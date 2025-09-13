@@ -1,0 +1,72 @@
+body {
+    background-color: #141414;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+}
+h1 {
+    color: white;
+    margin-top: 20px;
+    font-size: 60px;
+}
+.container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.profiles-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px; ;
+    gap: 40px;
+}
+.profile-image {
+    width: 180px;
+    height: 180px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.manage-profiles-container {
+    margin-top: 100px;
+}
+.manage-profiles-button {
+    background-color: transparent;
+    border: 2px solid grey;
+    color: grey;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+.manage-profiles-button:hover {
+    background-color: grey;
+    color: black;
+    border-color: grey;
+}
+
+/* —— Added for editable names (no JS) —— */
+.name-input {
+    display: block;
+    width: 100%;
+    max-width: 180px;        /* align with image width */
+    margin: 10px auto 0;     /* same spacing as .profile-name */
+    background: transparent;
+    color: grey;
+    text-align: center;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    outline: 0;
+    font-size: 20px;
+}
+.name-input::placeholder { color: #6d6d6d; }
+.name-input:focus {
+    color: white;
+    border-bottom-color: white;
+    box-shadow: none;
+}

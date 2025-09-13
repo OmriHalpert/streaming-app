@@ -1,0 +1,95 @@
+.background_photo {
+    background-image: url("../resources/netflix_background.jpg");
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+}
+.logo {
+    display: flex;
+    justify-content: left;
+    padding: 2%;
+}
+.main_box {
+    width: 500px;
+    height: 650px;
+    background-color: black;
+    opacity: 0.7;
+    margin: auto;
+    border-radius: 10px;
+}
+.textbox-title {
+    color: white;
+    padding-top: 5%;
+    padding-left: 9%;
+    font-size: 48px;
+    text-align: left;
+}
+.text-box {
+    padding: 0 5%;
+    text-align: center;
+}
+.text-input {
+    width: 90%;
+    height: 40px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 5px;
+    padding-left: 10px;
+    font-size: 16px;
+}
+.login-button {
+    width: 90%;
+    height: 50px;
+    margin-top: 30px;
+    background-color: #e50914;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    transition: background-color 0.2s;
+}
+.login-button:hover {
+    background-color: #b00610;
+}
+.alt-login-button {
+    width: 90%;
+    height: 50px;
+    margin-top: 10px;
+    background-color: gray;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    transition: background-color 0.2s;
+}
+.alt-login-button:hover {
+    background-color: rgb(82, 78, 78);
+}
+.forgot-password-ref {
+    display: block;
+    color: white;
+    margin-top: 20px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.textbox-footer {
+    margin-top: 20px;
+    padding: 0 10%;
+    text-align: left;
+}
+.sign-up-text {
+    color: white;
+    margin-top: 20px;
+}
+p {
+    color: grey;
+    font-size: 12px;
+    margin-top: 10px;
+    width: 90%;
+    margin-bottom: 0;
+}
+.more-details-ref {
+    color: grey;
+    font-size: 10px;
+    text-decoration: underline;
+}
