@@ -14,6 +14,7 @@ function loginValidation() {
 
     form.addEventListener('submit', (e) => {
         clearErrors();
+        e.preventDefault(); 
         let hasError = false;
 
         // Email validation
@@ -36,11 +37,16 @@ function loginValidation() {
         }
 
         // Block submission if any errors exist
-        if (hasError) {
-            e.preventDefault();
-        }
+        if (!hasError) {
+            // After successful login
+            const userSession = {
+                isLoggedIn: true,
+                email: email.value,
+            };
 
-        localStorage.setItem('')
+            localStorage.setItem('userSession', JSON.stringify(userSession));
+            window.location.href = 'profiles.html';
+        }
     })
 }
 
