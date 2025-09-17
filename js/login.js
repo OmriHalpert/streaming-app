@@ -6,6 +6,7 @@ function loginValidation() {
     const emailError = document.querySelector('#email-error');
     const passwordError = document.querySelector('#password-error');
 
+    // Clears fields
     const clearErrors = () => {
         emailError.textContent = '';
         passwordError.textContent = '';
@@ -16,13 +17,12 @@ function loginValidation() {
         let hasError = false;
 
         // Email validation
-        if (!email.validity.valueMissing) {
+        if (email.validity.valueMissing) {
             hasError = true;
-            if (email.validity.valueMissing) {
-                emailError.textContent = 'Email is required';
-            } else if (email.validity.typeMismatch) {
-                emailError.textContent = 'Please enter a valid email address'
-            }
+            emailError.textContent = 'Email is required';
+        } else if (email.validity.typeMismatch) {
+            hasError = true;
+            emailError.textContent = 'Please enter a valid email address';
         }
 
         // Password validation
@@ -35,10 +35,12 @@ function loginValidation() {
             passwordError.textContent = 'Password must be at least 6 characters.';
         }
 
-        // Block submission if any errors
+        // Block submission if any errors exist
         if (hasError) {
             e.preventDefault();
         }
+
+        localStorage.setItem('')
     })
 }
 
