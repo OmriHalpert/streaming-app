@@ -15,9 +15,13 @@
         <div class="main_box">
             <h1 class="textbox-title">Sign In</h1>
             <div class="text-box">
-                <input type="text" class="text-input" placeholder="Email or phone number">
-                <input type="password" class="text-input" placeholder="Password" >
-                <button class="login-button">Login</button>
+                <form id="login-form" novalidate>
+                    <input type="email" class="text-input" id="email" placeholder="Email or phone number" required>
+                    <div id="email-error" class="error" id="email-error"></div>
+                    <input type="password" class="text-input" id="password" placeholder="Password" minlength="6" required>
+                    <div id="password-error" class="error" id="password-error"></div>
+                    <button type="submit" class="login-button">Login</button>
+                </form>
                 <h5 style="color: white; margin: 10px;">or</h5>
                 <button class="alt-login-button">Login with code</button>
                 <a class="forgot-password-ref">Forgot your Password?</a>
@@ -38,5 +42,6 @@
             </div>
         </div>
     </div>
+    <script src="./js/login.js"></script>
 </body>
 </html>
