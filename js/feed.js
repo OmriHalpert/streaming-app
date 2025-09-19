@@ -1,86 +1,86 @@
 // Holds initial files data
 const initialFiles = [
     {
-        name: "movie1",
-        year: 2020,
-        genre: "Action",
+        name: "The Dark Knight",
+        year: 2008,
+        genre: "Action/Crime/Drama",
         likes: 100,
         liked: false
     },
     {
-        name: "movie2",
-        year: 2021,
-        genre: "Comedy",
+        name: "Deadpool",
+        year: 2016,
+        genre: "Action/Comedy",
         likes: 150,
         liked: false
     },
     {
-        name: "movie3",
-        year: 2019,
+        name: "The Shawshank Redemption",
+        year: 1994,
         genre: "Drama",
         likes: 80,
         liked: false
     },
     {
-        name: "movie4",
-        year: 2022,
-        genre: "Thriller",
+        name: "Inception",
+        year: 2010,
+        genre: "Action/Sci-Fi/Thriller",
         likes: 200,
         liked: false
     },
     {
-        name: "movie5",
-        year: 2021,
-        genre: "Horror",
+        name: "The Conjuring",
+        year: 2013,
+        genre: "Horror/Thriller",
         likes: 120,
         liked: false
     },
     {
-        name: "movie6",
-        year: 2020,
-        genre: "Sci-Fi",
+        name: "Interstellar",
+        year: 2014,
+        genre: "Adventure/Drama/Sci-Fi",
         likes: 180,
         liked: false
     },
     {
-        name: "movie7",
-        year: 2023,
-        genre: "Adventure",
+        name: "Avatar",
+        year: 2009,
+        genre: "Action/Adventure/Fantasy",
         likes: 90,
         liked: false
     },
     {
-        name: "movie8",
-        year: 2022,
-        genre: "Romance",
+        name: "Titanic",
+        year: 1997,
+        genre: "Drama/Romance",
         likes: 160,
         liked: false
     },
     {
-        name: "movie9",
-        year: 2021,
-        genre: "Mystery",
+        name: "Gone Girl",
+        year: 2014,
+        genre: "Drama/Mystery/Thriller",
         likes: 140,
         liked: false
     },
     {
-        name: "movie10",
-        year: 2023,
-        genre: "Fantasy",
+        name: "Harry Potter",
+        year: 2001,
+        genre: "Adventure/Fantasy",
         likes: 170,
         liked: false
     },
     {
-        name: "movie11",
-        year: 2020,
+        name: "Planet Earth",
+        year: 2006,
         genre: "Documentary",
         likes: 110,
         liked: false
     },
     {
-        name: "movie12",
-        year: 2022,
-        genre: "Animation",
+        name: "Toy Story",
+        year: 1995,
+        genre: "Animation/Adventure/Comedy",
         likes: 190,
         liked: false
     }
@@ -90,17 +90,18 @@ const initialFiles = [
 Files = JSON.parse(localStorage.getItem('moviesData')) || initialFiles;
 
 // Render movies and TV shows (files)
-const renderFiles = () => {
+const renderFiles = (filesToRender = Files) => {
     const filesContainer = document.getElementById('files-container');
     filesContainer.innerHTML = '';
-    Files.forEach((file, index) => {
+    filesToRender.forEach((file, index) => {
+        const originalIndex = Files.indexOf(file);
         const fileDiv = document.createElement('div');
         fileDiv.className = 'file';
         fileDiv.innerHTML = `
             <h3>${file.name} (${file.year})</h3>
             <p>Genre: ${file.genre}</p>
             <p>Likes: <span class="likes-count">${file.likes}</span></p>
-            <img src="resources/heart.png" alt="Like Icon" class="like-icon ${file.liked ? 'liked' : ''}" data-index="${index}" />
+            <img src="resources/heart.png" alt="Like Icon" class="like-icon ${file.liked ? 'liked' : ''}" data-index="${originalIndex}" />
         `;
 
         // Add click handler for the like icon
@@ -131,8 +132,61 @@ const renderFiles = () => {
     });
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+// Initialize search functionality
+const initializeSearch = () => {
+    const searchIcon = document.querySelector('.search-icon');
+    const searchInput = document.querySelector('.search-input');
+    const sortButton = document.querySelector('.sort-button');
+    
+    searchIcon.addEventListener('click', () => {
+        searchInput.classList.toggle('visible');
+        sortButton.classList.toggle('visible');
+        
+        if (searchInput.classList.contains('visible')) {
+            searchInput.style.display = 'block';
+            sortButton.style.display = 'block';
+            searchInput.focus();
+        } else {
+            searchInput.style.display = 'none';
+            sortButton.style.display = 'none';
+            searchInput.value = '';
+            sortButton.classList.remove('active');
+            renderFiles(); // Show all files when search is closed
+        }
+    });
+};
 
+const searchAbility = () => {
+    const searchInput = document.querySelector('.search-input');
+    const sortButton = document.querySelector('.sort-button');
+    let isSorted = false;
+    
+    // Handle search input
+    searchInput.addEventListener('input', () => {
+        performSearch();
+    });
+    
+    // Handle sort button
+    sortButton.addEventListener('click', () => {
+        isSorted = !isSorted;
+        sortButton.classList.toggle('active');
+        performSearch();
+    });
+    
+    // Perform search with optional sorting
+    function performSearch() {
+        const query = searchInput.value.toLowerCase();
+        let filteredFiles = Files.filter(file => file.name.toLowerCase().includes(query));
+        
+        if (isSorted) {
+            filteredFiles = filteredFiles.sort((a, b) => a.name.localeCompare(b.name));
+        }
+        
+        renderFiles(filteredFiles);
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
     // Load profile login message
     const profileName = localStorage.getItem('selectedProfileName');
     // Add a small delay to ensure page is fully rendered
@@ -146,4 +200,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // renders files to the DOM
     renderFiles();
+
+    // Initialize search
+    initializeSearch();
+    searchAbility();
 });
