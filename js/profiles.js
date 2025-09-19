@@ -31,8 +31,7 @@ const profiles = [
 const renderProfiles = () => {
     const profilesContainer = document.getElementById('profiles-container');
     profilesContainer.innerHTML = '';
-
-    profiles.forEach(profile => {
+    profiles.forEach((profile, index) => {
         const profileDiv = document.createElement('div');
         profileDiv.className = 'profile';
         
@@ -48,10 +47,35 @@ const renderProfiles = () => {
                 placeholder="${profile.placeholder}"
             />
         `;
+
+        profileDiv.addEventListener('click', (e) => {
+            // Don't redirect if clicking the input field
+            if (e.target.classList.contains('name-input')) {
+                return;
+            }
+            const nameInput = profileDiv.querySelector('.name-input');
+            const profileName = nameInput.value || nameInput.placeholder;
+            localStorage.setItem('selectedProfileName', profileName);
+            window.location.href = 'feed.html';
+        });
         
         profilesContainer.appendChild(profileDiv);
     });
 };
 
-// Call renderProfiles when the page loads (loads profiles to page)
-document.addEventListener('DOMContentLoaded', renderProfiles);
+// Function to initialize the logout button
+function initializeLogoutButton() {
+    const logoutButton = document.querySelector('#logout-button');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        });
+    }
+}
+
+// Initialize everything when the DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    renderProfiles();
+    initializeLogoutButton();
+});

@@ -70,3 +70,23 @@ h1 {
     border-bottom-color: white;
     box-shadow: none;
 }
+
+#logout-button {
+    background-color: transparent;
+    border: 2px solid grey;
+    color: grey;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+#logout-button:hover {
+    background-color: grey;
+    color: black;
+    border-color: grey;
+}
