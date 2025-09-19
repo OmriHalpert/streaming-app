@@ -204,4 +204,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize search
     initializeSearch();
     searchAbility();
+    
+    // Simple hamburger menu
+    const hamburgerBtn = document.querySelector('.hamburger-btn');
+    const navMenu = document.querySelector('.nav-menu');
+    
+    if (hamburgerBtn && navMenu) {
+        hamburgerBtn.addEventListener('click', () => {
+            navMenu.classList.toggle('show');
+        });
+        
+        // Close menu when clicking on a link
+        navMenu.addEventListener('click', (e) => {
+            if (e.target.classList.contains('nav-selection')) {
+                navMenu.classList.remove('show');
+            }
+        });
+    }
 });
