@@ -36,6 +36,72 @@ a {
     align-items: center;
     gap: 15px;
 }
+
+.search-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-input {
+    background-color: #2f2f2f;
+    border: none;
+    padding: 8px 12px;
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 0;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.search-input.visible {
+    width: 200px;
+    opacity: 1;
+}
+
+.sort-button {
+    background-color: #404040;
+    border: 1px solid #666;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+}
+
+.sort-button.visible {
+    opacity: 1;
+    width: auto;
+    margin-left: 5px;
+}
+
+.sort-button:hover {
+    background-color: #555;
+}
+
+.sort-button.active {
+    background-color: #e50914;
+    border-color: #e50914;
+}
+
+.search-input:focus {
+    outline: none;
+    background-color: #404040;
+}
+
+.search-icon {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.search-icon:hover {
+    transform: scale(1.1);
+}
 .files-title {
     color: white;
     margin: 20px;
