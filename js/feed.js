@@ -5,84 +5,104 @@ const initialFiles = [
         year: 2008,
         genre: ["Action", "Crime", "Drama"],
         likes: 100,
-        liked: false
+        liked: false,
+        thumbnail: "../resources/thumbnails/the_dark_knight.jpg"
     },
     {
         name: "Deadpool",
         year: 2016,
         genre: ["Action", "Comedy"],
         likes: 150,
-        liked: false
+        liked: false,
+        thumbnail: "../resources/thumbnails/deadpool.jpg"
     },
     {
         name: "The Shawshank Redemption",
         year: 1994,
         genre: ["Drama"],
         likes: 80,
-        liked: false
+        liked: false,
+        thumbnail: "../resources/thumbnails/the_shawshank_redemption.jpg"
     },
     {
         name: "Inception",
         year: 2010,
         genre: ["Action", "Sci-Fi", "Thriller"],
         likes: 200,
-        liked: false
+        liked: false,
+        thumbnail: "../resources/thumbnails/inception.jpg"
     },
     {
         name: "The Conjuring",
         year: 2013,
         genre: ["Horror", "Thriller"],
         likes: 120,
-        liked: false
+        liked: false,
+        thumbnail: "../resources/thumbnails/the_conjuring.jpg"
     },
     {
         name: "Interstellar",
         year: 2014,
         genre: ["Adventure", "Drama", "Sci-Fi"],
         likes: 180,
-        liked: false
+        liked: false,
+        thumbnail: "../resources/thumbnails/interstellar.jpg"
     },
     {
         name: "Avatar",
         year: 2009,
         genre: ["Action", "Adventure", "Fantasy"],
         likes: 90,
-        liked: false
+        liked: false,
+        thumbnail: "../resources/thumbnails/avatar.jpg"
     },
     {
         name: "Titanic",
         year: 1997,
         genre: ["Drama", "Romance"],
         likes: 160,
-        liked: false
+        liked: false,
+        thumbnail: "../resources/thumbnails/titanic.jpg"
     },
     {
         name: "Gone Girl",
         year: 2014,
         genre: ["Drama", "Mystery", "Thriller"],
         likes: 140,
-        liked: false
+        liked: false,
+        thumbnail: "../resources/thumbnails/gone_girl.jpg"
     },
     {
         name: "Harry Potter",
         year: 2001,
         genre: ["Adventure", "Fantasy"],
         likes: 170,
-        liked: false
+        liked: false,
+        thumbnail: "../resources/thumbnails/harry_potter.jpg"
     },
     {
         name: "Planet Earth",
         year: 2006,
         genre: ["Documentary"],
         likes: 110,
-        liked: false
+        liked: false,
+        thumbnail: "../resources/thumbnails/planet_earth.jpg"
     },
     {
         name: "Toy Story",
         year: 1995,
         genre: ["Animation", "Adventure", "Comedy"],
         likes: 190,
+        liked: false,
+        thumbnail: "../resources/thumbnails/toy_story.jpg"
+    },
+    {
+        name: "Breaking Bad",
+        year: 2008,
+        genre: ["Drama", "Crime", "Thriller"],
+        likes: 220,
         liked: false
+        // No thumbnail - will use regular text layout
     }
 ];
 
@@ -149,7 +169,9 @@ function renderGenreView() {
         // Add movies to this genre row
         genreGroups[genre].forEach(movie => {
             const movieCard = createFileElement(movie);
-            movieCard.className = 'genre-file'; // Different styling for genre view
+            // Remove the default .file class and add .genre-file class for genre view
+            movieCard.classList.remove('file');
+            movieCard.classList.add('genre-file');
             genreRow.appendChild(movieCard);
         });
         
@@ -163,12 +185,35 @@ function createFileElement(file) {
     const originalIndex = Files.indexOf(file);
     const fileDiv = document.createElement('div');
     fileDiv.className = 'file';
-    fileDiv.innerHTML = `
-        <h3>${file.name} (${file.year})</h3>
-        <p>Genre: ${file.genre.join(', ')}</p>
-        <p>Likes: <span class="likes-count">${file.likes}</span></p>
-        <img src="resources/heart.png" alt="Like Icon" class="like-icon ${file.liked ? 'liked' : ''}" data-index="${originalIndex}" />
-    `;
+
+    if (file.thumbnail) {
+        // For movies with thumbnails, create a card with background image and overlay content
+        fileDiv.style.backgroundImage = `url(${file.thumbnail})`;
+        fileDiv.style.backgroundSize = 'cover';
+        fileDiv.style.backgroundPosition = 'center';
+        fileDiv.classList.add('file-with-thumbnail');
+        
+        fileDiv.innerHTML = `
+            <div class="file-overlay">
+                <div class="file-content">
+                    <h3>${file.name} (${file.year})</h3>
+                    <p>Genre: ${file.genre.join(', ')}</p>
+                    <p>Likes: <span class="likes-count">${file.likes}</span></p>
+                </div>
+                <span class="like-icon ${file.liked ? 'liked' : ''}" data-index="${originalIndex}"></span>
+            </div>
+        `;
+    } else {
+        // For movies without thumbnails, use the regular layout
+        fileDiv.innerHTML = `
+            <div class="file-text-content">
+                <h3>${file.name} (${file.year})</h3>
+                <p>Genre: ${file.genre.join(', ')}</p>
+                <p>Likes: <span class="likes-count">${file.likes}</span></p>
+            </div>
+            <span class="like-icon ${file.liked ? 'liked' : ''}" data-index="${originalIndex}"></span>
+        `;
+    }
 
     // Add click handler for the like icon
     fileDiv.querySelector('.like-icon').addEventListener('click', (e) => {
@@ -199,23 +244,34 @@ function createFileElement(file) {
         // Save updated Files array to localStorage
         localStorage.setItem('moviesData', JSON.stringify(Files));
         
-        // Re-render the current view to reflect changes everywhere
-        const searchInput = document.querySelector('.search-input');
-        const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
-        
-        if (query === '') {
-            // We're in genre view, re-render it
-            renderGenreView();
+        // Update all instances of this movie without re-rendering
+        updateMovieInstances(Files[index]);
+    });
+
+    return fileDiv;
+}
+
+// Update all instances of a movie across the page
+function updateMovieInstances(movie) {
+    const movieIndex = Files.indexOf(movie);
+    // Find all like icons for this movie
+    const allLikeIcons = document.querySelectorAll(`[data-index="${movieIndex}"]`);
+    
+    allLikeIcons.forEach(icon => {
+        // Update like state
+        if (movie.liked) {
+            icon.classList.add('liked');
         } else {
-            // We're in search/grid view, re-render the search results
-            const sortButton = document.querySelector('.sort-button');
-            let filteredFiles = Files.filter(file => file.name.toLowerCase().includes(query));
-            
-            if (sortButton && sortButton.classList.contains('active')) {
-                filteredFiles = filteredFiles.sort((a, b) => a.name.localeCompare(b.name));
+            icon.classList.remove('liked');
+        }
+        
+        // Update likes count in the same card
+        const card = icon.closest('.file, .genre-file');
+        if (card) {
+            const likesCountSpan = card.querySelector('.likes-count');
+            if (likesCountSpan) {
+                likesCountSpan.textContent = movie.likes;
             }
-            
-            renderFiles(filteredFiles);
         }
     });
 
