@@ -103,6 +103,86 @@ const initialFiles = [
         likes: 220,
         liked: false
         // No thumbnail - will use regular text layout
+    },
+    {
+        name: "Stranger Things",
+        year: 2016,
+        genre: ["Drama", "Fantasy", "Horror"],
+        likes: 180,
+        liked: false
+        // No thumbnail - will use regular text layout
+    },
+    {
+        name: "The Office",
+        year: 2005,
+        genre: ["Comedy"],
+        likes: 200,
+        liked: false
+        // No thumbnail - will use regular text layout
+    },
+    {
+        name: "Game of Thrones",
+        year: 2011,
+        genre: ["Drama", "Fantasy", "Adventure"],
+        likes: 170,
+        liked: false
+        // No thumbnail - will use regular text layout
+    },
+    {
+        name: "Friends",
+        year: 1994,
+        genre: ["Comedy", "Romance"],
+        likes: 190,
+        liked: false
+        // No thumbnail - will use regular text layout
+    },
+    {
+        name: "The Crown",
+        year: 2016,
+        genre: ["Drama", "Biography"],
+        likes: 150,
+        liked: false
+        // No thumbnail - will use regular text layout
+    },
+    {
+        name: "Sherlock",
+        year: 2010,
+        genre: ["Crime", "Drama", "Mystery"],
+        likes: 165,
+        liked: false
+        // No thumbnail - will use regular text layout
+    },
+    {
+        name: "The Mandalorian",
+        year: 2019,
+        genre: ["Adventure", "Fantasy", "Action"],
+        likes: 175,
+        liked: false
+        // No thumbnail - will use regular text layout
+    },
+    {
+        name: "Black Mirror",
+        year: 2011,
+        genre: ["Drama", "Thriller", "Sci-Fi"],
+        likes: 160,
+        liked: false
+        // No thumbnail - will use regular text layout
+    },
+    {
+        name: "The Witcher",
+        year: 2019,
+        genre: ["Fantasy", "Adventure", "Drama"],
+        likes: 155,
+        liked: false
+        // No thumbnail - will use regular text layout
+    },
+    {
+        name: "House of Cards",
+        year: 2013,
+        genre: ["Drama", "Thriller"],
+        likes: 140,
+        liked: false
+        // No thumbnail - will use regular text layout
     }
 ];
 
