@@ -1,8 +1,9 @@
 body {
-    background-color: #141414;
-    height: 100vh;
-    background-size: cover;
-    background-position: center;
+    background: linear-gradient(135deg, #0a0a0a 0%, #141414 40%, #9c3939 100%);
+    min-height: 100vh;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 #feed-page {
