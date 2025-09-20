@@ -1,3 +1,4 @@
+/* Background and general structure */
 body {
     background: linear-gradient(135deg, #0a0a0a 0%, #141414 40%, #9c3939 100%);
     min-height: 100vh;
@@ -6,6 +7,7 @@ body {
     background-attachment: fixed;
 }
 
+/* So content won't be cut by the header */
 #feed-page {
     padding-top: 50px;
 }
@@ -31,17 +33,13 @@ body {
     border: 1px solid #b8070f;
 }
 
+/* When the notification is shown */
 .custom-notification.show {
     opacity: 1;
     transform: translateX(0);
 }
 
-.custom-notification::before {
-    content: '👋';
-    margin-right: 8px;
-    font-size: 18px;
-}
-
+/* Custom notification Close button */
 .custom-notification .close-btn {
     background: none;
     border: none;
@@ -51,13 +49,15 @@ body {
     float: right;
     margin-left: 10px;
     cursor: pointer;
-    padding: 0;
+    padding-top: 3px; /* Adjusted for better vertical alignment */
     line-height: 1;
 }
 
 .custom-notification .close-btn:hover {
     opacity: 0.7;
 }
+
+/* Header styles */
 .feed-header {
     height: 60px;
     background-color: #1a1a1a;
@@ -71,12 +71,15 @@ body {
     right: 0;
     z-index: 1000;
 }
+
 .netflix-logo {
     height: 100%;
     display: flex;
     align-items: center;
     padding-left: 20px;
 }
+
+/* Contains the navigation links of the header */
 .nav-selection-container {
     display: flex;
     gap: 20px;
@@ -85,27 +88,92 @@ body {
     align-items: center;
 }
 
+.nav-menu {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Hamburger menu button */
 .hamburger-btn {
     display: none;
     background: none;
     border: none;
     color: white;
     font-size: 18px;
-    cursor: pointer;
     padding: 5px;
 }
 
-.nav-menu {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
+/* Shifts between full nav menu and hamburger menu */
+@media (max-width: 1130px) {
+    /* Displays hamburger menu button */
+    .hamburger-btn {
+        display: block;
+        margin-left: 20px;
+    }
+
+    /* Transforms navigation menu into hidden dropdown for mobile */
+    .nav-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 250px;
+        background-color: #1a1a1a;
+        border-top: 1px solid #333;
+        border-right: 1px solid #333;
+        border-bottom: 1px solid #333;
+        border-radius: 0 0 4px 4px;
+        flex-direction: column;
+        gap: 0;
+        padding: 0;
+        z-index: 100;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Displays the navigation menu */
+    .nav-menu.show {
+        display: flex;
+    }
+
+    /* Navigation menu children styles */
+    .nav-menu .nav-selection {
+        padding: 18px 20px;
+        border-bottom: 1px solid #333;
+        font-size: 16px;
+        line-height: 20px;
+        text-align: left;
+        height: 56px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+    }
+    
+    .nav-menu .nav-selection:hover {
+        background-color: #2f2f2f;
+    }
+    
+    .nav-selection-container {
+        position: relative;
+        padding-left: 0;
+        gap: 0;
+    }
 }
+
+/* General style for anchor tags */
 a {
     color: white;
     text-decoration: none;
     font-size: 16px;
     line-height: 60px;
 }
+
+a:hover {
+    opacity: 0.7;
+}
+
+/* Settings container styles (search, notifications, profile) */
 .settings-container {
     right: 20px;
     display: flex;
@@ -114,12 +182,14 @@ a {
     padding-right: 10px;
 }
 
+/* Search container styles */
 .search-container {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
+/* Searchbox styles */
 .search-input {
     background-color: #2f2f2f;
     border: none;
@@ -146,7 +216,6 @@ a {
     padding: 8px 12px;
     border-radius: 4px;
     font-size: 12px;
-    cursor: pointer;
     transition: all 0.3s ease;
     opacity: 0;
     width: 45px;
@@ -163,29 +232,34 @@ a {
     background-color: #555;
 }
 
+/* When pressed */
 .sort-button.active {
     background-color: #e50914;
     border-color: #e50914;
 }
 
+/* When pressed */
 .search-input:focus {
     outline: none;
     background-color: #404040;
 }
 
 .search-icon {
-    cursor: pointer;
     transition: transform 0.2s ease;
 }
 
 .search-icon:hover {
-    transform: scale(1.1);
+    opacity: 0.7;
 }
+
+/* Main page title (your movies and TV shows) */
 .files-title {
     color: white;
     margin: 20px;
     font-size: 24px;
 }
+
+/* Main container for files */
 .files-container {
     display: flex;
     flex-wrap: wrap;
@@ -193,6 +267,7 @@ a {
     padding: 20px;
 }
 
+/* Individual file styles for grid view */
 .file {
     width: 280px;
     min-height: 160px;
@@ -227,20 +302,7 @@ a {
     font-size: 14px;
 }
 
-.file .like-icon {
-    position: absolute !important;
-    bottom: 15px !important;
-    right: 15px !important;
-    flex-shrink: unset;
-}
-
-.genre-file .like-icon {
-    position: absolute !important;
-    bottom: 15px !important;
-    right: 15px !important;
-    flex-shrink: unset;
-}
-
+/* Text content for non-thumbnail files */
 .file-text-content {
     flex: 1;
     display: flex;
@@ -254,6 +316,7 @@ a {
     overflow: hidden;
 }
 
+/* dark hover feature (thumbnail) */
 .file-overlay {
     position: absolute;
     bottom: 0;
@@ -317,6 +380,7 @@ a {
     padding-left: 10px;
 }
 
+/* Genre row styles */
 .genre-row {
     display: flex;
     gap: 15px;
@@ -327,6 +391,7 @@ a {
     contain: layout;
 }
 
+/* Horizontal scrollbar styles */
 .genre-row::-webkit-scrollbar {
     height: 8px;
 }
@@ -348,7 +413,7 @@ a {
 .genre-file {
     width: 280px;
     height: 160px;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Prevent shrinking */
     background-color: #2f2f2f;
     border-radius: 4px;
     padding: 15px;
@@ -363,15 +428,7 @@ a {
     position: relative;
 }
 
-.genre-file .file-main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 130px;
-    padding-right: 40px;
-}
-
+/* removes padding for files with thumbnails */
 .genre-file.file-with-thumbnail {
     padding: 0;
     flex-direction: column;
@@ -399,6 +456,13 @@ a {
 }
 
 .like-icon {
+    /* Positioning */
+    position: absolute !important;
+    bottom: 15px !important;
+    right: 15px !important;
+    flex-shrink: unset;
+
+    /* Styling and animation */
     font-size: 20px;
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -415,6 +479,7 @@ a {
     transform: scale(0.9);
 }
 
+/* Fallback for systems who don't support emojis */
 .like-icon.liked {
     color: #e50914;
 }
@@ -425,76 +490,4 @@ a {
 
 .like-icon:not(.liked)::before {
     content: '🤍';
-}
-
-.like-icon.animate {
-    animation: likeAnimation 0.45s ease-in-out;
-}
-
-@keyframes likeAnimation {
-    0% {
-        transform: scale(1);
-    }
-    25% {
-        transform: scale(1.2);
-    }
-    50% {
-        transform: scale(0.95);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-/* Simple responsive design - 2 states only */
-@media (max-width: 1130px) {
-    .hamburger-btn {
-        display: block;
-        margin-left: 20px;
-    }
-    
-    .nav-menu {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 250px;
-        background-color: #1a1a1a;
-        border-top: 1px solid #333;
-        border-right: 1px solid #333;
-        border-bottom: 1px solid #333;
-        border-radius: 0 0 4px 4px;
-        flex-direction: column;
-        gap: 0;
-        padding: 0;
-        z-index: 100;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
-    
-    .nav-menu.show {
-        display: flex;
-    }
-    
-    .nav-menu .nav-selection {
-        padding: 18px 20px;
-        border-bottom: 1px solid #333;
-        font-size: 16px;
-        line-height: 20px;
-        text-align: left;
-        height: 56px;
-        box-sizing: border-box;
-        display: flex;
-        align-items: center;
-        white-space: nowrap;
-    }
-    
-    .nav-menu .nav-selection:hover {
-        background-color: #2f2f2f;
-    }
-    
-    .nav-selection-container {
-        position: relative;
-        padding-left: 0;
-        gap: 0;
-    }
 }

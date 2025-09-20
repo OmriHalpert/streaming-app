@@ -183,6 +183,14 @@ const initialFiles = [
         likes: 140,
         liked: false
         // No thumbnail - will use regular text layout
+    },
+    {
+        name: "Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test ",
+        year: 2013,
+        genre: ["Drama", "Thriller"],
+        likes: 140,
+        liked: false
+        // No thumbnail - will use regular text layout
     }
 ];
 
@@ -192,7 +200,7 @@ Files = JSON.parse(localStorage.getItem('filessData')) || initialFiles;
 // Function to group files by genre
 function groupFilesByGenre(files) {
     const genreGroups = {};
-
+    
     files.forEach(file => {
         // Extracts genres from files
         file.genre.forEach(genre => {
@@ -200,13 +208,21 @@ function groupFilesByGenre(files) {
                 genreGroups[genre] = [];
             }
             // Adds files to genre groups (avoids duplicates)
-            if (!genreGroups[genre].find(f => f.name === file.name)) {
+            if (!genreGroups[genre].find(m => m.name === file.name)) {
                 genreGroups[genre].push(file);
             }
         });
     });
     
     return genreGroups;
+}
+
+// Helper function to truncate text if it exceeds character limit
+function truncateText(text, maxLength = 100) {
+    if (text.length <= maxLength) {
+        return text;
+    }
+    return text.substring(0, maxLength).trim() + '...';
 }
 
 // Render movies and TV shows (files)
@@ -266,6 +282,9 @@ function createFileElement(file) {
     const fileDiv = document.createElement('div');
     fileDiv.className = 'file';
 
+    // Truncate the file name if it's too long
+    const displayName = truncateText(file.name);
+
     if (file.thumbnail) {
         // For files with thumbnails, create a card with background image and overlay content
         fileDiv.style.backgroundImage = `url(${file.thumbnail})`;
@@ -276,7 +295,7 @@ function createFileElement(file) {
         fileDiv.innerHTML = `
             <div class="file-overlay">
                 <div class="file-content">
-                    <h3>${file.name} (${file.year})</h3>
+                    <h3>${displayName} (${file.year})</h3>
                     <p>Genre: ${file.genre.join(', ')}</p>
                     <p>Likes: <span class="likes-count">${file.likes}</span></p>
                 </div>
@@ -287,7 +306,7 @@ function createFileElement(file) {
         // For files without thumbnails, use the regular layout
         fileDiv.innerHTML = `
             <div class="file-text-content">
-                <h3>${file.name} (${file.year})</h3>
+                <h3>${displayName} (${file.year})</h3>
                 <p>Genre: ${file.genre.join(', ')}</p>
                 <p>Likes: <span class="likes-count">${file.likes}</span></p>
             </div>
@@ -447,7 +466,7 @@ function showCustomNotification(message) {
     // Add close button functionality
     const closeBtn = notification.querySelector('.close-btn');
     closeBtn.addEventListener('click', () => {
-        hideNotification(notification);
+        notification.classList.remove('show');
     });
     
     // Add to page
@@ -484,7 +503,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add a small delay to ensure page is fully rendered
     setTimeout(() => {
         if (profileName) {
-            showCustomNotification(`Welcome back ${profileName}!`);
+            showCustomNotification(`👋 Welcome back ${profileName}!`);
         } else {
             console.log('No profile name found in localStorage');
         }
