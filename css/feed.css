@@ -5,6 +5,10 @@ body {
     background-position: center;
 }
 
+#feed-page {
+    padding-top: 50px;
+}
+
 /* Custom notification popup */
 .custom-notification {
     position: fixed;
@@ -60,7 +64,11 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    position: relative;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
 .netflix-logo {
     height: 100%;
@@ -119,12 +127,14 @@ a {
     font-size: 14px;
     width: 0;
     opacity: 0;
+    visibility: hidden;
     transition: all 0.3s ease;
 }
 
 .search-input.visible {
     width: 200px;
     opacity: 1;
+    visibility: visible;
 }
 
 .sort-button {
@@ -137,14 +147,14 @@ a {
     cursor: pointer;
     transition: all 0.3s ease;
     opacity: 0;
-    width: 0;
-    overflow: hidden;
+    width: 45px;
+    margin-left: 5px;
+    visibility: hidden;
 }
 
 .sort-button.visible {
     opacity: 1;
-    width: auto;
-    margin-left: 5px;
+    visibility: visible;
 }
 
 .sort-button:hover {
