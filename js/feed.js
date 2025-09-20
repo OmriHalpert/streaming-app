@@ -5,7 +5,8 @@ const initialFiles = [
         year: 2008,
         genre: ["Action", "Crime", "Drama"],
         likes: 100,
-        liked: false
+        liked: false,
+        thumbnail: "../resources/dark_knight.jpg"
     },
     {
         name: "Deadpool",
