@@ -167,7 +167,7 @@ function createFileElement(file) {
         <h3>${file.name} (${file.year})</h3>
         <p>Genre: ${file.genre.join(', ')}</p>
         <p>Likes: <span class="likes-count">${file.likes}</span></p>
-        <img src="resources/heart.png" alt="Like Icon" class="like-icon ${file.liked ? 'liked' : ''}" data-index="${originalIndex}" />
+        <img src="../resources/heart.png" alt="Like Icon" class="like-icon ${file.liked ? 'liked' : ''}" data-index="${originalIndex}" />
     `;
 
     // Add click handler for the like icon
