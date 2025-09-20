@@ -187,6 +187,15 @@ function createFileElement(file) {
             Files[index].likes -= 1;
         }
         
+        // Trigger animation only on the clicked icon
+        if (Files[index].liked) {
+            icon.classList.add('animate');
+            // Remove animation class after animation completes
+            setTimeout(() => {
+                icon.classList.remove('animate');
+            }, 450); // Match animation duration
+        }
+        
         // Save updated Files array to localStorage
         localStorage.setItem('moviesData', JSON.stringify(Files));
         
@@ -213,7 +222,7 @@ function createFileElement(file) {
     return fileDiv;
 }
 
-// Initialize search functionality
+// Initialize search
 const initializeSearch = () => {
     const searchIcon = document.querySelector('.search-icon');
     const searchInput = document.querySelector('.search-input');
@@ -233,6 +242,7 @@ const initializeSearch = () => {
     });
 };
 
+// Search and sort functionality
 const searchAbility = () => {
     const searchInput = document.querySelector('.search-input');
     const sortButton = document.querySelector('.sort-button');
@@ -271,77 +281,8 @@ const searchAbility = () => {
     }
 };
 
-// Custom notification function
-function showCustomNotification(message) {
-    // Remove any existing notifications
-    const existingNotification = document.querySelector('.custom-notification');
-    if (existingNotification) {
-        existingNotification.remove();
-    }
-    
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = 'custom-notification';
-    notification.innerHTML = `
-        <button class="close-btn">&times;</button>
-        ${message}
-    `;
-    
-    // Add to page
-    document.body.appendChild(notification);
-    
-    // Show notification with animation
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 100);
-    
-    // Auto-hide after 4 seconds
-    setTimeout(() => {
-        hideNotification(notification);
-    }, 4000);
-    
-    // Add close button functionality
-    const closeBtn = notification.querySelector('.close-btn');
-    closeBtn.addEventListener('click', () => {
-        hideNotification(notification);
-    });
-}
-
-function hideNotification(notification) {
-    notification.classList.remove('show');
-    setTimeout(() => {
-        if (notification.parentNode) {
-            notification.remove();
-        }
-    }, 300);
-}
-
-// Main DOMContentLoaded event
-document.addEventListener('DOMContentLoaded', () => {
-    // Clear search input on page refresh
-    const searchInput = document.querySelector('.search-input');
-    if (searchInput) {
-        searchInput.value = '';
-    }
-    
-    // Load profile login message
-    const profileName = localStorage.getItem('selectedProfileName');
-    // Add a small delay to ensure page is fully rendered
-    setTimeout(() => {
-        if (profileName) {
-            showCustomNotification(`Welcome back ${profileName}!`);
-        } else {
-            console.log('No profile name found in localStorage');
-        }
-    }, 500);
-
-    // renders files to the DOM - default to genre view
-    renderGenreView();
-
-    // Initialize search
-    initializeSearch();
-    searchAbility();
-    
+// initialize hamburger menu
+function initializeHamburgerMenu() {
     // Simple hamburger menu
     const hamburgerBtn = document.querySelector('.hamburger-btn');
     const navMenu = document.querySelector('.nav-menu');
@@ -358,5 +299,78 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+}
+
+// Custom notification function
+function showCustomNotification(message) {
+    // Remove any existing notifications
+    const existingNotification = document.querySelector('.custom-notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'custom-notification';
+    notification.innerHTML = `
+        <button class="close-btn">&times;</button>
+        ${message}
+    `;
+
+    // Add close button functionality
+    const closeBtn = notification.querySelector('.close-btn');
+    closeBtn.addEventListener('click', () => {
+        hideNotification(notification);
+    });
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Show notification with animation
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    // Auto-hide after 4 seconds
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 300);
+    }, 4000);
+}
+
+// Main DOMContentLoaded event
+document.addEventListener('DOMContentLoaded', () => {
+
+    // Clear search input on page refresh
+    const searchInput = document.querySelector('.search-input');
+    if (searchInput) {
+        searchInput.value = '';
+    }
+    
+    // Load profile login message
+    const profileName = localStorage.getItem('selectedProfileName');
+
+    // Add a small delay to ensure page is fully rendered
+    setTimeout(() => {
+        if (profileName) {
+            showCustomNotification(`Welcome back ${profileName}!`);
+        } else {
+            console.log('No profile name found in localStorage');
+        }
+    }, 500);
+
+    // renders files to the DOM - default genre view
+    renderGenreView();
+
+    // Initialize search
+    initializeSearch();
+    searchAbility();
+
+    // initialize hamburger menu
+    initializeHamburgerMenu();
 });
 
