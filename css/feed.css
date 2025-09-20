@@ -337,8 +337,11 @@ a {
 }
 
 .like-icon.liked {
-    animation: likeAnimation 0.45s ease-in-out;
     filter: invert(15%) sepia(95%) saturate(6932%) hue-rotate(358deg) brightness(95%) contrast(112%);
+}
+
+.like-icon.animate {
+    animation: likeAnimation 0.45s ease-in-out;
 }
 
 @keyframes likeAnimation {
