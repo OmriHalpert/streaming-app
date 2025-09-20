@@ -187,21 +187,21 @@ const initialFiles = [
 ];
 
 // Load files from localStorage or use initial files
-Files = JSON.parse(localStorage.getItem('moviesData')) || initialFiles;
+Files = JSON.parse(localStorage.getItem('filessData')) || initialFiles;
 
-// Function to group movies by genre
-function groupMoviesByGenre(movies) {
+// Function to group files by genre
+function groupFilesByGenre(files) {
     const genreGroups = {};
-    
-    movies.forEach(movie => {
-        // Extracts genres from movies
-        movie.genre.forEach(genre => {
+
+    files.forEach(file => {
+        // Extracts genres from files
+        file.genre.forEach(genre => {
             if (!genreGroups[genre]) {
                 genreGroups[genre] = [];
             }
-            // Adds movies to genre groups (avoids duplicates)
-            if (!genreGroups[genre].find(m => m.name === movie.name)) {
-                genreGroups[genre].push(movie);
+            // Adds files to genre groups (avoids duplicates)
+            if (!genreGroups[genre].find(f => f.name === file.name)) {
+                genreGroups[genre].push(file);
             }
         });
     });
@@ -227,10 +227,10 @@ function renderGenreView() {
     const container = document.getElementById('files-container');
     container.innerHTML = '';
     container.className = 'genre-container'; // Different layout class (genre view)
-    
-    // Group movies by genre dynamically
-    const genreGroups = groupMoviesByGenre(Files);
-    
+
+    // Group files by genre dynamically
+    const genreGroups = groupFilesByGenre(Files);
+
     // Create a section for each genre
     Object.keys(genreGroups).forEach(genre => {
         const genreSection = document.createElement('div');
@@ -246,13 +246,13 @@ function renderGenreView() {
         const genreRow = document.createElement('div');
         genreRow.className = 'genre-row';
         
-        // Add movies to this genre row
-        genreGroups[genre].forEach(movie => {
-            const movieCard = createFileElement(movie);
+        // Add files to this genre row
+        genreGroups[genre].forEach(file => {
+            const fileCard = createFileElement(file);
             // Remove the default .file class and add .genre-file class for genre view
-            movieCard.classList.remove('file');
-            movieCard.classList.add('genre-file');
-            genreRow.appendChild(movieCard);
+            fileCard.classList.remove('file');
+            fileCard.classList.add('genre-file');
+            genreRow.appendChild(fileCard);
         });
         
         genreSection.appendChild(genreRow);
@@ -260,14 +260,14 @@ function renderGenreView() {
     });
 }
 
-// Create individual movie element (shared between grid and genre views)
+// Create individual file element (shared between grid and genre views)
 function createFileElement(file) {
     const originalIndex = Files.indexOf(file);
     const fileDiv = document.createElement('div');
     fileDiv.className = 'file';
 
     if (file.thumbnail) {
-        // For movies with thumbnails, create a card with background image and overlay content
+        // For files with thumbnails, create a card with background image and overlay content
         fileDiv.style.backgroundImage = `url(${file.thumbnail})`;
         fileDiv.style.backgroundSize = 'cover';
         fileDiv.style.backgroundPosition = 'center';
@@ -284,7 +284,7 @@ function createFileElement(file) {
             </div>
         `;
     } else {
-        // For movies without thumbnails, use the regular layout
+        // For files without thumbnails, use the regular layout
         fileDiv.innerHTML = `
             <div class="file-text-content">
                 <h3>${file.name} (${file.year})</h3>
@@ -312,34 +312,25 @@ function createFileElement(file) {
             Files[index].likes -= 1;
         }
         
-        // Trigger animation only on the clicked icon
-        if (Files[index].liked) {
-            icon.classList.add('animate');
-            // Remove animation class after animation completes
-            setTimeout(() => {
-                icon.classList.remove('animate');
-            }, 450); // Match animation duration
-        }
-        
         // Save updated Files array to localStorage
-        localStorage.setItem('moviesData', JSON.stringify(Files));
-        
-        // Update all instances of this movie without re-rendering
-        updateMovieInstances(Files[index]);
+        localStorage.setItem('filesData', JSON.stringify(Files));
+
+        // Update all instances of this file without re-rendering
+        updateFileInstances(Files[index]);
     });
 
     return fileDiv;
 }
 
-// Update all instances of a movie across the page
-function updateMovieInstances(movie) {
-    const movieIndex = Files.indexOf(movie);
-    // Find all like icons for this movie
-    const allLikeIcons = document.querySelectorAll(`[data-index="${movieIndex}"]`);
-    
+// Update all instances of a file across the page
+function updateFileInstances(file) {
+    const fileIndex = Files.indexOf(file);
+    // Find all like icons for this file
+    const allLikeIcons = document.querySelectorAll(`[data-index="${fileIndex}"]`);
+
     allLikeIcons.forEach(icon => {
         // Update like state
-        if (movie.liked) {
+        if (file.liked) {
             icon.classList.add('liked');
         } else {
             icon.classList.remove('liked');
@@ -350,7 +341,7 @@ function updateMovieInstances(movie) {
         if (card) {
             const likesCountSpan = card.querySelector('.likes-count');
             if (likesCountSpan) {
-                likesCountSpan.textContent = movie.likes;
+                likesCountSpan.textContent = file.likes;
             }
         }
     });
