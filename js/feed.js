@@ -94,12 +94,12 @@ function groupMoviesByGenre(movies) {
     const genreGroups = {};
     
     movies.forEach(movie => {
-        // Now genre is already an array
+        // Extracts genres from movies
         movie.genre.forEach(genre => {
             if (!genreGroups[genre]) {
                 genreGroups[genre] = [];
             }
-            // Only add if not already in this genre group (avoid duplicates)
+            // Adds movies to genre groups (avoids duplicates)
             if (!genreGroups[genre].find(m => m.name === movie.name)) {
                 genreGroups[genre].push(movie);
             }
@@ -113,51 +113,20 @@ function groupMoviesByGenre(movies) {
 const renderFiles = (filesToRender = Files) => {
     const filesContainer = document.getElementById('files-container');
     filesContainer.innerHTML = '';
-    filesContainer.className = 'files-container'; // Reset to grid layout class
+    filesContainer.className = 'files-container'; // Reset to grid layout class (grid view)
+
+    // Use createFileElement to build each file's HTML
     filesToRender.forEach((file, index) => {
-        const originalIndex = Files.indexOf(file);
-        const fileDiv = document.createElement('div');
-        fileDiv.className = 'file';
-        fileDiv.innerHTML = `
-            <h3>${file.name} (${file.year})</h3>
-            <p>Genre: ${file.genre.join(', ')}</p>
-            <p>Likes: <span class="likes-count">${file.likes}</span></p>
-            <img src="resources/heart.png" alt="Like Icon" class="like-icon ${file.liked ? 'liked' : ''}" data-index="${originalIndex}" />
-        `;
-
-        // Add click handler for the like icon
-        fileDiv.querySelector('.like-icon').addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent the file div click event
-            const icon = e.target;
-            const index = parseInt(icon.dataset.index);
-            
-            const wasLiked = Files[index].liked;
-            // Toggle liked state in both UI and data
-            Files[index].liked = !Files[index].liked;
-            icon.classList.toggle('liked');
-            
-            // Update likes count based on previous state
-            const likesElement = fileDiv.querySelector('.likes-count');
-            if (!wasLiked && Files[index].liked) {
-                Files[index].likes += 1;
-            } else if (wasLiked && !Files[index].liked) {
-                Files[index].likes -= 1;
-            }
-            likesElement.textContent = Files[index].likes;
-            
-            // Save updated Files array to localStorage
-            localStorage.setItem('moviesData', JSON.stringify(Files));
-        });
-
+        const fileDiv = createFileElement(file);
         filesContainer.appendChild(fileDiv);
     });
 };
 
-// Netflix-style genre view (for default homepage)
+// Default view (genre based)
 function renderGenreView() {
     const container = document.getElementById('files-container');
     container.innerHTML = '';
-    container.className = 'genre-container'; // Different layout class
+    container.className = 'genre-container'; // Different layout class (genre view)
     
     // Group movies by genre dynamically
     const genreGroups = groupMoviesByGenre(Files);
@@ -255,12 +224,8 @@ const initializeSearch = () => {
         sortButton.classList.toggle('visible');
         
         if (searchInput.classList.contains('visible')) {
-            searchInput.style.display = 'block';
-            sortButton.style.display = 'block';
             searchInput.focus();
         } else {
-            searchInput.style.display = 'none';
-            sortButton.style.display = 'none';
             searchInput.value = '';
             sortButton.classList.remove('active');
             renderGenreView(); // Return to genre view when search is closed
