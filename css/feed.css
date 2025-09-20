@@ -110,6 +110,7 @@ a {
     display: flex;
     align-items: center;
     gap: 15px;
+    padding-right: 10px;
 }
 
 .search-container {
@@ -360,7 +361,7 @@ a {
 }
 
 /* Simple responsive design - 2 states only */
-@media (max-width: 1110px) {
+@media (max-width: 1130px) {
     .hamburger-btn {
         display: block;
         margin-left: 20px;
