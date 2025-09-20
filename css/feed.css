@@ -203,6 +203,7 @@ a {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    position: relative;
 }
 
 .file:hover {
@@ -216,12 +217,84 @@ a {
     margin: 0 0 10px 0;
     font-size: 18px;
     font-weight: bold;
+    word-wrap: break-word;
+    overflow: visible;
 }
 
 .file p {
     color: #ffffff;
     margin: 5px 0;
     font-size: 14px;
+}
+
+.file .like-icon {
+    position: absolute !important;
+    bottom: 15px !important;
+    right: 15px !important;
+    flex-shrink: unset;
+}
+
+.genre-file .like-icon {
+    position: absolute !important;
+    bottom: 15px !important;
+    right: 15px !important;
+    flex-shrink: unset;
+}
+
+.file-text-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-right: 40px;
+}
+
+/* Thumbnail file styles */
+.file-with-thumbnail {
+    position: relative;
+    overflow: hidden;
+}
+
+.file-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.file-content {
+    flex: 1;
+}
+
+.file-with-thumbnail:hover .file-overlay,
+.genre-file.file-with-thumbnail:hover .file-overlay {
+    opacity: 1;
+}
+
+.file-content h3 {
+    color: white;
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.file-content p {
+    color: #ffffff;
+    margin: 2px 0;
+    font-size: 12px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.file-with-thumbnail .like-icon {
+    position: relative;
+    z-index: 2;
 }
 
 /* Genre View Styles */
@@ -232,6 +305,8 @@ a {
 
 .genre-section {
     margin-bottom: 40px;
+    clear: both;
+    overflow: hidden;
 }
 
 .genre-title {
@@ -249,6 +324,7 @@ a {
     overflow-y: hidden;
     padding: 10px;
     scroll-behavior: smooth;
+    contain: layout;
 }
 
 .genre-row::-webkit-scrollbar {
@@ -279,9 +355,26 @@ a {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
     cursor: pointer;
     box-sizing: border-box;
     overflow: hidden;
+    position: relative;
+}
+
+.genre-file .file-main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 130px;
+    padding-right: 40px;
+}
+
+.genre-file.file-with-thumbnail {
+    padding: 0;
+    flex-direction: column;
 }
 
 .genre-file h3 {
@@ -289,12 +382,6 @@ a {
     font-size: 16px;
     line-height: 1.2;
     word-wrap: break-word;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
     color: white;
 }
 
@@ -312,25 +399,15 @@ a {
 }
 
 .like-icon {
-    width: 20px;
-    height: 20px;
-    vertical-align: middle;
-    float: right;
-    margin-left: 5px;
-}
-.like-icon {
-    width: 20px;
-    height: 20px;
-    vertical-align: middle;
-    float: right;
-    margin-left: 5px;
+    font-size: 20px;
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     transform-origin: center;
+    user-select: none;
+    flex-shrink: 0;
 }
 
 .like-icon:hover {
-    filter: brightness(1.2);
     transform: scale(1.15);
 }
 
@@ -339,7 +416,15 @@ a {
 }
 
 .like-icon.liked {
-    filter: invert(15%) sepia(95%) saturate(6932%) hue-rotate(358deg) brightness(95%) contrast(112%);
+    color: #e50914;
+}
+
+.like-icon.liked::before {
+    content: '❤️';
+}
+
+.like-icon:not(.liked)::before {
+    content: '🤍';
 }
 
 .like-icon.animate {
