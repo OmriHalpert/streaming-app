@@ -1,4 +1,5 @@
 const fs = require('fs').promises;
+const { throws } = require('assert');
 const path = require('path');
 
 // Path to the users JSON file
@@ -7,8 +8,6 @@ const usersFilePath = path.join(__dirname, '../data/users.json');
 // registers a new user
 async function register(email, username, password) {
     try {
-        console.log('in register');
-
         // Validate required fields
         // will be handeled in frontend level
         // if (!email || !username || !password) {
