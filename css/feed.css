@@ -218,7 +218,7 @@ a:hover {
     font-size: 12px;
     transition: all 0.3s ease;
     opacity: 0;
-    width: 45px;
+    width: 50px;
     margin-left: 5px;
     visibility: hidden;
 }
