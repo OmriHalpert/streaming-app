@@ -1,12 +1,16 @@
-const exspress = require('express');
-const app = exspress();
+// Imports
+const express = require('express');
+const { indexRouter } = require('./routes/indexRouter.js');
+
+// Variables
+const app = express();
 const port = 3000;
 
 // Middleware to parse JSON bodies
-app.use(exspress.json());
+app.use(express.json());
 
 // Serve static files from the public directory
-app.use(exspress.static('public'));
+app.use(express.static('public'));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -17,6 +21,9 @@ app.get('/health', (req, res) => {
         uptime: process.uptime()
     });
 });
+
+// Route to index
+app.use('/api', indexRouter);
 
 // Start the server
 app.listen(port, () => {
