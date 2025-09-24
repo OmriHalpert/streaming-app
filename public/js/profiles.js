@@ -1,61 +1,64 @@
-// Profiles array
-const profiles = [
-    {
-        imageSrc: "../resources/profile_pics/profile1.jpg",
-        imageAlt: "Profile 1",
-        placeholder: "User 1"
-    },
-    {
-        imageSrc: "../resources/profile_pics/profile2.jpg",
-        imageAlt: "Profile 2",
-        placeholder: "User 2"
-    },
-    {
-        imageSrc: "../resources/profile_pics/profile3.jpg",
-        imageAlt: "Profile 3",
-        placeholder: "User 3"
-    },
-    {
-        imageSrc: "../resources/profile_pics/profile4.jpg",
-        imageAlt: "Profile 4",
-        placeholder: "User 4"
-    },
-    {
-        imageSrc: "../resources/profile_pics/profile5.jpg",
-        imageAlt: "Profile 5",
-        placeholder: "User 5"
-    }
-];
-
 // Renders profiles to the DOM
 const renderProfiles = () => {
-    const profilesContainer = document.getElementById('profiles-container');
-    profilesContainer.innerHTML = '';
-    profiles.forEach((profile, index) => {
+    let loggedUser = null;
+    let profilesContainer = null;
+
+    try {
+        profilesContainer = document.getElementById('profiles-container');
+        if (!profilesContainer) {
+            console.error('profiles-container element not found');
+            return;
+        }
+
+        // Fetch user session for parse
+        const userSessionData = localStorage.getItem('userSession');
+        
+        // Fetch logged user 
+        loggedUser = userSessionData ? JSON.parse(userSessionData) : null;
+        console.log('Parsed loggedUser:', loggedUser);
+        
+        profilesContainer.innerHTML = '';
+
+        // Verify a user is logged in
+        if (!loggedUser || !loggedUser.isLoggedIn) {
+            console.log('user is not logged in, redirecting to login page');
+            window.location.href = 'login.html';
+            return;
+        }
+    } catch (error) {
+        console.error('Error in renderProfiles:', error);
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Use profiles from stored user session
+    const userProfiles = loggedUser.profiles || [];
+    
+    userProfiles.forEach((profile, index) => {
         const profileDiv = document.createElement('div');
-        profileDiv.className = 'profile';
+        profileDiv.className = 'profiles-container';
         
         profileDiv.innerHTML = `
             <img
-                src="${profile.imageSrc}"
-                alt="${profile.imageAlt}"
+                src="${profile.avatar}"
+                alt="${profile.name}"
                 class="profile-image"
             />
             <input
                 class="name-input"
                 type="text"
-                placeholder="${profile.placeholder}"
+                value="${profile.name}"
             />
         `;
 
         profileDiv.addEventListener('click', (e) => {
-            // Don't redirect if clicking the input field
-            if (e.target.classList.contains('name-input')) {
-                return;
-            }
-            const nameInput = profileDiv.querySelector('.name-input');
-            const profileName = nameInput.value || nameInput.placeholder;
-            localStorage.setItem('selectedProfileName', profileName);
+            // Store selected profile data
+            const selectedProfile = {
+                id: profile.id,
+                name: profile.name,
+                avatar: profile.avatar
+            };
+            localStorage.setItem('selectedProfile', JSON.stringify(selectedProfile));
             window.location.href = 'feed.html';
         });
         
