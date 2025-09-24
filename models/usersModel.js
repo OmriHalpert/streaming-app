@@ -8,11 +8,6 @@ const usersFilePath = path.join(__dirname, '../data/users.json');
 // registers a new user
 async function register(email, username, password) {
     try {
-        // Validate required fields
-        // will be handeled in frontend level
-        // if (!email || !username || !password) {
-        //     throw new Error('All fields are required');
-        // }
 
         // Read existing users
         const usersData = await fs.readFile(usersFilePath, 'utf8');
