@@ -62,7 +62,13 @@ async function login(email, password) {
             throw new Error('Incorrect Password');
         }
 
-        return true;
+        // Return user data (without password)
+        return {
+            id: foundUser.id,
+            email: foundUser.email,
+            username: foundUser.username,
+            profiles: foundUser.profiles
+        };
 
     } catch (error) {
         throw error;

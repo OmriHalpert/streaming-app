@@ -39,9 +39,11 @@ function loginValidation() {
 
 // handles API login
 async function loginUser(email, password) {
+    // Store original button text outside try block
+    const originalText = submitButton.textContent;
+    
     try {
         // Show loading state
-        const originalText = submitButton.textContent;
         submitButton.textContent = 'Logging in...';
         submitButton.disabled = true;
 
@@ -60,10 +62,13 @@ async function loginUser(email, password) {
         const result = await response.json();
 
         if (response.ok) {
-            // Success - store user session and redirect
+            // Success - store complete user session and redirect
             const userSession = {
                 isLoggedIn: true,
-                email: email,
+                id: result.user.id,
+                email: result.user.email,
+                username: result.user.username,
+                profiles: result.user.profiles
             };
 
             localStorage.setItem('userSession', JSON.stringify(userSession));
@@ -72,10 +77,11 @@ async function loginUser(email, password) {
             // Handle server validation errors
             if (result.error === 'Email does not exist') {
                 emailError.textContent = 'No account found with this email';
-            } else if (result.error === 'Invalid email format') {
+            } else if (result.error.includes('email') || result.error === 'Invalid email format') {
                 emailError.textContent = result.error;
-            } else if (result.error === 'Incorrect Password') {
-                passwordError.textContent = 'Incorrect password';
+            } else if (result.error.includes('Password') || result.error.includes('password') || 
+                       result.error === 'Incorrect Password') {
+                passwordError.textContent = result.error;
             } else {
                 emailError.textContent = result.error || 'Login failed. Please try again.';
             }

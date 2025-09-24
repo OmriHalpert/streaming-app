@@ -48,10 +48,13 @@ async function login(req, res) {
         // Password length validation
         validateFieldLength('password', trimmedPassword, 6, 128, 'Password');
 
-        const loginSuccess = await userModel.login(trimmedEmail, trimmedPassword);
+        const user = await userModel.login(trimmedEmail, trimmedPassword);
 
-        if (loginSuccess) {
-            return res.status(200).json({ message: 'Login successful' });
+        if (user) {
+            return res.status(200).json({ 
+                message: 'Login successful',
+                user: user
+            });
         }
     } catch (error) {
         return handleAuthError(error, res, 'login');
