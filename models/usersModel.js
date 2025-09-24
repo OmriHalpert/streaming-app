@@ -1,5 +1,4 @@
 const fs = require('fs').promises;
-const { throws } = require('assert');
 const path = require('path');
 
 // Path to the users JSON file
@@ -16,12 +15,17 @@ async function register(email, username, password) {
         // Read existing users for creating new user
         const users = await readUsersFromFile();
 
-        // Create new user object
+        // Create new user object (generate random pic from profile_pics folder)
+        const profilePicsPath = path.join(__dirname, '../public/resources/profile_pics');
+        const profilePics = await fs.readdir(profilePicsPath);
+        const randomAvatar = profilePics[Math.floor(Math.random() * profilePics.length)];
+        
         const newUser = {
             id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
             email,
             username,
-            password
+            password,
+            profiles: [{"id":"1", "name":"profile 1", "avatar": `/resources/profile_pics/${randomAvatar}`}]
         };
 
         // Add new user to users array
@@ -57,14 +61,19 @@ async function login(email, password) {
             throw new Error('Incorrect Password');
         }
 
-        return true;
+        // Return user data (without password)
+        return {
+            id: foundUser.id,
+            email: foundUser.email,
+            username: foundUser.username,
+            profiles: foundUser.profiles
+        };
 
     } catch (error) {
         throw error;
     }
 }
 
-// Private helper functions
 async function readUsersFromFile() {
     try {
         const usersData = await fs.readFile(usersFilePath, 'utf8');
@@ -78,6 +87,7 @@ async function readUsersFromFile() {
     }
 }
 
+// Private helper functions
 async function findUserByEmail(email) {
     const users = await readUsersFromFile();
     return users.find(user => user.email === email);
@@ -90,5 +100,6 @@ async function emailExists(email) {
 
 module.exports = {
     register,
-    login
+    login,
+    readUsersFromFile
 };

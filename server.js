@@ -1,6 +1,7 @@
 // Imports
 const express = require('express');
 const { indexRouter } = require('./routes/indexRouter.js');
+const { pagesRouter } = require('./routes/pagesRouter.js');
 
 // Variables
 const app = express();
@@ -12,6 +13,9 @@ app.use(express.json());
 // Serve static files from the public directory
 app.use(express.static('public'));
 
+// Set view engine
+app.set('view engine', 'ejs');
+
 // Health check endpoint
 app.get('/health', (req, res) => {
     res.status(200).json({
@@ -22,7 +26,10 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Route to index
+// Page routes (EJS templates)
+app.use('/', pagesRouter);
+
+// API routes (JSON responses)
 app.use('/api', indexRouter);
 
 // Start the server
