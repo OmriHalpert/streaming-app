@@ -8,21 +8,13 @@ const usersFilePath = path.join(__dirname, '../data/users.json');
 // registers a new user
 async function register(email, username, password) {
     try {
-        // Validate required fields
-        // will be handeled in frontend level
-        // if (!email || !username || !password) {
-        //     throw new Error('All fields are required');
-        // }
-
-        // Read existing users
-        const usersData = await fs.readFile(usersFilePath, 'utf8');
-        const users = JSON.parse(usersData);
-
         // Check if email already exists
-        const emailExists = users.some(user => user.email === email);
-        if (emailExists) {
+        if (await emailExists(email)) {
             throw new Error('Email already exists');
         }
+
+        // Read existing users for creating new user
+        const users = await readUsersFromFile();
 
         // Create new user object
         const newUser = {
@@ -51,6 +43,52 @@ async function register(email, username, password) {
     }
 }
 
+// validates user login
+async function login(email, password) {
+    try {
+        // Find user by email
+        const foundUser = await findUserByEmail(email);
+        if (!foundUser) {
+            throw new Error('Email does not exist');
+        }
+    
+        // Validates password
+        if (foundUser.password !== password) {
+            throw new Error('Incorrect Password');
+        }
+
+        return true;
+
+    } catch (error) {
+        throw error;
+    }
+}
+
+// Private helper functions
+async function readUsersFromFile() {
+    try {
+        const usersData = await fs.readFile(usersFilePath, 'utf8');
+        return JSON.parse(usersData);
+    } catch (error) {
+        // If file doesn't exist, return empty array
+        if (error.code === 'ENOENT') {
+            return [];
+        }
+        throw error;
+    }
+}
+
+async function findUserByEmail(email) {
+    const users = await readUsersFromFile();
+    return users.find(user => user.email === email);
+}
+
+async function emailExists(email) {
+    const user = await findUserByEmail(email);
+    return !!user; // Convert to boolean
+}
+
 module.exports = {
-    register
+    register,
+    login
 };
