@@ -1,27 +1,27 @@
 // Profiles array
 const profiles = [
     {
-        imageSrc: "../resources/profile1.jpg",
+        imageSrc: "../resources/profile_pics/profile1.jpg",
         imageAlt: "Profile 1",
         placeholder: "User 1"
     },
     {
-        imageSrc: "../resources/profile2.jpg",
+        imageSrc: "../resources/profile_pics/profile2.jpg",
         imageAlt: "Profile 2",
         placeholder: "User 2"
     },
     {
-        imageSrc: "../resources/profile3.jpg",
+        imageSrc: "../resources/profile_pics/profile3.jpg",
         imageAlt: "Profile 3",
         placeholder: "User 3"
     },
     {
-        imageSrc: "../resources/profile4.jpg",
+        imageSrc: "../resources/profile_pics/profile4.jpg",
         imageAlt: "Profile 4",
         placeholder: "User 4"
     },
     {
-        imageSrc: "../resources/profile5.jpg",
+        imageSrc: "../resources/profile_pics/profile5.jpg",
         imageAlt: "Profile 5",
         placeholder: "User 5"
     }
