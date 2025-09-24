@@ -100,7 +100,7 @@ function handleAuthError(error, res, context = 'authentication') {
         'Email must be no more than 254 characters',
         'Username must be at least 3 characters',
         'Username must be no more than 30 characters',
-        'Password must be at least 6 characters long',
+        'Password must be at least 6 characters',  // Fixed: removed "long"
         'Password must be no more than 128 characters',
         'Email already exists',
         'Email does not exist',

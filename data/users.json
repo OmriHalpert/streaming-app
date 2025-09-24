@@ -3,13 +3,49 @@
     "id": 1,
     "email": "user1@gmail.com",
     "username": "user1",
-    "password": "password1"
+    "password": "password1",
+    "profiles": ["profile 1"]
   },
   {
     "id": 2,
     "email": "user2@gmail.com",
     "username": "user2",
-    "password": "password2"
+    "password": "password2",
+    "profiles": ["profile 1"]
   },
-  { "id": 3, "email": "user3", "username": "user3", "password": "aa" }
+  {
+    "id": 3,
+    "email": "user3@gmail.com",
+    "username": "user3",
+    "password": "aa",
+    "profiles": ["profile 1"]
+  },
+  {
+    "id": 4,
+    "email": "user4@gmail.com",
+    "username": "user4",
+    "password": "password",
+    "profiles": ["profile 1"]
+  },
+  {
+    "id": 5,
+    "email": "user5@gmail.com",
+    "username": "user5",
+    "password": "password",
+    "profiles": ["profile 1"]
+  },
+  {
+    "id": 6,
+    "email": "user6@gmail.com",
+    "username": "user6",
+    "password": "password",
+    "profiles": ["profile 1"]
+  },
+  {
+    "id": 7,
+    "email": "user7@gmail.com",
+    "username": "user7",
+    "password": "password",
+    "profiles": ["profile 1"]
+  }
 ]
