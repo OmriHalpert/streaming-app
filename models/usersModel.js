@@ -22,7 +22,7 @@ async function register(email, username, password) {
             email,
             username,
             password,
-            profiles: []
+            profiles: ['profile 1']
         };
 
         // Add new user to users array
