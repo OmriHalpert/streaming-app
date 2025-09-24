@@ -3,6 +3,12 @@ const userModel = require('../models/usersModel');
 // Register controller
 async function register(req, res) {
     try {
+
+        // Validate required fields
+        if (!email || !username || !password) {
+            throw new Error('All fields are required');
+        }
+
         const { email, username, password } = req.body;
 
         // Call the register function from userModel
