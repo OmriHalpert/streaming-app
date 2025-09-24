@@ -21,7 +21,8 @@ async function register(email, username, password) {
             id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
             email,
             username,
-            password
+            password,
+            profiles: []
         };
 
         // Add new user to users array
@@ -64,7 +65,6 @@ async function login(email, password) {
     }
 }
 
-// Private helper functions
 async function readUsersFromFile() {
     try {
         const usersData = await fs.readFile(usersFilePath, 'utf8');
@@ -78,6 +78,7 @@ async function readUsersFromFile() {
     }
 }
 
+// Private helper functions
 async function findUserByEmail(email) {
     const users = await readUsersFromFile();
     return users.find(user => user.email === email);
@@ -90,5 +91,6 @@ async function emailExists(email) {
 
 module.exports = {
     register,
-    login
+    login,
+    readUsersFromFile
 };
