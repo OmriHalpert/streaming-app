@@ -17,12 +17,16 @@ async function register(email, username, password) {
         const users = await readUsersFromFile();
 
         // Create new user object
+        const profilePicsPath = path.join(__dirname, '../public/resources/profile_pics');
+        const profilePics = await fs.readdir(profilePicsPath);
+        const randomAvatar = profilePics[Math.floor(Math.random() * profilePics.length)];
+        
         const newUser = {
             id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
             email,
             username,
             password,
-            profiles: ['profile 1']
+            profiles: [{"id":"1", "name":"profile 1", "avatar": `/resources/profile_pics/${randomAvatar}`}]
         };
 
         // Add new user to users array
