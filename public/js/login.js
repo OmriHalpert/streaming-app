@@ -72,7 +72,7 @@ async function loginUser(email, password) {
             };
 
             localStorage.setItem('userSession', JSON.stringify(userSession));
-            window.location.href = 'profiles.html';
+            window.location.href = `/profiles?userId=${result.user.id}`;
         } else {
             // Handle server validation errors
             if (result.error === 'Email does not exist') {

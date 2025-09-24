@@ -1,6 +1,7 @@
 // Imports
 const express = require('express');
 const { indexRouter } = require('./routes/indexRouter.js');
+const { pagesRouter } = require('./routes/pagesRouter.js');
 
 // Variables
 const app = express();
@@ -25,7 +26,10 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Route to index
+// Page routes (EJS templates)
+app.use('/', pagesRouter);
+
+// API routes (JSON responses)
 app.use('/api', indexRouter);
 
 // Start the server
