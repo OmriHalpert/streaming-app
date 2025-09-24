@@ -3,13 +3,184 @@
     "id": 1,
     "email": "user1@gmail.com",
     "username": "user1",
-    "password": "password1"
+    "password": "password1",
+    "profiles": [
+      {
+        "id": "1",
+        "name": "Main Profile",
+        "avatar": "/resources/profile_pics/profile1.jpg"
+      }
+    ]
   },
   {
     "id": 2,
     "email": "user2@gmail.com",
     "username": "user2",
-    "password": "password2"
+    "password": "password2",
+    "profiles": [
+      {
+        "id": "1",
+        "name": "Personal",
+        "avatar": "/resources/profile_pics/profile2.jpg"
+      },
+      {
+        "id": "2",
+        "name": "Work",
+        "avatar": "/resources/profile_pics/profile4.jpg"
+      }
+    ]
   },
-  { "id": 3, "email": "user3", "username": "user3", "password": "aa" }
+  {
+    "id": 3,
+    "email": "user3@gmail.com",
+    "username": "user3",
+    "password": "aa",
+    "profiles": [
+      {
+        "id": "1",
+        "name": "Home",
+        "avatar": "/resources/profile_pics/profile3.jpg"
+      },
+      {
+        "id": "2",
+        "name": "Kids",
+        "avatar": "/resources/profile_pics/profile5.jpg"
+      },
+      {
+        "id": "3",
+        "name": "Guest",
+        "avatar": "/resources/profile_pics/profile1.jpg"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "email": "user4@gmail.com",
+    "username": "user4",
+    "password": "password",
+    "profiles": [
+      {
+        "id": "1",
+        "name": "Primary",
+        "avatar": "/resources/profile_pics/profile4.jpg"
+      },
+      {
+        "id": "2",
+        "name": "Family",
+        "avatar": "/resources/profile_pics/profile2.jpg"
+      },
+      {
+        "id": "3",
+        "name": "Movies",
+        "avatar": "/resources/profile_pics/profile3.jpg"
+      },
+      {
+        "id": "4",
+        "name": "Shows",
+        "avatar": "/resources/profile_pics/profile5.jpg"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "email": "user5@gmail.com",
+    "username": "user5",
+    "password": "password",
+    "profiles": [
+      {
+        "id": "1",
+        "name": "Me",
+        "avatar": "/resources/profile_pics/profile5.jpg"
+      },
+      {
+        "id": "2",
+        "name": "Partner",
+        "avatar": "/resources/profile_pics/profile1.jpg"
+      },
+      {
+        "id": "3",
+        "name": "Kids Safe",
+        "avatar": "/resources/profile_pics/profile2.jpg"
+      },
+      {
+        "id": "4",
+        "name": "Guests",
+        "avatar": "/resources/profile_pics/profile4.jpg"
+      },
+      {
+        "id": "5",
+        "name": "Travel",
+        "avatar": "/resources/profile_pics/profile3.jpg"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "email": "user6@gmail.com",
+    "username": "user6",
+    "password": "password",
+    "profiles": [
+      {
+        "id": "1",
+        "name": "Default",
+        "avatar": "/resources/profile_pics/profile3.jpg"
+      },
+      {
+        "id": "2",
+        "name": "Gaming",
+        "avatar": "/resources/profile_pics/profile1.jpg"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "email": "user7@gmail.com",
+    "username": "user7",
+    "password": "password",
+    "profiles": [
+      {
+        "id": "1",
+        "name": "Main",
+        "avatar": "/resources/profile_pics/profile2.jpg"
+      },
+      {
+        "id": "2",
+        "name": "Documentaries",
+        "avatar": "/resources/profile_pics/profile5.jpg"
+      },
+      {
+        "id": "3",
+        "name": "Comedy",
+        "avatar": "/resources/profile_pics/profile4.jpg"
+      },
+      {
+        "id": "4",
+        "name": "Action",
+        "avatar": "/resources/profile_pics/profile1.jpg"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "email": "user8@gmail.com",
+    "username": "user8",
+    "password": "password",
+    "profiles": [
+      {
+        "id": "1",
+        "name": "Solo Viewer",
+        "avatar": "/resources/profile_pics/profile4.jpg"
+      },
+      {
+        "id": "2",
+        "name": "Date Night",
+        "avatar": "/resources/profile_pics/profile3.jpg"
+      },
+      {
+        "id": "3",
+        "name": "Binge Watch",
+        "avatar": "/resources/profile_pics/profile5.jpg"
+      }
+    ]
+  }
 ]

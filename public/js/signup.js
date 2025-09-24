@@ -49,9 +49,11 @@ function signupValidation() {
 
 // handles API registration
 async function registerUser(email, username, password) {
+    // Store original button text outside try block
+    const originalText = submitButton.textContent;
+    
     try {
         // Show loading state
-        const originalText = submitButton.textContent;
         submitButton.textContent = 'Creating Account...';
         submitButton.disabled = true;
 
@@ -76,12 +78,12 @@ async function registerUser(email, username, password) {
             window.location.href = 'login.html';
         } else {
             // Handle server validation errors
-            if (result.error === 'Email already exists' ||
+            if (result.error.includes('email') || result.error === 'Email already exists' || 
                 result.error === 'Invalid email format') {
                 emailError.textContent = result.error;
-            } else if (result.error === 'Username must be at least 3 characters') {
+            } else if (result.error.includes('Username') || result.error.includes('username')) {
                 usernameError.textContent = result.error;
-            } else if (result.error === 'Password must be at least 6 characters long') {
+            } else if (result.error.includes('Password') || result.error.includes('password')) {
                 passwordError.textContent = result.error;
             } else {
                 // General error
