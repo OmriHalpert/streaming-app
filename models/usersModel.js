@@ -1,5 +1,4 @@
 const fs = require('fs').promises;
-const { throws } = require('assert');
 const path = require('path');
 
 // Path to the users JSON file
@@ -16,7 +15,7 @@ async function register(email, username, password) {
         // Read existing users for creating new user
         const users = await readUsersFromFile();
 
-        // Create new user object
+        // Create new user object (generate random pic from profile_pics folder)
         const profilePicsPath = path.join(__dirname, '../public/resources/profile_pics');
         const profilePics = await fs.readdir(profilePicsPath);
         const randomAvatar = profilePics[Math.floor(Math.random() * profilePics.length)];

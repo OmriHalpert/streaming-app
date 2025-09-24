@@ -1,26 +1,12 @@
-const userModel = require('../models/usersModel');
+const UserService = require('../services/userService');
 
 // Register controller
 async function register(req, res) {
     try {
         const { email, username, password } = req.body;
 
-        // Validate and trim inputs
-        const { email: trimmedEmail, username: trimmedUsername, password: trimmedPassword } = 
-            validateAndTrimInputs({ email, username, password });
-
-        // Email format and length validation
-        validateEmailFormat(trimmedEmail);
-        validateFieldLength('email', trimmedEmail, 5, 254, 'Email');
-
-        // Username length validation
-        validateFieldLength('username', trimmedUsername, 3, 30, 'Username');
-
-        // Password length validation
-        validateFieldLength('password', trimmedPassword, 6, 128, 'Password');
-
-        // Call the register function from userModel with trimmed values
-        const user = await userModel.register(trimmedEmail, trimmedUsername, trimmedPassword);
+        // Delegate to service layer
+        const user = await UserService.register(email, username, password);
 
         // Return success response
         return res.status(201).json({ 
@@ -37,61 +23,19 @@ async function login(req, res) {
     try {
         const { email, password } = req.body;
         
-        // Validate and trim inputs
-        const { email: trimmedEmail, password: trimmedPassword } = 
-            validateAndTrimInputs({ email, password });
+        // Delegate to service layer
+        const user = await UserService.login(email, password);
 
-        // Email format and length validation
-        validateEmailFormat(trimmedEmail);
-        validateFieldLength('email', trimmedEmail, 5, 254, 'Email');
-
-        // Password length validation
-        validateFieldLength('password', trimmedPassword, 6, 128, 'Password');
-
-        const user = await userModel.login(trimmedEmail, trimmedPassword);
-
-        if (user) {
-            return res.status(200).json({ 
-                message: 'Login successful',
-                user: user
-            });
-        }
+        return res.status(200).json({ 
+            message: 'Login successful',
+            user: user
+        });
     } catch (error) {
         return handleAuthError(error, res, 'login');
     }
 }
 
-// Private helper functions
-function validateAndTrimInputs(inputs) {
-    const trimmed = {};
-    
-    // Trim all inputs
-    for (const [key, value] of Object.entries(inputs)) {
-        if (!value) {
-            throw new Error('All fields are required');
-        }
-        trimmed[key] = value.trim();
-    }
-    
-    return trimmed;
-}
-
-function validateEmailFormat(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        throw new Error('Invalid email format');
-    }
-}
-
-function validateFieldLength(field, value, min, max, fieldName) {
-    if (value.length < min) {
-        throw new Error(`${fieldName} must be at least ${min} characters`);
-    }
-    if (value.length > max) {
-        throw new Error(`${fieldName} must be no more than ${max} characters`);
-    }
-}
-
+// Private helper function to handle auth-related errors
 function handleAuthError(error, res, context = 'authentication') {
     console.error(`${context} error:`, error);
     
@@ -103,7 +47,7 @@ function handleAuthError(error, res, context = 'authentication') {
         'Email must be no more than 254 characters',
         'Username must be at least 3 characters',
         'Username must be no more than 30 characters',
-        'Password must be at least 6 characters',  // Fixed: removed "long"
+        'Password must be at least 6 characters',
         'Password must be no more than 128 characters',
         'Email already exists',
         'Email does not exist',
