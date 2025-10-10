@@ -98,8 +98,60 @@ async function emailExists(email) {
     return !!user; // Convert to boolean
 }
 
+// Add a new profile to a user
+async function addProfile(userId, profileName) {
+    try {
+        // Read all users
+        const users = await readUsersFromFile();
+        
+        // Find the user
+        const userIndex = users.findIndex(user => user.id === parseInt(userId));
+        if (userIndex === -1) {
+            throw new Error('User not found');
+        }
+        
+        // Get current profiles for this user
+        const currentProfiles = users[userIndex].profiles || [];
+        
+        // Check if user already has 5 profiles (Netflix limit)
+        if (currentProfiles.length >= 5) {
+            throw new Error('Maximum number of profiles (5) reached');
+        }
+        
+        // Generate new profile ID (highest current + 1)
+        const newProfileId = currentProfiles.length > 0 
+            ? Math.max(...currentProfiles.map(p => parseInt(p.id))) + 1 
+            : 1;
+        
+        // Generate random avatar from profile_pics folder
+        const profilePicsPath = path.join(__dirname, '../public/resources/profile_pics');
+        const profilePics = await fs.readdir(profilePicsPath);
+        const randomAvatar = profilePics[Math.floor(Math.random() * profilePics.length)];
+        
+        // Create new profile object
+        const newProfile = {
+            id: newProfileId.toString(),
+            name: profileName,
+            avatar: `/resources/profile_pics/${randomAvatar}`
+        };
+        
+        // Add new profile to user's profiles
+        users[userIndex].profiles.push(newProfile);
+        
+        // Write updated users back to file
+        await fs.writeFile(usersFilePath, JSON.stringify(users, null, 2));
+        
+        // Return the new profile
+        return newProfile;
+        
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     register,
     login,
-    readUsersFromFile
+    readUsersFromFile,
+    addProfile
 };
