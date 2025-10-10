@@ -8,7 +8,7 @@ async function renderProfilesPage(req, res) {
         // Redirect to login if no userId provided
         if (!userId) {
             console.log('No userId provided in query parameters.');
-            return res.redirect('/html/login.html');
+            return res.redirect('/login');
         }
 
         // TODO: Add proper session validation when express-session is implemented
@@ -20,12 +20,12 @@ async function renderProfilesPage(req, res) {
             
         } catch (error) {
             console.log('Could not fetch user data:', error.message);
-            return res.redirect('/html/login.html');
+            return res.redirect('/login');
         }
         
     } catch (error) {
         console.error('Error rendering profiles page:', error);
-        res.redirect('/html/login.html');
+        res.redirect('/login');
     }
 }
 

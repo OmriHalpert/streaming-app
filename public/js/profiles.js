@@ -1,6 +1,7 @@
 // Set up click handlers for server-rendered profiles
 function setupProfileClickHandlers() {
     const profileDivs = document.querySelectorAll('.profiles-container');
+    const userId = document.body.getAttribute('data-user-id');
     
     profileDivs.forEach(profileDiv => {
         profileDiv.addEventListener('click', (e) => {
@@ -12,7 +13,7 @@ function setupProfileClickHandlers() {
             };
             
             localStorage.setItem('selectedProfile', JSON.stringify(selectedProfile));
-            window.location.href = '/html/feed.html';
+            window.location.href = `/feed?profileId=${selectedProfile.id}&userId=${userId}`;
         });
     });
 }
