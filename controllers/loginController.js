@@ -6,6 +6,7 @@ async function renderLoginPage(req, res) {
     }
     catch (error) {
         console.error('Error rendering login page:', error);
+        res.status(500).send('Internal Server Error');
     }
 }
 
