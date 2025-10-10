@@ -1,6 +1,6 @@
 const userModel = require('../models/usersModel');
 
-// Business logic for user operations (remove class later and use static methods)
+// Business logic for user operations
 class UserService {
     
     // Get all users with safe data validation
