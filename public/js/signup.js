@@ -75,7 +75,7 @@ async function registerUser(email, username, password) {
         if (response.ok) {
             // Success - redirect to login page with success message
             alert('Account created successfully! Please login with your credentials.');
-            window.location.href = 'login.html';
+            window.location.href = '/login';
         } else {
             // Handle server validation errors
             if (result.error.includes('email') || result.error === 'Email already exists' || 
