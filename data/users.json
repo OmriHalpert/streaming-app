@@ -182,5 +182,18 @@
         "avatar": "/resources/profile_pics/profile5.jpg"
       }
     ]
+  },
+  {
+    "id": 9,
+    "email": "user10@gmail.com",
+    "username": "user10",
+    "password": "password10",
+    "profiles": [
+      {
+        "id": "1",
+        "name": "profile 1",
+        "avatar": "/resources/profile_pics/profile2.jpg"
+      }
+    ]
   }
 ]
