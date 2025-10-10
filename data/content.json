@@ -1,0 +1,301 @@
+[
+  {
+    "name": "The Dark Knight",
+    "year": 2008,
+    "genre": [
+      "Action",
+      "Crime",
+      "Drama"
+    ],
+    "likes": 102,
+    "liked": false,
+    "profileLikes": [
+      1,
+      2
+    ],
+    "thumbnail": "/resources/thumbnails/the_dark_knight.jpg"
+  },
+  {
+    "name": "Deadpool",
+    "year": 2016,
+    "genre": [
+      "Action",
+      "Comedy"
+    ],
+    "likes": 153,
+    "liked": false,
+    "profileLikes": [
+      3,
+      1,
+      2
+    ],
+    "thumbnail": "/resources/thumbnails/deadpool.jpg"
+  },
+  {
+    "name": "The Shawshank Redemption",
+    "year": 1994,
+    "genre": [
+      "Drama"
+    ],
+    "likes": 81,
+    "liked": false,
+    "profileLikes": [
+      1
+    ],
+    "thumbnail": "/resources/thumbnails/the_shawshank_redemption.jpg"
+  },
+  {
+    "name": "Inception",
+    "year": 2010,
+    "genre": [
+      "Action",
+      "Sci-Fi",
+      "Thriller"
+    ],
+    "likes": 200,
+    "liked": false,
+    "profileLikes": [],
+    "thumbnail": "/resources/thumbnails/inception.jpg"
+  },
+  {
+    "name": "The Conjuring",
+    "year": 2013,
+    "genre": [
+      "Horror",
+      "Thriller"
+    ],
+    "likes": 121,
+    "liked": false,
+    "profileLikes": [
+      2
+    ],
+    "thumbnail": "/resources/thumbnails/the_conjuring.jpg"
+  },
+  {
+    "name": "Interstellar",
+    "year": 2014,
+    "genre": [
+      "Adventure",
+      "Drama",
+      "Sci-Fi"
+    ],
+    "likes": 180,
+    "liked": false,
+    "profileLikes": [],
+    "thumbnail": "/resources/thumbnails/interstellar.jpg"
+  },
+  {
+    "name": "Avatar",
+    "year": 2009,
+    "genre": [
+      "Action",
+      "Adventure",
+      "Fantasy"
+    ],
+    "likes": 90,
+    "liked": false,
+    "profileLikes": [],
+    "thumbnail": "/resources/thumbnails/avatar.jpg"
+  },
+  {
+    "name": "Titanic",
+    "year": 1997,
+    "genre": [
+      "Drama",
+      "Romance"
+    ],
+    "likes": 160,
+    "liked": false,
+    "profileLikes": [],
+    "thumbnail": "/resources/thumbnails/titanic.jpg"
+  },
+  {
+    "name": "Gone Girl",
+    "year": 2014,
+    "genre": [
+      "Drama",
+      "Mystery",
+      "Thriller"
+    ],
+    "likes": 140,
+    "liked": false,
+    "profileLikes": [],
+    "thumbnail": "/resources/thumbnails/gone_girl.jpg"
+  },
+  {
+    "name": "Harry Potter",
+    "year": 2001,
+    "genre": [
+      "Adventure",
+      "Fantasy"
+    ],
+    "likes": 170,
+    "liked": false,
+    "profileLikes": [],
+    "thumbnail": "/resources/thumbnails/harry_potter.jpg"
+  },
+  {
+    "name": "Planet Earth",
+    "year": 2006,
+    "genre": [
+      "Documentary"
+    ],
+    "likes": 110,
+    "liked": false,
+    "profileLikes": [],
+    "thumbnail": "/resources/thumbnails/planet_earth.jpg"
+  },
+  {
+    "name": "Toy Story",
+    "year": 1995,
+    "genre": [
+      "Animation",
+      "Adventure",
+      "Comedy"
+    ],
+    "likes": 190,
+    "liked": false,
+    "profileLikes": [],
+    "thumbnail": "/resources/thumbnails/toy_story.jpg"
+  },
+  {
+    "name": "Breaking Bad",
+    "year": 2008,
+    "genre": [
+      "Drama",
+      "Crime",
+      "Thriller"
+    ],
+    "likes": 220,
+    "liked": false,
+    "profileLikes": []
+  },
+  {
+    "name": "Stranger Things",
+    "year": 2016,
+    "genre": [
+      "Drama",
+      "Fantasy",
+      "Horror"
+    ],
+    "likes": 180,
+    "liked": false,
+    "profileLikes": []
+  },
+  {
+    "name": "The Office",
+    "year": 2005,
+    "genre": [
+      "Comedy"
+    ],
+    "likes": 200,
+    "liked": false,
+    "profileLikes": []
+  },
+  {
+    "name": "Game of Thrones",
+    "year": 2011,
+    "genre": [
+      "Drama",
+      "Fantasy",
+      "Adventure"
+    ],
+    "likes": 170,
+    "liked": false,
+    "profileLikes": []
+  },
+  {
+    "name": "Friends",
+    "year": 1994,
+    "genre": [
+      "Comedy",
+      "Romance"
+    ],
+    "likes": 190,
+    "liked": false,
+    "profileLikes": []
+  },
+  {
+    "name": "The Crown",
+    "year": 2016,
+    "genre": [
+      "Drama",
+      "Biography"
+    ],
+    "likes": 150,
+    "liked": false,
+    "profileLikes": []
+  },
+  {
+    "name": "Sherlock",
+    "year": 2010,
+    "genre": [
+      "Crime",
+      "Drama",
+      "Mystery"
+    ],
+    "likes": 165,
+    "liked": false,
+    "profileLikes": []
+  },
+  {
+    "name": "The Mandalorian",
+    "year": 2019,
+    "genre": [
+      "Adventure",
+      "Fantasy",
+      "Action"
+    ],
+    "likes": 176,
+    "liked": false,
+    "profileLikes": [
+      1
+    ]
+  },
+  {
+    "name": "Black Mirror",
+    "year": 2011,
+    "genre": [
+      "Drama",
+      "Thriller",
+      "Sci-Fi"
+    ],
+    "likes": 160,
+    "liked": false,
+    "profileLikes": []
+  },
+  {
+    "name": "The Witcher",
+    "year": 2019,
+    "genre": [
+      "Fantasy",
+      "Adventure",
+      "Drama"
+    ],
+    "likes": 155,
+    "liked": false,
+    "profileLikes": []
+  },
+  {
+    "name": "House of Cards",
+    "year": 2013,
+    "genre": [
+      "Drama",
+      "Thriller"
+    ],
+    "likes": 140,
+    "liked": false,
+    "profileLikes": []
+  },
+  {
+    "name": "Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test ",
+    "year": 2013,
+    "genre": [
+      "Drama",
+      "Thriller"
+    ],
+    "likes": 140,
+    "liked": false,
+    "profileLikes": []
+  }
+]
