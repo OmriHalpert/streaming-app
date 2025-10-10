@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Profiles - Netflix Clone</title>
+    <link rel="stylesheet" href="/css/profiles.css">
+    <link rel="stylesheet" href="/css/manage-profiles.css">
+</head>
+<body data-user-id="<%= user.id %>">
+    <!-- Single Main Container -->
+    <div class="manage-profiles-container">
+        <!-- Header with logo and back button -->
+        <div class="header">
+            <img src="/resources/netflix_logo.png" alt="Netflix Logo" class="logo">
+            <button class="back-button" onclick="goBack()">← Back to Profiles</button>
+        </div>
+
+        <!-- Page Title -->
+        <h1 class="page-title"><%= user.username %>'s Profiles</h1>
+        
+        <!-- Add Profile Section -->
+        <div class="add-profile-section">
+            <h2>Add New Profile</h2>
+            <div class="add-profile-form">
+                <input 
+                    type="text" 
+                    id="profileNameInput" 
+                    placeholder="Enter profile name (max 12 characters)"
+                    maxlength="20"
+                    class="profile-name-input"
+                >
+                <button 
+                    id="addProfileBtn" 
+                    class="add-profile-btn"
+                    onclick="addNewProfile()"
+                >
+                    Add Profile
+                </button>
+            </div>
+            <div id="addProfileMessage" class="message"></div>
+            
+            <!-- Current Profiles List -->
+            <div class="current-profiles">
+                <h3>Current Profiles (<span id="profileCount"><%= profiles.length %></span>/5)</h3>
+                <ul class="profiles-list" id="profilesList">
+                    <% profiles.forEach(function(profile) { %>
+                        <li class="profile-item" data-profile-id="<%= profile.id %>">
+                            <img src="<%= profile.avatar %>" alt="<%= profile.name %>" class="profile-avatar">
+                            <span class="profile-name"><%= profile.name %></span>
+                        </li>
+                    <% }); %>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/manage-profiles.js"></script>
+</body>
+</html>

@@ -143,6 +143,28 @@ class UserService {
         // Use model for actual login
         return await userModel.login(trimmedEmail, trimmedPassword);
     }
+
+    // Add a new profile to a user
+    static async addProfile(userId, profileName) {
+        // Validate user ID
+        if (isNaN(userId) || userId <= 0) {
+            throw new Error('Invalid user ID');
+        }
+
+        // Validate profile name
+        if (!profileName || typeof profileName !== 'string') {
+            throw new Error('Profile name is required');
+        }
+
+        const trimmedProfileName = profileName.trim();
+        
+        if (trimmedProfileName.length < 1 || trimmedProfileName.length > 12) {
+            throw new Error(trimmedProfileName.length < 1 ? 'Profile name cannot be empty' : 'Profile name must be no more than 12 characters');
+        }
+
+        // Use model to add the profile
+        return await userModel.addProfile(userId, trimmedProfileName);
+    }
 }
 
 module.exports = UserService;

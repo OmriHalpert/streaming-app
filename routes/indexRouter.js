@@ -2,6 +2,7 @@ const { Router } = require('express');
 const { authRouter } = require('./authRouter.js');
 const { usersRouter } = require('./usersRouter.js');
 const { contentRouter } = require('./contentRouter.js');
+const { profilesRouter } = require('./profilesRouter.js');
 
 const indexRouter = Router();
 
@@ -13,5 +14,8 @@ indexRouter.use('/users', usersRouter);
 
 // Route to handle content operations
 indexRouter.use('/content', contentRouter);
+
+// Route to handle profile operations
+indexRouter.use('/profiles', profilesRouter);
 
 module.exports = { indexRouter };
