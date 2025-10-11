@@ -1,10 +1,50 @@
 const fs = require('fs').promises;
 const path = require('path');
+const User = require('./User'); // Import the Mongoose User model
 
-// Path to the users JSON file
-const usersFilePath = path.join(__dirname, '../data/users.json');
+// Get next available user ID
+async function getNextUserId() {
+    const lastUser = await User.findOne().sort({ id: -1 });
+    return lastUser ? lastUser.id + 1 : 1;
+}
 
-// registers a new user
+// Find user by email
+async function findUserByEmail(email) {
+    return await User.findOne({ email: email.toLowerCase() });
+}
+
+// Find user by ID
+async function findUserById(userId) {
+    return await User.findOne({ id: parseInt(userId) });
+}
+
+// Check if email exists
+async function emailExists(email) {
+    const user = await findUserByEmail(email);
+    return !!user;
+}
+
+// Get all users (excluding passwords)
+async function readUsersFromFile() {
+    return await User.find({}, { password: 0 });
+}
+
+// Helper function to generate random avatar
+async function generateRandomAvatar() {
+    const profilePicsPath = path.join(__dirname, '../public/resources/profile_pics');
+    const profilePics = await fs.readdir(profilePicsPath);
+    const randomAvatar = profilePics[Math.floor(Math.random() * profilePics.length)];
+    return `/resources/profile_pics/${randomAvatar}`;
+}
+
+// Helper function to generate new profile ID for a user
+function generateNewProfileId(existingProfiles) {
+    return existingProfiles.length > 0 
+        ? Math.max(...existingProfiles.map(p => parseInt(p.id))) + 1 
+        : 1;
+}
+
+// Register a new user
 async function register(email, username, password) {
     try {
         // Check if email already exists
@@ -12,27 +52,26 @@ async function register(email, username, password) {
             throw new Error('Email already exists');
         }
 
-        // Read existing users for creating new user
-        const users = await readUsersFromFile();
+        // Generate new user ID
+        const newUserId = await getNextUserId();
 
-        // Create new user object (generate random pic from profile_pics folder)
-        const profilePicsPath = path.join(__dirname, '../public/resources/profile_pics');
-        const profilePics = await fs.readdir(profilePicsPath);
-        const randomAvatar = profilePics[Math.floor(Math.random() * profilePics.length)];
+        // Generate random avatar
+        const randomAvatar = await generateRandomAvatar();
         
-        const newUser = {
-            id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
+        const newUser = new User({
+            id: newUserId,
             email,
             username,
             password,
-            profiles: [{"id":"1", "name":"profile 1", "avatar": `/resources/profile_pics/${randomAvatar}`}]
-        };
+            profiles: [{
+                id: "1", 
+                name: "profile 1", 
+                avatar: randomAvatar
+            }]
+        });
 
-        // Add new user to users array
-        users.push(newUser);
-
-        // Write updated users back to file
-        await fs.writeFile(usersFilePath, JSON.stringify(users));
+        // Save user to MongoDB
+        await newUser.save();
 
         // Return user data (without password)
         return {
@@ -47,11 +86,13 @@ async function register(email, username, password) {
     }
 }
 
-// validates user login
+// Validate user login
 async function login(email, password) {
     try {
         // Find user by email
+        console.log("user details: ", email, password);
         const foundUser = await findUserByEmail(email);
+        console.log('post validation: ', foundUser);
         if (!foundUser) {
             throw new Error('Email does not exist');
         }
@@ -74,72 +115,37 @@ async function login(email, password) {
     }
 }
 
-async function readUsersFromFile() {
-    try {
-        const usersData = await fs.readFile(usersFilePath, 'utf8');
-        return JSON.parse(usersData);
-    } catch (error) {
-        // If file doesn't exist, return empty array
-        if (error.code === 'ENOENT') {
-            return [];
-        }
-        throw error;
-    }
-}
-
-// Private helper functions
-async function findUserByEmail(email) {
-    const users = await readUsersFromFile();
-    return users.find(user => user.email === email);
-}
-
-async function emailExists(email) {
-    const user = await findUserByEmail(email);
-    return !!user; // Convert to boolean
-}
-
 // Add a new profile to a user
 async function addProfile(userId, profileName) {
     try {
-        // Read all users
-        const users = await readUsersFromFile();
-        
-        // Find the user
-        const userIndex = users.findIndex(user => user.id === parseInt(userId));
-        if (userIndex === -1) {
+        // Find the user by ID
+        const user = await findUserById(userId);
+        if (!user) {
             throw new Error('User not found');
         }
         
-        // Get current profiles for this user
-        const currentProfiles = users[userIndex].profiles || [];
-        
-        // Check if user already has 5 profiles (Netflix limit)
-        if (currentProfiles.length >= 5) {
+        // Check profile limit
+        if (user.profiles.length >= 5) {
             throw new Error('Maximum number of profiles (5) reached');
         }
         
-        // Generate new profile ID (highest current + 1)
-        const newProfileId = currentProfiles.length > 0 
-            ? Math.max(...currentProfiles.map(p => parseInt(p.id))) + 1 
-            : 1;
+        // Generate new profile ID
+        const newProfileId = generateNewProfileId(user.profiles);
         
-        // Generate random avatar from profile_pics folder
-        const profilePicsPath = path.join(__dirname, '../public/resources/profile_pics');
-        const profilePics = await fs.readdir(profilePicsPath);
-        const randomAvatar = profilePics[Math.floor(Math.random() * profilePics.length)];
+        // Generate random avatar
+        const randomAvatar = await generateRandomAvatar();
         
-        // Create new profile object
         const newProfile = {
             id: newProfileId.toString(),
             name: profileName,
-            avatar: `/resources/profile_pics/${randomAvatar}`
+            avatar: randomAvatar
         };
         
-        // Add new profile to user's profiles
-        users[userIndex].profiles.push(newProfile);
+        // Add profile to user
+        user.profiles.push(newProfile);
         
-        // Write updated users back to file
-        await fs.writeFile(usersFilePath, JSON.stringify(users, null, 2));
+        // Save the updated user
+        await user.save();
         
         // Return the new profile
         return newProfile;
@@ -153,5 +159,8 @@ module.exports = {
     register,
     login,
     readUsersFromFile,
-    addProfile
+    addProfile,
+    findUserByEmail,
+    findUserById,
+    emailExists
 };

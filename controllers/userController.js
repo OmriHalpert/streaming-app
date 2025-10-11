@@ -1,9 +1,9 @@
-const UserService = require('../services/userService');
+const { getAllUsers, getUserById: getUserByIdService, getUserProfiles: getUserProfilesService } = require('../services/userService');
 
 // Returns all users list
 async function getUsers(req, res) {
     try {
-        const users = await UserService.getAllUsers();
+        const users = await getAllUsers();
         return res.status(200).json({'users': users});
     } catch (error) {
         return handleUserError(error, res, 'fetching all users');
@@ -14,7 +14,7 @@ async function getUsers(req, res) {
 async function getUserById(req, res) {
     try {
         const userId = Number(req.params.id);
-        const user = await UserService.getUserById(userId);
+        const user = await getUserByIdService(userId);
 
         return res.status(200).json({'user': user});
     } catch (error) {
@@ -25,7 +25,7 @@ async function getUserById(req, res) {
 async function getUserProfiles(req, res) {
     try {
         const userId = Number(req.params.id);
-        const profiles = await UserService.getUserProfiles(userId);
+        const profiles = await getUserProfilesService(userId);
 
         return res.status(200).json({'profiles': profiles});
     } catch (error) {
