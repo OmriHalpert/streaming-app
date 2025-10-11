@@ -61,7 +61,7 @@ async function register(email, username, password) {
         const randomAvatar = await generateRandomAvatar();
 
         // Hash the password before saving
-        const saltRounds = 12;
+        const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS) || 12;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         
         const newUser = new User({
