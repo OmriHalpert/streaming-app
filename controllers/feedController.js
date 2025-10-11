@@ -14,38 +14,47 @@ async function renderFeedPage(req, res) {
             });
         }
 
-        // Get content data for feed
-        const feedData = await getContentForFeed(profileId);
-        
-        // Get profile data for avatar
-        let profileData = null;
-        if (userId) {
-            try {
-                const profiles = await getUserProfilesService(parseInt(userId));
-                profileData = profiles.find(p => p.id === profileId);
-            } catch (error) {
-                console.log('Could not fetch profile data for avatar:', error.message);
-            }
-        }
-        
-        // Add additional data
-        feedData.userId = userId || null;
-        feedData.currentProfile = profileData || null;
-        
-        // Render feed EJS template with data
-        res.render('feed', feedData);
+        // Renders page
+        res.render('feed', { 
+            profileId, 
+            userId 
+        });
         
     } catch (error) {
         console.error('Error rendering feed page:', error);
+        res.status(500).render('error', { 
+            message: 'Unable to load feed. Please try again.' 
+        });
+    }
+}
+
+// Get content data for API
+async function getContent(req, res) {
+    try {
+        const profileId = req.query.profileId;
+        
+        if (!profileId) {
+            return res.status(400).json({
+                error: 'Profile ID is required'
+            });
+        }
+
+        // Get content data for feed
+        const feedData = await getContentForFeed(profileId);
+        
+        res.json(feedData);
+        
+    } catch (error) {
+        console.error('Error fetching content via API:', error);
         
         if (error.message === 'Valid profile ID is required for feed') {
-            return res.status(400).render('error', { 
-                message: 'Invalid profile ID' 
+            return res.status(400).json({
+                error: 'Invalid profile ID'
             });
         }
         
-        res.status(500).render('error', { 
-            message: 'Unable to load feed. Please try again.' 
+        res.status(500).json({
+            error: 'Unable to fetch content. Please try again.'
         });
     }
 }
@@ -105,6 +114,7 @@ async function searchContent(req, res) {
 
 module.exports = {
     renderFeedPage,
+    getContent,
     toggleContentLike,
     searchContent
 };
