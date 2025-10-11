@@ -1,15 +1,16 @@
 const { Router } = require('express');
 const { getUsers, getUserById, getUserProfiles } = require('../controllers/userController');
 
+// Import authentication middleware
+const { requireAuth, requireAuthAndOwnership } = require('../middleware/auth');
+
 const usersRouter = Router();
 
-// Route to get users array
+// 🔓 PUBLIC ROUTE - No authentication needed (maybe for admin panel later)
 usersRouter.get('/', getUsers); 
 
-// Route to get specific user data fetch
-usersRouter.get('/:id', getUserById);
-
-// Route to get specufuc user profiles
-usersRouter.get('/:id/profiles', getUserProfiles);
+// 🔒 PROTECTED ROUTES - Require authentication AND ownership
+usersRouter.get('/:id', requireAuthAndOwnership, getUserById);
+usersRouter.get('/:id/profiles', requireAuthAndOwnership, getUserProfiles);
 
 module.exports = { usersRouter };

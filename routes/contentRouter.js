@@ -1,15 +1,17 @@
 const { Router } = require('express');
 const { toggleContentLike, searchContent, getContent } = require('../controllers/feedController');
 
+// Import authentication middleware
+const { requireAuth } = require('../middleware/auth');
+
 const contentRouter = Router();
 
-// Get content for feed
+// 🔒 PROTECT ALL CONTENT ROUTES - Apply to entire router
+contentRouter.use(requireAuth);
+
+// All routes below this point require authentication
 contentRouter.get('/', getContent);
-
-// Toggle like for content
 contentRouter.post('/like', toggleContentLike);
-
-// Search content
 contentRouter.get('/search', searchContent);
 
 module.exports = { contentRouter };
