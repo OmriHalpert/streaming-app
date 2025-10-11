@@ -10,7 +10,3 @@ authRouter.post('/register', register);
 authRouter.post('/login', login);
 
 module.exports = { authRouter };
-
-// Note: Ensure that the authController has methods 'register' and 'login' defined.
-// This router can be mounted in the main server file (e.g., server.js) using:
-// app.use('/auth', authRouter);
