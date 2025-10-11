@@ -1,110 +1,111 @@
 const contentModel = require('../models/contentModel');
 
-// Business logic for content operations
-class ContentService {
-    
-    // Get all content with optional profile-specific like status
-    static async getAllContent(profileId = null) {
-        // Fetch content list
-        const content = await contentModel.getContent();
+// Get all content with optional profile-specific like status
+async function getAllContent(profileId = null) {
+    // Fetch content list
+    const content = await contentModel.getContent();
 
-        // No content exists
-        if (content.length === 0) {
-            throw new Error('No content found');
-        }
-
-        // If profileId provided, add isLiked status for that profile
-        if (profileId) {
-            const profileIdInt = parseInt(profileId);
-            return content.map(item => ({
-                ...item,
-                isLiked: item.profileLikes.includes(profileIdInt)
-            }));
-        }
-
-        return content;
-    }
-    
-    // Get content by name
-    static async getContentByName(contentName) {
-        // Validate content name
-        if (!contentName || contentName.trim() === '') {
-            throw new Error('Content name is required');
-        }
-
-        // Fetch all content
-        const content = await contentModel.getContent();
-        const foundContent = content.find(item => item.name === contentName.trim());
-
-        if (!foundContent) {
-            throw new Error('Content not found');
-        }
-
-        return foundContent;
+    // No content exists
+    if (content.length === 0) {
+        throw new Error('No content found');
     }
 
-    // Search content
-    static async searchContent(query, profileId = null) {
-        // Validate search query
-        if (!query || query.trim() === '') {
-            // Return all content if no query
-            return await this.getAllContent(profileId);
-        }
-
-        if (query.trim().length < 2) {
-            throw new Error('Search query must be at least 2 characters');
-        }
-
-        // Use model search function
-        const searchResults = await contentModel.searchContent(query.trim());
-
-        // Add profile-specific like status if profileId provided
-        if (profileId) {
-            const profileIdInt = parseInt(profileId);
-            return searchResults.map(item => ({
-                ...item,
-                isLiked: item.profileLikes.includes(profileIdInt)
-            }));
-        }
-
-        return searchResults;
+    // If profileId provided, add isLiked status for that profile
+    if (profileId) {
+        const profileIdInt = parseInt(profileId);
+        const transformedContent = content.map(item => ({
+            ...item.toObject(), // Convert Mongoose document to plain object
+            isLiked: item.profileLikes.includes(profileIdInt)
+        }));
+        
+        return transformedContent;
     }
 
-    // Toggle like
-    static async toggleContentLike(contentName, profileId) {
-        // Validate inputs
-        if (!contentName || contentName.trim() === '') {
-            throw new Error('Content name is required');
-        }
+    return content;
+}
 
-        if (!profileId || isNaN(profileId) || profileId <= 0) {
-            throw new Error('Valid profile ID is required');
-        }
-
-        // Use model to toggle like
-        const result = await contentModel.updateContentLikes(
-            contentName.trim(), 
-            parseInt(profileId), 
-            'toggle'
-        );
-
-        return {
-            contentName: result.content.name,
-            likeCount: result.likeCount,
-            isLiked: result.isLiked,
-            message: result.isLiked ? 'Content liked' : 'Content unliked'
-        };
+// Get content by name
+async function getContentByName(contentName) {
+    // Validate content name
+    if (!contentName || contentName.trim() === '') {
+        throw new Error('Content name is required');
     }
 
-    // Get content for feed page (with profile-specific data)
-    static async getContentForFeed(profileId) {
+    // Fetch all content
+    const content = await contentModel.getContent();
+    const foundContent = content.find(item => item.name === contentName.trim());
+
+    if (!foundContent) {
+        throw new Error('Content not found');
+    }
+
+    return foundContent;
+}
+
+// Search content
+async function searchContent(query, profileId = null) {
+    // Validate search query
+    if (!query || query.trim() === '') {
+        // Return all content if no query
+        return await getAllContent(profileId);
+    }
+
+    if (query.trim().length < 2) {
+        throw new Error('Search query must be at least 2 characters');
+    }
+
+    // Use model search function
+    const searchResults = await contentModel.searchContent(query.trim());
+
+    // Add profile-specific like status if profileId provided
+    if (profileId) {
+        const profileIdInt = parseInt(profileId);
+        return searchResults.map(item => ({
+            ...item.toObject(), // Convert Mongoose document to plain object
+            isLiked: item.profileLikes.includes(profileIdInt)
+        }));
+    }
+
+    // Convert all results to plain objects even without profileId
+    return searchResults.map(item => item.toObject());
+}
+
+// Toggle like
+async function toggleContentLike(contentName, profileId) {
+    // Validate inputs
+    if (!contentName || contentName.trim() === '') {
+        throw new Error('Content name is required');
+    }
+
+    if (!profileId || isNaN(profileId) || profileId <= 0) {
+        throw new Error('Valid profile ID is required');
+    }
+
+    // Use model to toggle like
+    const result = await contentModel.updateContentLikes(
+        contentName.trim(), 
+        parseInt(profileId), 
+        'toggle'
+    );
+
+    return {
+        contentName: result.content.name,
+        likeCount: result.likeCount,
+        isLiked: result.isLiked,
+        message: result.isLiked ? 'Content liked' : 'Content unliked'
+    };
+}
+
+// Get content for feed page (with profile-specific data)
+async function getContentForFeed(profileId) {
+    try {
         // Validate profile ID
         if (!profileId || isNaN(profileId) || profileId <= 0) {
             throw new Error('Valid profile ID is required for feed');
         }
 
         // Get all content with profile-specific like status
-        const content = await this.getAllContent(parseInt(profileId));
+        const content = await getAllContent(parseInt(profileId));
 
         // Group content by genres
         const genreGroups = {};
@@ -120,7 +121,6 @@ class ContentService {
             });
         });
 
-        // Add any additional feed-specific processing here
         return {
             content: content,
             genreGroups: genreGroups,
@@ -128,7 +128,25 @@ class ContentService {
             likedCount: content.filter(item => item.isLiked).length,
             profileId: parseInt(profileId)
         };
+    } catch (error) {
+        // If no content found, return empty data structure instead of throwing
+        if (error.message === 'No content found') {
+            return {
+                content: [],
+                genreGroups: {},
+                totalCount: 0,
+                likedCount: 0,
+                profileId: parseInt(profileId)
+            };
+        }
+        throw error;
     }
 }
 
-module.exports = ContentService;
+module.exports = {
+    getAllContent,
+    getContentByName,
+    searchContent,
+    toggleContentLike,
+    getContentForFeed
+};

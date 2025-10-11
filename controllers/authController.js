@@ -1,4 +1,4 @@
-const UserService = require('../services/userService');
+const { register: registerUser, login: loginUser } = require('../services/userService');
 
 // Register controller
 async function register(req, res) {
@@ -6,7 +6,7 @@ async function register(req, res) {
         const { email, username, password } = req.body;
 
         // Delegate to service layer
-        const user = await UserService.register(email, username, password);
+        const user = await registerUser(email, username, password);
 
         // Return success response
         return res.status(201).json({ 
@@ -24,7 +24,7 @@ async function login(req, res) {
         const { email, password } = req.body;
         
         // Delegate to service layer
-        const user = await UserService.login(email, password);
+        const user = await loginUser(email, password);
 
         return res.status(200).json({ 
             message: 'Login successful',
