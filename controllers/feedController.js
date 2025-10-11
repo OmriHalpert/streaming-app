@@ -1,5 +1,5 @@
-const ContentService = require('../services/contentService');
-const UserService = require('../services/userService');
+const { getContentForFeed, toggleContentLike: toggleLike, searchContent: searchContentService } = require('../services/contentService');
+const { getUserWithProfiles } = require('../services/userService');
 
 // Renders feed page with content
 async function renderFeedPage(req, res) {
@@ -15,13 +15,13 @@ async function renderFeedPage(req, res) {
         }
 
         // Get content data for feed
-        const feedData = await ContentService.getContentForFeed(profileId);
+        const feedData = await getContentForFeed(profileId);
         
         // Get profile data for avatar
         let profileData = null;
         if (userId) {
             try {
-                const { profiles } = await UserService.getUserWithProfiles(parseInt(userId));
+                const { profiles } = await getUserWithProfiles(parseInt(userId));
                 profileData = profiles.find(p => p.id === profileId);
             } catch (error) {
                 console.log('Could not fetch profile data for avatar:', error.message);
@@ -61,7 +61,7 @@ async function toggleContentLike(req, res) {
             });
         }
         
-        const result = await ContentService.toggleContentLike(contentName, profileId);
+        const result = await toggleLike(contentName, profileId);
         
         res.json({
             success: true,
@@ -86,7 +86,7 @@ async function searchContent(req, res) {
         // Convert profileId to integer if provided
         const profileIdInt = profileId ? parseInt(profileId) : null;
         
-        const results = await ContentService.searchContent(query, profileIdInt);
+        const results = await searchContentService(query, profileIdInt);
         
         res.json({
             success: true,

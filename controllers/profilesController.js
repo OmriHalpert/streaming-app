@@ -1,4 +1,4 @@
-const UserService = require("../services/userService");
+const { getUserWithProfiles, addProfile: addProfileService } = require("../services/userService");
 
 // Render profiles page
 async function renderProfilesPage(req, res) {
@@ -14,7 +14,7 @@ async function renderProfilesPage(req, res) {
     // TODO: Add proper session validation when express-session is implemented
 
     try {
-      const { user, profiles } = await UserService.getUserWithProfiles(
+      const { user, profiles } = await getUserWithProfiles(
         parseInt(userId)
       );
 
@@ -43,7 +43,7 @@ async function renderManageProfilesPage(req, res) {
     // TODO: Add proper session validation when express-session is implemented
 
     try {
-      const { user, profiles } = await UserService.getUserWithProfiles(
+      const { user, profiles } = await getUserWithProfiles(
         parseInt(userId)
       );
 
@@ -80,7 +80,7 @@ async function addProfile(req, res) {
 
     try {
       // Add the new profile using UserService
-      const newProfile = await UserService.addProfile(parseInt(userId), profileName);
+      const newProfile = await addProfileService(parseInt(userId), profileName);
       
       // Return success response with the new profile
       res.json({
