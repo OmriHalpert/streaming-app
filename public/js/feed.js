@@ -131,8 +131,9 @@ async function loadUserProfile() {
         // Show loading spinner (it's already there from the template)
         avatarContainer.innerHTML = '<div class="profile-loading"></div>';
         
+        // Fetches profile
         const profiles = await UserAPI.fetchUserProfiles(userId);
-        const currentProfile = profiles.find(p => p.id === profileId);
+        const currentProfile = profiles.find(p => p.id === parseInt(profileId));
         
         if (currentProfile) {
             // Replace loading spinner with actual image
