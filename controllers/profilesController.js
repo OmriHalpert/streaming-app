@@ -1,4 +1,22 @@
-const { getUserWithProfiles, addProfile: addProfileService } = require("../services/userService");
+const { getUserById, getUserProfiles: getUserProfilesService, addProfile: addProfileService } = require("../services/userService");
+
+// Helper function to make internal API calls
+async function makeInternalAPICall(url) {
+  const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+  
+  try {
+    const response = await fetch(`${baseUrl}${url}`);
+    
+    if (!response.ok) {
+      throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error(`Internal API call failed for ${url}:`, error.message);
+    throw error;
+  }
+}
 
 // Render profiles page
 async function renderProfilesPage(req, res) {
@@ -11,18 +29,9 @@ async function renderProfilesPage(req, res) {
       return res.redirect("/login");
     }
 
-    // TODO: Add proper session validation when express-session is implemented
-
-    try {
-      const { user, profiles } = await getUserWithProfiles(
-        parseInt(userId)
-      );
-
-      res.render("profiles", { profiles, user });
-    } catch (error) {
-      console.log("Could not fetch user data:", error.message);
-      return res.redirect("/login");
-    }
+    // Simply render the template with userId - JavaScript will fetch the profiles
+    res.render("profiles", { userId });
+    
   } catch (error) {
     console.error("Error rendering profiles page:", error);
     res.redirect("/login");
@@ -43,9 +52,12 @@ async function renderManageProfilesPage(req, res) {
     // TODO: Add proper session validation when express-session is implemented
 
     try {
-      const { user, profiles } = await getUserWithProfiles(
-        parseInt(userId)
-      );
+      // Fetch user data via internal API calls
+      const userResponse = await makeInternalAPICall(`/users/${userId}`);
+      const profilesResponse = await makeInternalAPICall(`/users/${userId}/profiles`);
+      
+      const user = userResponse.user;
+      const profiles = profilesResponse.profiles;
 
       res.render("manage-profiles", { profiles, user });
     } catch (error) {
