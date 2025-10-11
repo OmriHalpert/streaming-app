@@ -1,4 +1,4 @@
-const { getUserById, getUserProfiles: getUserProfilesService, addProfile: addProfileService } = require("../services/userService");
+const { getUserById, getUserProfiles: getUserProfilesService, addProfile: addProfileService, updateUserProfile, deleteUserProfile } = require("../services/userService");
 
 // Make internal API calls
 async function makeInternalAPICall(url) {
@@ -145,8 +145,159 @@ async function addProfile(req, res) {
   }
 }
 
+async function updateProfile(req, res) {
+  try {
+    const userId = req.query.userId || req.body.userId;
+    const profileId = req.body.profileId;
+    const profileName = req.body.profileName;
+
+    // Validate inputs
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'User ID is required'
+      });
+    }
+
+    if (!profileId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Profile ID is required'
+      });
+    }
+
+    if (!profileName) {
+      return res.status(400).json({
+        success: false,
+        error: 'Profile name is required'
+      });
+    }
+
+    try {
+      // Update the profile using UserService
+      const updatedProfile = await updateUserProfile(
+        parseInt(userId),
+        parseInt(profileId),
+        profileName
+      );
+      
+      // Return success response with the updated profile
+      res.json({
+        success: true,
+        message: 'Profile updated successfully',
+        data: {
+          profile: updatedProfile
+        }
+      });
+
+    } catch (error) {
+      console.log("Could not update profile:", error.message);
+      
+      // Handle specific error cases
+      if (error.message === 'User not found') {
+        return res.status(404).json({
+          success: false,
+          error: 'User not found'
+        });
+      }
+      
+      if (error.message === 'Profile not found') {
+        return res.status(404).json({
+          success: false,
+          error: 'Profile not found'
+        });
+      }
+      
+      // Generic validation errors
+      return res.status(400).json({
+        success: false,
+        error: error.message
+      });
+    }
+    
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error. Please try again.'
+    });
+  }
+}
+
+async function deleteProfile(req, res) {
+  try {
+    const userId = req.query.userId || req.body.userId;
+    const profileId = req.body.profileId;
+
+    // Validate inputs
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'User ID is required'
+      });
+    }
+
+    if (!profileId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Profile ID is required'
+      });
+    }
+
+    try {
+      // Delete the profile using UserService
+      const deletedProfile = await deleteUserProfile(
+        parseInt(userId),
+        parseInt(profileId)
+      );
+      
+      // Return success response with the deleted profile
+      res.json({
+        success: true,
+        message: 'Profile deleted successfully',
+        data: {
+          profile: deletedProfile
+        }
+      });
+
+    } catch (error) {
+      console.log("Could not delete profile:", error.message);
+      
+      // Handle specific error cases
+      if (error.message === 'User not found') {
+        return res.status(404).json({
+          success: false,
+          error: 'User not found'
+        });
+      }
+      
+      if (error.message === 'Profile not found') {
+        return res.status(404).json({
+          success: false,
+          error: 'Profile not found'
+        });
+      }
+      
+      // Generic validation errors
+      return res.status(400).json({
+        success: false,
+        error: error.message
+      });
+    }
+    
+  } catch (error) {
+    console.error("Error deleting profile:", error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error. Please try again.'
+    });
+  }
+}
+
 module.exports = {
   renderProfilesPage,
   renderManageProfilesPage,
   addProfile,
+  updateProfile,
+  deleteProfile,
 };

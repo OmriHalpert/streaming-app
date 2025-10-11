@@ -64,7 +64,7 @@ async function register(email, username, password) {
             username,
             password,
             profiles: [{
-                id: "1", 
+                id: 1, 
                 name: "profile 1", 
                 avatar: randomAvatar
             }]
@@ -136,7 +136,7 @@ async function addProfile(userId, profileName) {
         const randomAvatar = await generateRandomAvatar();
         
         const newProfile = {
-            id: newProfileId.toString(),
+            id: newProfileId,
             name: profileName,
             avatar: randomAvatar
         };
@@ -155,11 +155,76 @@ async function addProfile(userId, profileName) {
     }
 }
 
+async function updateUserProfile(userId, profileId, newProfileName) {
+    try {
+        // Find the user by ID
+        const user = await findUserById(userId);
+        if (!user) {
+            throw new Error('User not found');
+        }
+        
+        // Find relevant profile using profile ID
+        const profile = user.profiles.find(p => p.id === profileId);
+        if (!profile) {
+            throw new Error('Profile not found');
+        }
+
+        // Update the profile's name
+        profile.name = newProfileName;
+
+        // Save the updated user
+        await user.save();
+
+        // Returns the updated profile
+        return profile;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function deleteUserProfile(userId, profileId) {
+    try {
+        // Find the user by ID
+        const user = await findUserById(userId);
+        if (!user) {
+            throw new Error('User not found');
+        }
+        
+        // Fetch profiles list for pre-deletion validations
+        const profilesList = user.profiles;
+
+        // Check profile limit
+        if (profilesList.length < 2) {
+            throw new Error("User must have at least 1 profile");
+        }
+
+        // Check if profile exists
+        const profileExists = profilesList.find(p => p.id === profileId);
+        if (!profileExists) {
+            throw new Error('Profile not found');
+        }
+
+        // New Profiles list with deleted profile filtered out
+        const newProfilesList = profilesList.filter(profile => profile.id !== profileId);
+
+        // Saves new profiles list
+        user.profiles = newProfilesList;
+        await user.save();
+
+        // Returns the deleted profile for confirmation
+        return profileExists;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     register,
     login,
     readUsersFromFile,
     addProfile,
+    updateUserProfile,
+    deleteUserProfile,
     findUserByEmail,
     findUserById,
     emailExists
