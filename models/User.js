@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 // Profile subdocument schema
 const profileSchema = new mongoose.Schema({
     id: {
-        type: String,
+        type: Number,
         required: true
     },
     name: {

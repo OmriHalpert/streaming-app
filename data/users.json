@@ -6,12 +6,12 @@
     "password": "password1",
     "profiles": [
       {
-        "id": "1",
+        "id": 1,
         "name": "Main Profile",
         "avatar": "/resources/profile_pics/profile1.jpg"
       },
       {
-        "id": "2",
+        "id": 2,
         "name": "temp",
         "avatar": "/resources/profile_pics/profile2.jpg"
       }
@@ -24,27 +24,27 @@
     "password": "password2",
     "profiles": [
       {
-        "id": "1",
+        "id": 1,
         "name": "Personal",
         "avatar": "/resources/profile_pics/profile2.jpg"
       },
       {
-        "id": "2",
+        "id": 2,
         "name": "Work",
         "avatar": "/resources/profile_pics/profile4.jpg"
       },
       {
-        "id": "3",
+        "id": 3,
         "name": "omri",
         "avatar": "/resources/profile_pics/profile5.jpg"
       },
       {
-        "id": "4",
+        "id": 4,
         "name": "omri2",
         "avatar": "/resources/profile_pics/profile4.jpg"
       },
       {
-        "id": "5",
+        "id": 5,
         "name": "omri3",
         "avatar": "/resources/profile_pics/profile5.jpg"
       }
@@ -57,17 +57,17 @@
     "password": "aa",
     "profiles": [
       {
-        "id": "1",
+        "id": 1,
         "name": "Home",
         "avatar": "/resources/profile_pics/profile3.jpg"
       },
       {
-        "id": "2",
+        "id": 2,
         "name": "Kids",
         "avatar": "/resources/profile_pics/profile5.jpg"
       },
       {
-        "id": "3",
+        "id": 3,
         "name": "Guest",
         "avatar": "/resources/profile_pics/profile1.jpg"
       }
@@ -80,27 +80,27 @@
     "password": "password",
     "profiles": [
       {
-        "id": "1",
+        "id": 1,
         "name": "Primary",
         "avatar": "/resources/profile_pics/profile4.jpg"
       },
       {
-        "id": "2",
+        "id": 2,
         "name": "Family",
         "avatar": "/resources/profile_pics/profile2.jpg"
       },
       {
-        "id": "3",
+        "id": 3,
         "name": "Movies",
         "avatar": "/resources/profile_pics/profile3.jpg"
       },
       {
-        "id": "4",
+        "id": 4,
         "name": "Shows",
         "avatar": "/resources/profile_pics/profile5.jpg"
       },
       {
-        "id": "5",
+        "id": 5,
         "name": "a",
         "avatar": "/resources/profile_pics/profile2.jpg"
       }
@@ -113,27 +113,27 @@
     "password": "password",
     "profiles": [
       {
-        "id": "1",
+        "id": 1,
         "name": "Me",
         "avatar": "/resources/profile_pics/profile5.jpg"
       },
       {
-        "id": "2",
+        "id": 2,
         "name": "Partner",
         "avatar": "/resources/profile_pics/profile1.jpg"
       },
       {
-        "id": "3",
+        "id": 3,
         "name": "Kids Safe",
         "avatar": "/resources/profile_pics/profile2.jpg"
       },
       {
-        "id": "4",
+        "id": 4,
         "name": "Guests",
         "avatar": "/resources/profile_pics/profile4.jpg"
       },
       {
-        "id": "5",
+        "id": 5,
         "name": "Travel",
         "avatar": "/resources/profile_pics/profile3.jpg"
       }
@@ -146,12 +146,12 @@
     "password": "password",
     "profiles": [
       {
-        "id": "1",
+        "id": 1,
         "name": "Default",
         "avatar": "/resources/profile_pics/profile3.jpg"
       },
       {
-        "id": "2",
+        "id": 2,
         "name": "Gaming",
         "avatar": "/resources/profile_pics/profile1.jpg"
       }
@@ -164,22 +164,22 @@
     "password": "password",
     "profiles": [
       {
-        "id": "1",
+        "id": 1,
         "name": "Main",
         "avatar": "/resources/profile_pics/profile2.jpg"
       },
       {
-        "id": "2",
+        "id": 2,
         "name": "Documentaries",
         "avatar": "/resources/profile_pics/profile5.jpg"
       },
       {
-        "id": "3",
+        "id": 3,
         "name": "Comedy",
         "avatar": "/resources/profile_pics/profile4.jpg"
       },
       {
-        "id": "4",
+        "id": 4,
         "name": "Action",
         "avatar": "/resources/profile_pics/profile1.jpg"
       }
@@ -192,17 +192,17 @@
     "password": "password",
     "profiles": [
       {
-        "id": "1",
+        "id": 1,
         "name": "Solo Viewer",
         "avatar": "/resources/profile_pics/profile4.jpg"
       },
       {
-        "id": "2",
+        "id": 2,
         "name": "Date Night",
         "avatar": "/resources/profile_pics/profile3.jpg"
       },
       {
-        "id": "3",
+        "id": 3,
         "name": "Binge Watch",
         "avatar": "/resources/profile_pics/profile5.jpg"
       }
@@ -215,7 +215,7 @@
     "password": "password10",
     "profiles": [
       {
-        "id": "1",
+        "id": 1,
         "name": "profile 1",
         "avatar": "/resources/profile_pics/profile2.jpg"
       }
