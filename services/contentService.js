@@ -13,10 +13,12 @@ async function getAllContent(profileId = null) {
     // If profileId provided, add isLiked status for that profile
     if (profileId) {
         const profileIdInt = parseInt(profileId);
-        return content.map(item => ({
-            ...item,
+        const transformedContent = content.map(item => ({
+            ...item.toObject(), // Convert Mongoose document to plain object
             isLiked: item.profileLikes.includes(profileIdInt)
         }));
+        
+        return transformedContent;
     }
 
     return content;
@@ -59,12 +61,13 @@ async function searchContent(query, profileId = null) {
     if (profileId) {
         const profileIdInt = parseInt(profileId);
         return searchResults.map(item => ({
-            ...item,
+            ...item.toObject(), // Convert Mongoose document to plain object
             isLiked: item.profileLikes.includes(profileIdInt)
         }));
     }
 
-    return searchResults;
+    // Convert all results to plain objects even without profileId
+    return searchResults.map(item => item.toObject());
 }
 
 // Toggle like
@@ -95,36 +98,53 @@ async function toggleContentLike(contentName, profileId) {
 
 // Get content for feed page (with profile-specific data)
 async function getContentForFeed(profileId) {
-    // Validate profile ID
-    if (!profileId || isNaN(profileId) || profileId <= 0) {
-        throw new Error('Valid profile ID is required for feed');
-    }
+    try {
+        // Validate profile ID
+        if (!profileId || isNaN(profileId) || profileId <= 0) {
+            throw new Error('Valid profile ID is required for feed');
+        }
 
-    // Get all content with profile-specific like status
-    const content = await getAllContent(parseInt(profileId));
+        // Get all content with profile-specific like status
+        const content = await getAllContent(parseInt(profileId));
 
-    // Group content by genres
-    const genreGroups = {};
-    content.forEach(item => {
-        item.genre.forEach(genre => {
-            if (!genreGroups[genre]) {
-                genreGroups[genre] = [];
-            }
-            // Avoid duplicates
-            if (!genreGroups[genre].find(existing => existing.name === item.name)) {
-                genreGroups[genre].push(item);
+        // Group content by genres
+        const genreGroups = {};
+        content.forEach(item => {
+            // Defensive check for genre field
+            if (item.genre && Array.isArray(item.genre)) {
+                item.genre.forEach(genre => {
+                    if (!genreGroups[genre]) {
+                        genreGroups[genre] = [];
+                    }
+                    // Avoid duplicates
+                    if (!genreGroups[genre].find(existing => existing.name === item.name)) {
+                        genreGroups[genre].push(item);
+                    }
+                });
             }
         });
-    });
 
-    // Add any additional feed-specific processing here
-    return {
-        content: content,
-        genreGroups: genreGroups,
-        totalCount: content.length,
-        likedCount: content.filter(item => item.isLiked).length,
-        profileId: parseInt(profileId)
-    };
+        // Add any additional feed-specific processing here
+        return {
+            content: content,
+            genreGroups: genreGroups,
+            totalCount: content.length,
+            likedCount: content.filter(item => item.isLiked).length,
+            profileId: parseInt(profileId)
+        };
+    } catch (error) {
+        // If no content found, return empty data structure instead of throwing
+        if (error.message === 'No content found') {
+            return {
+                content: [],
+                genreGroups: {},
+                totalCount: 0,
+                likedCount: 0,
+                profileId: parseInt(profileId)
+            };
+        }
+        throw error;
+    }
 }
 
 module.exports = {
