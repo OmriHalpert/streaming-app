@@ -8,7 +8,6 @@
       "Drama"
     ],
     "likes": 102,
-    "liked": false,
     "profileLikes": [
       1,
       2
@@ -23,7 +22,6 @@
       "Comedy"
     ],
     "likes": 153,
-    "liked": false,
     "profileLikes": [
       3,
       1,
@@ -38,7 +36,6 @@
       "Drama"
     ],
     "likes": 81,
-    "liked": false,
     "profileLikes": [
       1
     ],
@@ -53,7 +50,6 @@
       "Thriller"
     ],
     "likes": 200,
-    "liked": false,
     "profileLikes": [],
     "thumbnail": "/resources/thumbnails/inception.jpg"
   },
@@ -65,7 +61,6 @@
       "Thriller"
     ],
     "likes": 121,
-    "liked": false,
     "profileLikes": [
       2
     ],
@@ -80,7 +75,6 @@
       "Sci-Fi"
     ],
     "likes": 180,
-    "liked": false,
     "profileLikes": [],
     "thumbnail": "/resources/thumbnails/interstellar.jpg"
   },
@@ -93,7 +87,6 @@
       "Fantasy"
     ],
     "likes": 90,
-    "liked": false,
     "profileLikes": [],
     "thumbnail": "/resources/thumbnails/avatar.jpg"
   },
@@ -105,7 +98,6 @@
       "Romance"
     ],
     "likes": 160,
-    "liked": false,
     "profileLikes": [],
     "thumbnail": "/resources/thumbnails/titanic.jpg"
   },
@@ -118,7 +110,6 @@
       "Thriller"
     ],
     "likes": 140,
-    "liked": false,
     "profileLikes": [],
     "thumbnail": "/resources/thumbnails/gone_girl.jpg"
   },
@@ -130,7 +121,6 @@
       "Fantasy"
     ],
     "likes": 170,
-    "liked": false,
     "profileLikes": [],
     "thumbnail": "/resources/thumbnails/harry_potter.jpg"
   },
@@ -141,7 +131,6 @@
       "Documentary"
     ],
     "likes": 110,
-    "liked": false,
     "profileLikes": [],
     "thumbnail": "/resources/thumbnails/planet_earth.jpg"
   },
@@ -154,7 +143,6 @@
       "Comedy"
     ],
     "likes": 190,
-    "liked": false,
     "profileLikes": [],
     "thumbnail": "/resources/thumbnails/toy_story.jpg"
   },
@@ -167,7 +155,6 @@
       "Thriller"
     ],
     "likes": 220,
-    "liked": false,
     "profileLikes": []
   },
   {
@@ -179,7 +166,6 @@
       "Horror"
     ],
     "likes": 180,
-    "liked": false,
     "profileLikes": []
   },
   {
@@ -189,7 +175,6 @@
       "Comedy"
     ],
     "likes": 200,
-    "liked": false,
     "profileLikes": []
   },
   {
@@ -201,7 +186,6 @@
       "Adventure"
     ],
     "likes": 170,
-    "liked": false,
     "profileLikes": []
   },
   {
@@ -212,7 +196,6 @@
       "Romance"
     ],
     "likes": 190,
-    "liked": false,
     "profileLikes": []
   },
   {
@@ -223,7 +206,6 @@
       "Biography"
     ],
     "likes": 150,
-    "liked": false,
     "profileLikes": []
   },
   {
@@ -235,7 +217,6 @@
       "Mystery"
     ],
     "likes": 165,
-    "liked": false,
     "profileLikes": []
   },
   {
@@ -247,7 +228,6 @@
       "Action"
     ],
     "likes": 176,
-    "liked": false,
     "profileLikes": [
       1
     ]
@@ -261,7 +241,6 @@
       "Sci-Fi"
     ],
     "likes": 160,
-    "liked": false,
     "profileLikes": []
   },
   {
@@ -273,7 +252,6 @@
       "Drama"
     ],
     "likes": 155,
-    "liked": false,
     "profileLikes": []
   },
   {
@@ -284,7 +262,6 @@
       "Thriller"
     ],
     "likes": 140,
-    "liked": false,
     "profileLikes": []
   },
   {
@@ -295,7 +272,6 @@
       "Thriller"
     ],
     "likes": 140,
-    "liked": false,
     "profileLikes": []
   }
 ]

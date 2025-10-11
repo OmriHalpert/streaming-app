@@ -3,6 +3,169 @@ function getProfileId() {
     return document.body.getAttribute('data-profile-id');
 }
 
+// Get user ID from the page
+function getUserId() {
+    return document.body.getAttribute('data-user-id');
+}
+
+// Load content from server
+async function loadContent() {
+    const profileId = getProfileId();
+    const userId = getUserId();
+    const container = document.getElementById('files-container');
+    const titleElement = document.getElementById('content-title');
+    
+    try {
+        // Show loading message
+        container.innerHTML = '<div class="loading">Loading content...</div>';
+        titleElement.textContent = 'Loading your content...';
+        
+        // Fetch content via API
+        const feedData = await UserAPI.fetchContent(profileId);
+        
+        if (!feedData) {
+            throw new Error('Failed to load content');
+        }
+        
+        // Update title with count
+        titleElement.textContent = `Your Movies and TV shows (${feedData.totalCount || 0} items)`;
+        
+        // Clear loading message
+        container.innerHTML = '';
+        
+        // Check if we got content
+        if (feedData.genreGroups && Object.keys(feedData.genreGroups).length > 0) {
+            // Create HTML for each genre
+            Object.keys(feedData.genreGroups).forEach(genre => {
+                const genreSection = document.createElement('div');
+                genreSection.className = 'genre-section';
+                
+                // Add genre title to div
+                const genreTitle = document.createElement('h2');
+                genreTitle.className = 'genre-title';
+                genreTitle.textContent = genre;
+                genreSection.appendChild(genreTitle);
+                
+                const genreRow = document.createElement('div');
+                genreRow.className = 'genre-row';
+                
+                // Create content items for this genre
+                feedData.genreGroups[genre].forEach(item => {
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = `genre-file ${item.thumbnail ? 'file-with-thumbnail' : ''}`;
+                    contentDiv.setAttribute('data-content-name', item.name);
+                    contentDiv.setAttribute('data-content-year', item.year);
+                    contentDiv.setAttribute('data-content-genre', item.genre.join(', '));
+                    contentDiv.setAttribute('data-is-liked', item.isLiked);
+                    
+                    // Check if content has a thumbnail, if not fallback to default view
+                    if (item.thumbnail) {
+                        contentDiv.style.backgroundImage = `url('${item.thumbnail}')`;
+                        contentDiv.style.backgroundSize = 'cover';
+                        contentDiv.style.backgroundPosition = 'center';
+                        
+                        contentDiv.innerHTML = `
+                            <div class="file-overlay">
+                                <div class="file-content">
+                                    <h3 title="${item.name}">${item.name} (${item.year})</h3>
+                                    <p>Genre: ${item.genre.join(', ')}</p>
+                                    <p>Likes: <span class="likes-count">${item.likes}</span></p>
+                                </div>
+                                <span class="like-icon ${item.isLiked ? 'liked' : ''}" data-content-name="${item.name}"></span>
+                            </div>
+                        `;
+                    } else {
+                        contentDiv.innerHTML = `
+                            <div class="file-text-content">
+                                <h3 title="${item.name}">${item.name} (${item.year})</h3>
+                                <p>Genre: ${item.genre.join(', ')}</p>
+                                <p>Likes: <span class="likes-count">${item.likes}</span></p>
+                            </div>
+                            <span class="like-icon ${item.isLiked ? 'liked' : ''}" data-content-name="${item.name}"></span>
+                        `;
+                    }
+                    
+                    // Add single content to a single genre
+                    genreRow.appendChild(contentDiv);
+                });
+                
+                // Add Genre to container
+                genreSection.appendChild(genreRow);
+                container.appendChild(genreSection);
+            });
+            
+            // Set up like buttons for the content we just created
+            setupLikeButtons();
+            
+        } else {
+            // Fallback for when content is empty
+            container.innerHTML = `
+                <div class="no-content">
+                    <h3>No content available</h3>
+                    <p>Check back later for new movies and shows!</p>
+                </div>
+            `;
+        }
+        
+        // Load user profile for avatar
+        await loadUserProfile();
+        
+    } catch (error) {
+        console.error('Error loading content:', error);
+        container.innerHTML = `
+            <div class="no-content">
+                <h3>Error loading content</h3>
+                <p>Please try refreshing the page.</p>
+            </div>
+        `;
+    }
+}
+
+// Load user profile avatar
+async function loadUserProfile() {
+    const userId = getUserId();
+    const profileId = getProfileId();
+    const avatarContainer = document.getElementById('profile-avatar-container');
+    
+    try {
+        // Show loading spinner (it's already there from the template)
+        avatarContainer.innerHTML = '<div class="profile-loading"></div>';
+        
+        const profiles = await UserAPI.fetchUserProfiles(userId);
+        const currentProfile = profiles.find(p => p.id === profileId);
+        
+        if (currentProfile) {
+            // Replace loading spinner with actual image
+            avatarContainer.innerHTML = `
+                <img src="${currentProfile.avatar}" 
+                     alt="Profile Icon" 
+                     class="icon"
+                     onload="this.style.opacity=1"
+                     style="opacity:0; transition: opacity 0.3s ease;" />
+            `;
+        } else {
+            // Fallback to default image if profile not found
+            avatarContainer.innerHTML = `
+                <img src="/resources/profile_pics/profile1.jpg" 
+                     alt="Profile Icon" 
+                     class="icon"
+                     onload="this.style.opacity=1"
+                     style="opacity:0; transition: opacity 0.3s ease;" />
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading user profile:', error);
+        // Fallback to default image on error
+        avatarContainer.innerHTML = `
+            <img src="/resources/profile_pics/profile1.jpg" 
+                 alt="Profile Icon" 
+                 class="icon"
+                 onload="this.style.opacity=1"
+                 style="opacity:0; transition: opacity 0.3s ease;" />
+        `;
+    }
+}
+
 // Helper function to truncate text if it exceeds character limit
 function truncateText(text, maxLength = 50) {
     if (text.length <= maxLength) {
@@ -298,9 +461,11 @@ function setupLogout() {
 }
 
 // Main initialization
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialize all functionality
-    setupLikeButtons();
+document.addEventListener('DOMContentLoaded', async () => {
+    // Load content first
+    await loadContent();
+    
+    // Initialize other functionality
     setupSearch();
     setupHamburgerMenu();
     setupLogout();

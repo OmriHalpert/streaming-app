@@ -297,6 +297,7 @@ a:hover {
 .files-title {
     color: white;
     margin: 20px;
+    margin-top: 80px;
     font-size: 24px;
 }
 
@@ -543,4 +544,39 @@ a:hover {
 
 .like-icon:not(.liked)::before {
     content: '🤍';
+}
+
+/* Profile image loading animation */
+.profile-loading {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #333;
+    border-top: 3px solid #e50914; /* Netflix red */
+    border-radius: 50%;
+    animation: profileSpin 1s linear infinite;
+    display: inline-block;
+}
+
+@keyframes profileSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Profile avatar container for smooth transitions */
+.profile-avatar-container {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-avatar-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    transition: opacity 0.3s ease;
 }
