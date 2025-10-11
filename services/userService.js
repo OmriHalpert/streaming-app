@@ -153,12 +153,54 @@ async function addProfile(userId, profileName) {
 
     const trimmedProfileName = profileName.trim();
     
+    // Profile name validations
     if (trimmedProfileName.length < 1 || trimmedProfileName.length > 12) {
         throw new Error(trimmedProfileName.length < 1 ? 'Profile name cannot be empty' : 'Profile name must be no more than 12 characters');
     }
 
     // Use model to add the profile
     return await userModel.addProfile(userId, trimmedProfileName);
+}
+
+// Updates a profile's name
+async function updateUserProfile(userId, profileId, profileName) {
+    // Validate user ID
+    if (isNaN(userId) || userId <= 0) {
+        throw new Error('Invalid user ID');
+    }
+
+    // Validate profile ID
+    if (isNaN(profileId) || profileId <= 0) {
+        throw new Error('Invalid profile ID');
+    } 
+
+    // Validate profile name
+    if (!profileName || typeof profileName !== 'string') {
+        throw new Error('Profile name is required');
+    }
+
+    const trimmedProfileName = profileName.trim();
+
+    // Profile name validations
+    if (trimmedProfileName.length < 1 || trimmedProfileName.length > 12) {
+        throw new Error(trimmedProfileName.length < 1 ? 'Profile name cannot be empty' : 'Profile name must be no more than 12 characters');
+    }
+
+    return await userModel.updateUserProfile(userId, profileId, trimmedProfileName);
+}
+
+async function deleteUserProfile(userId, profileId) {
+    // Validate user ID
+    if (isNaN(userId) || userId <= 0) {
+        throw new Error('Invalid user ID');
+    }
+
+    // Validate profile ID
+    if (isNaN(profileId) || profileId <= 0) {
+        throw new Error('Invalid profile ID');
+    } 
+
+    return await userModel.deleteUserProfile(userId, profileId);
 }
 
 module.exports = {
@@ -168,5 +210,7 @@ module.exports = {
     getUserWithProfiles,
     register,
     login,
-    addProfile
+    addProfile,
+    updateUserProfile,
+    deleteUserProfile,
 };
