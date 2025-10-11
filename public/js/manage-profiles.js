@@ -8,6 +8,7 @@ let addProfileBtn;
 let addProfileMessage;
 let profilesList;
 let profileCount;
+let backButton;
 
 // Initialize page when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -17,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     addProfileMessage = document.getElementById('addProfileMessage');
     profilesList = document.getElementById('profilesList');
     profileCount = document.getElementById('profileCount');
+    backButton = document.getElementById('backButton');
 
     // Setup event listeners
     setupEventListeners();
@@ -26,6 +28,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function setupEventListeners() {
+    // Back button
+    backButton.addEventListener('click', goBack);
+    
+    // Add profile button
+    addProfileBtn.addEventListener('click', addNewProfile);
+    
     // Enter key in input field
     profileNameInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
@@ -37,6 +45,18 @@ function setupEventListeners() {
     profileNameInput.addEventListener('input', function() {
         clearMessage();
         updateAddProfileButton();
+    });
+    
+    // Event delegation for edit and delete buttons (handles dynamically added buttons)
+    profilesList.addEventListener('click', function(e) {
+        if (e.target.classList.contains('edit-btn')) {
+            const profileId = parseInt(e.target.getAttribute('data-profile-id'));
+            const profileName = e.target.getAttribute('data-profile-name');
+            editProfile(profileId, profileName);
+        } else if (e.target.classList.contains('delete-btn')) {
+            const profileId = parseInt(e.target.getAttribute('data-profile-id'));
+            directDeleteProfile(profileId);
+        }
     });
 }
 
@@ -134,10 +154,10 @@ function addProfileToList(profile) {
         <img src="${profile.avatar}" alt="${profile.name}" class="profile-avatar">
         <span class="profile-name">${profile.name}</span>
         <div class="profile-actions">
-            <button class="edit-btn" onclick="editProfile(${profile.id}, '${profile.name}')">
+            <button class="edit-btn" data-profile-id="${profile.id}" data-profile-name="${profile.name}">
                 Edit
             </button>
-            <button class="delete-btn" onclick="deleteProfile(${profile.id}, '${profile.name}')">
+            <button class="delete-btn" data-profile-id="${profile.id}">
                 Delete
             </button>
         </div>
@@ -166,61 +186,23 @@ function goBack() {
     window.location.href = `/profiles?userId=${userId}`;
 }
 
-// Edit Profile Functions
-let currentEditProfileId = null;
-
-function editProfile(profileId, profileName) {
-    currentEditProfileId = profileId;
-    const editModal = document.getElementById('editModal');
-    const editProfileName = document.getElementById('editProfileName');
-    const editProfileMessage = document.getElementById('editProfileMessage');
+// Edit Profile
+async function editProfile(profileId, profileName) {
+    // Use browser's built-in prompt dialog
+    const newName = prompt("Enter new profile name:", profileName);
     
-    // Set current name in input
-    editProfileName.value = profileName;
-    
-    // Clear any previous messages
-    editProfileMessage.textContent = '';
-    editProfileMessage.className = 'message';
-    
-    // Show modal
-    editModal.style.display = 'block';
-    
-    // Focus on input
-    setTimeout(() => {
-        editProfileName.focus();
-        editProfileName.select();
-    }, 100);
-}
-
-function closeEditModal() {
-    const editModal = document.getElementById('editModal');
-    editModal.style.display = 'none';
-    currentEditProfileId = null;
-}
-
-async function saveProfileEdit() {
-    const editProfileName = document.getElementById('editProfileName');
-    const editProfileMessage = document.getElementById('editProfileMessage');
-    const saveBtn = document.querySelector('.save-btn');
-    
-    const newProfileName = editProfileName.value.trim();
-    
-    // Validate input
-    if (!newProfileName) {
-        showEditMessage('Please enter a profile name', 'error');
+    // If user clicked Cancel or entered empty name, do nothing
+    if (!newName || newName.trim() === '') {
         return;
     }
-
-    if (newProfileName.length > 12) {
-        showEditMessage('Profile name must be 12 characters or less', 'error');
+    
+    // Validate length
+    if (newName.trim().length > 12) {
+        alert('Profile name must be 12 characters or less');
         return;
     }
-
-    // Show loading state
-    saveBtn.disabled = true;
-    saveBtn.textContent = 'Saving...';
-    clearEditMessage();
-
+    
+    // Make API call to update
     try {
         const response = await fetch('/api/profiles/update', {
             method: 'PUT',
@@ -229,8 +211,8 @@ async function saveProfileEdit() {
             },
             body: JSON.stringify({
                 userId: userId,
-                profileId: currentEditProfileId,
-                profileName: newProfileName
+                profileId: profileId,
+                profileName: newName.trim()
             })
         });
 
@@ -238,28 +220,21 @@ async function saveProfileEdit() {
 
         if (result.success) {
             // Update the profile name in the UI
-            updateProfileInList(currentEditProfileId, result.data.profile);
+            updateProfileInList(profileId, result.data.profile);
             
-            // Close modal
-            closeEditModal();
-            
-            // Show success message briefly
+            // Show success message
             showMessage('Profile updated successfully!', 'success');
             setTimeout(() => {
                 clearMessage();
             }, 3000);
             
         } else {
-            showEditMessage(result.error || 'Failed to update profile', 'error');
+            alert(result.error || 'Failed to update profile');
         }
 
     } catch (error) {
         console.error('Error updating profile:', error);
-        showEditMessage('Network error. Please try again.', 'error');
-    } finally {
-        // Reset button
-        saveBtn.disabled = false;
-        saveBtn.textContent = 'Save Changes';
+        alert('Network error. Please try again.');
     }
 }
 
@@ -271,69 +246,17 @@ function updateProfileInList(profileId, updatedProfile) {
             profileNameSpan.textContent = updatedProfile.name;
         }
         
-        // Update onclick handlers with new name
+        // Update edit button's data attribute with new name
         const editBtn = profileItem.querySelector('.edit-btn');
-        const deleteBtn = profileItem.querySelector('.delete-btn');
         if (editBtn) {
-            editBtn.setAttribute('onclick', `editProfile(${profileId}, '${updatedProfile.name}')`);
+            editBtn.setAttribute('data-profile-name', updatedProfile.name);
         }
-        if (deleteBtn) {
-            deleteBtn.setAttribute('onclick', `deleteProfile(${profileId}, '${updatedProfile.name}')`);
-        }
+        
     }
 }
 
-function showEditMessage(text, type) {
-    const editProfileMessage = document.getElementById('editProfileMessage');
-    editProfileMessage.textContent = text;
-    editProfileMessage.className = `message ${type}`;
-}
-
-function clearEditMessage() {
-    const editProfileMessage = document.getElementById('editProfileMessage');
-    editProfileMessage.textContent = '';
-    editProfileMessage.className = 'message';
-}
-
-// Delete Profile Functions
-let currentDeleteProfileId = null;
-let currentDeleteProfileName = null;
-
-function deleteProfile(profileId, profileName) {
-    currentDeleteProfileId = profileId;
-    currentDeleteProfileName = profileName;
-    
-    const deleteModal = document.getElementById('deleteModal');
-    const deleteConfirmText = document.getElementById('deleteConfirmText');
-    const deleteProfileMessage = document.getElementById('deleteProfileMessage');
-    
-    // Set confirmation text
-    deleteConfirmText.textContent = `Are you sure you want to delete the profile "${profileName}"? This action cannot be undone.`;
-    
-    // Clear any previous messages
-    deleteProfileMessage.textContent = '';
-    deleteProfileMessage.className = 'message';
-    
-    // Show modal
-    deleteModal.style.display = 'block';
-}
-
-function closeDeleteModal() {
-    const deleteModal = document.getElementById('deleteModal');
-    deleteModal.style.display = 'none';
-    currentDeleteProfileId = null;
-    currentDeleteProfileName = null;
-}
-
-async function confirmDeleteProfile() {
-    const deleteProfileMessage = document.getElementById('deleteProfileMessage');
-    const deleteBtn = document.querySelector('.delete-btn-confirm');
-    
-    // Show loading state
-    deleteBtn.disabled = true;
-    deleteBtn.textContent = 'Deleting...';
-    clearDeleteMessage();
-
+// Delete Profile Function
+async function directDeleteProfile(profileId) {
     try {
         const response = await fetch('/api/profiles/delete', {
             method: 'DELETE',
@@ -342,7 +265,7 @@ async function confirmDeleteProfile() {
             },
             body: JSON.stringify({
                 userId: userId,
-                profileId: currentDeleteProfileId
+                profileId: profileId
             })
         });
 
@@ -350,13 +273,10 @@ async function confirmDeleteProfile() {
 
         if (result.success) {
             // Remove profile from the UI
-            removeProfileFromList(currentDeleteProfileId);
+            removeProfileFromList(profileId);
             
             // Update profile count
             updateProfileCount();
-            
-            // Close modal
-            closeDeleteModal();
             
             // Show success message
             showMessage('Profile deleted successfully!', 'success');
@@ -368,16 +288,12 @@ async function confirmDeleteProfile() {
             updateAddProfileButton();
             
         } else {
-            showDeleteMessage(result.error || 'Failed to delete profile', 'error');
+            showMessage(result.error || 'Failed to delete profile', 'error');
         }
 
     } catch (error) {
         console.error('Error deleting profile:', error);
-        showDeleteMessage('Network error. Please try again.', 'error');
-    } finally {
-        // Reset button
-        deleteBtn.disabled = false;
-        deleteBtn.textContent = 'Delete Profile';
+        showMessage('Network error. Please try again.', 'error');
     }
 }
 
@@ -387,36 +303,3 @@ function removeProfileFromList(profileId) {
         profileItem.remove();
     }
 }
-
-function showDeleteMessage(text, type) {
-    const deleteProfileMessage = document.getElementById('deleteProfileMessage');
-    deleteProfileMessage.textContent = text;
-    deleteProfileMessage.className = `message ${type}`;
-}
-
-function clearDeleteMessage() {
-    const deleteProfileMessage = document.getElementById('deleteProfileMessage');
-    deleteProfileMessage.textContent = '';
-    deleteProfileMessage.className = 'message';
-}
-
-// Close modals when clicking outside
-window.onclick = function(event) {
-    const editModal = document.getElementById('editModal');
-    const deleteModal = document.getElementById('deleteModal');
-    
-    if (event.target === editModal) {
-        closeEditModal();
-    }
-    if (event.target === deleteModal) {
-        closeDeleteModal();
-    }
-}
-
-// Handle escape key to close modals
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        closeEditModal();
-        closeDeleteModal();
-    }
-});
