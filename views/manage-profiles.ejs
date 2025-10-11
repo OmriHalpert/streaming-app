@@ -8,12 +8,10 @@
     <link rel="stylesheet" href="/css/manage-profiles.css">
 </head>
 <body data-user-id="<%= user.id %>">
-    <!-- Single Main Container -->
     <div class="manage-profiles-container">
-        <!-- Header with logo and back button -->
         <div class="header">
             <img src="/resources/netflix_logo.png" alt="Netflix Logo" class="logo">
-            <button class="back-button" onclick="goBack()">← Back to Profiles</button>
+            <button class="back-button" id="backButton">← Back to Profiles</button>
         </div>
 
         <!-- Page Title -->
@@ -33,7 +31,6 @@
                 <button 
                     id="addProfileBtn" 
                     class="add-profile-btn"
-                    onclick="addNewProfile()"
                 >
                     Add Profile
                 </button>
@@ -49,58 +46,16 @@
                             <img src="<%= profile.avatar %>" alt="<%= profile.name %>" class="profile-avatar">
                             <span class="profile-name"><%= profile.name %></span>
                             <div class="profile-actions">
-                                <button class="edit-btn" onclick="editProfile(<%= profile.id %>, '<%= JSON.stringify(profile.name) %>')">
+                                <button class="edit-btn" data-profile-id="<%= profile.id %>" data-profile-name="<%= profile.name %>">
                                     Edit
                                 </button>
-                                <button class="delete-btn" onclick="deleteProfile(<%= profile.id %>, '<%= JSON.stringify(profile.name) %>')">
+                                <button class="delete-btn" data-profile-id="<%= profile.id %>">
                                     Delete
                                 </button>
                             </div>
                         </li>
                     <% }); %>
                 </ul>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Profile Modal -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Edit Profile</h3>
-                <span class="close" onclick="closeEditModal()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <label for="editProfileName">Profile Name:</label>
-                <input 
-                    type="text" 
-                    id="editProfileName" 
-                    maxlength="12"
-                    class="edit-profile-input"
-                >
-                <div id="editProfileMessage" class="message"></div>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn cancel-btn" onclick="closeEditModal()">Cancel</button>
-                <button class="modal-btn save-btn" onclick="saveProfileEdit()">Save Changes</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Delete Profile</h3>
-                <span class="close" onclick="closeDeleteModal()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <p id="deleteConfirmText">Are you sure you want to delete this profile?</p>
-                <div id="deleteProfileMessage" class="message"></div>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn cancel-btn" onclick="closeDeleteModal()">Cancel</button>
-                <button class="modal-btn delete-btn-confirm" onclick="confirmDeleteProfile()">Delete Profile</button>
             </div>
         </div>
     </div>
