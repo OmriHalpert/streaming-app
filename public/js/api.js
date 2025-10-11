@@ -36,8 +36,27 @@ async function fetchUser(userId) {
     }
 }
 
+// Fetch content from the API
+async function fetchContent(profileId) {
+    try {
+        const response = await fetch(`/api/content?profileId=${profileId}`);
+        const result = await response.json();
+        
+        if (response.ok) {
+            return result;
+        } else {
+            console.error('Failed to fetch content:', result.error);
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching content:', error);
+        return null;
+    }
+}
+
 // Make functions available globally
 window.UserAPI = {
     fetchUserProfiles,
-    fetchUser
+    fetchUser,
+    fetchContent
 };

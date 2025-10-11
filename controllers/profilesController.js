@@ -1,6 +1,6 @@
 const { getUserById, getUserProfiles: getUserProfilesService, addProfile: addProfileService } = require("../services/userService");
 
-// Helper function to make internal API calls
+// Make internal API calls
 async function makeInternalAPICall(url) {
   const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
   
@@ -29,7 +29,7 @@ async function renderProfilesPage(req, res) {
       return res.redirect("/login");
     }
 
-    // Simply render the template with userId - JavaScript will fetch the profiles
+    // Renders page
     res.render("profiles", { userId });
     
   } catch (error) {

@@ -1,4 +1,4 @@
-// Function to fetch profiles from API and display them
+// Load profiles from API
 async function loadProfiles() {
     const userId = document.body.getAttribute('data-user-id');
     const container = document.getElementById('profiles-container');

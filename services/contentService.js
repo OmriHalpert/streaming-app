@@ -110,21 +110,17 @@ async function getContentForFeed(profileId) {
         // Group content by genres
         const genreGroups = {};
         content.forEach(item => {
-            // Defensive check for genre field
-            if (item.genre && Array.isArray(item.genre)) {
-                item.genre.forEach(genre => {
-                    if (!genreGroups[genre]) {
-                        genreGroups[genre] = [];
-                    }
-                    // Avoid duplicates
-                    if (!genreGroups[genre].find(existing => existing.name === item.name)) {
-                        genreGroups[genre].push(item);
-                    }
-                });
-            }
+            item.genre.forEach(genre => {
+                if (!genreGroups[genre]) {
+                    genreGroups[genre] = [];
+                }
+                // Avoid duplicates
+                if (!genreGroups[genre].find(existing => existing.name === item.name)) {
+                    genreGroups[genre].push(item);
+                }
+            });
         });
 
-        // Add any additional feed-specific processing here
         return {
             content: content,
             genreGroups: genreGroups,
