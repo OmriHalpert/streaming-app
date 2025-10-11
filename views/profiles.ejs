@@ -9,9 +9,10 @@
     />
     <link rel="stylesheet" href="/css/profiles.css" />
     <title>Profiles</title>
+    <script src="/js/api.js" defer></script>
     <script src="/js/profiles.js" defer></script>
   </head>
-  <body id="profiles-page" data-user-id="<%= user.id %>">
+  <body id="profiles-page" data-user-id="<%= userId %>">
     <div id="logout-button-container">
       <button id="logout-button">Logout</button>
     </div>
@@ -19,28 +20,14 @@
       <div class="title">
         <h1>Who's watching?</h1>
       </div>
+      
+      <!-- Empty container that JavaScript will fill with profiles -->
       <div id="profiles-container">
-        <% if (profiles && profiles.length > 0) { %>
-          <% profiles.forEach(function(profile) { %>
-            <div class="profiles-container" data-profile-id="<%= profile.id %>" data-profile-name="<%= profile.name %>" data-profile-avatar="<%= profile.avatar %>">
-              <img
-                src="<%= profile.avatar %>"
-                alt="<%= profile.name %>"
-                class="profile-image"
-              />
-              <input
-                class="name-input"
-                type="text"
-                value="<%= profile.name %>"
-              />
-            </div>
-          <% }) %>
-        <% } else { %>
-          <p>No profiles found. Please log in again.</p>
-        <% } %>
+        <div class="loading">Loading profiles...</div>
       </div>
+      
       <div class="manage-profiles-container">
-        <a href="/manage-profiles?userId=<%= user.id %>" class="manage-profiles-button">Manage Profiles</a>
+        <a href="/manage-profiles?userId=<%= userId %>" class="manage-profiles-button">Manage Profiles</a>
       </div>
-  </body>
+    </div>
 </html>
