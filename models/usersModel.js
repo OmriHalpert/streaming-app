@@ -1,6 +1,8 @@
 const fs = require('fs').promises;
 const path = require('path');
 const User = require('./User'); // Import the Mongoose User model
+const bcrypt = require('bcrypt');
+
 
 // Get next available user ID
 async function getNextUserId() {
@@ -57,12 +59,16 @@ async function register(email, username, password) {
 
         // Generate random avatar
         const randomAvatar = await generateRandomAvatar();
+
+        // Hash the password before saving
+        const saltRounds = 12;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
         
         const newUser = new User({
             id: newUserId,
             email,
             username,
-            password,
+            password: hashedPassword,
             profiles: [{
                 id: 1, 
                 name: "profile 1", 
@@ -90,15 +96,14 @@ async function register(email, username, password) {
 async function login(email, password) {
     try {
         // Find user by email
-        console.log("user details: ", email, password);
         const foundUser = await findUserByEmail(email);
-        console.log('post validation: ', foundUser);
         if (!foundUser) {
             throw new Error('Email does not exist');
         }
     
-        // Validates password
-        if (foundUser.password !== password) {
+        // Validates password using bcrypt
+        const isPasswordValid = await bcrypt.compare(password, foundUser.password);
+        if (!isPasswordValid) {
             throw new Error('Incorrect Password');
         }
 
