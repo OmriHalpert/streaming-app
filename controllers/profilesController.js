@@ -40,8 +40,12 @@ async function renderProfilesPage(req, res) {
 
 // Render manage profiles page
 async function renderManageProfilesPage(req, res) {
+  console.log("=== MANAGE PROFILES DEBUG START ===");
+  console.log("Query parameters:", req.query);
+  
   try {
     const userId = req.query.userId;
+    console.log("Extracted userId:", userId);
 
     // Redirect to login if no userId provided
     if (!userId) {
@@ -49,16 +53,20 @@ async function renderManageProfilesPage(req, res) {
       return res.redirect("/login");
     }
 
+    console.log("userId check passed, proceeding to API calls...");
+
     // TODO: Add proper session validation when express-session is implemented
 
     try {
       // Fetch user data via internal API calls
-      const userResponse = await makeInternalAPICall(`/users/${userId}`);
-      const profilesResponse = await makeInternalAPICall(`/users/${userId}/profiles`);
+      console.log(`Debug: Trying to fetch user with ID: ${userId}`);
+      const userResponse = await makeInternalAPICall(`/api/users/${userId}`);
+      const profilesResponse = await makeInternalAPICall(`/api/users/${userId}/profiles`);
       
       const user = userResponse.user;
       const profiles = profilesResponse.profiles;
 
+      console.log("API calls successful, rendering page...");
       res.render("manage-profiles", { profiles, user });
     } catch (error) {
       console.log("Could not fetch user data:", error.message);
