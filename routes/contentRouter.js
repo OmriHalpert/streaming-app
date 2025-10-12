@@ -6,7 +6,7 @@ const { requireAuth } = require('../middleware/auth');
 
 const contentRouter = Router();
 
-// 🔒 PROTECT ALL CONTENT ROUTES - Apply to entire router
+// PROTECT ALL CONTENT ROUTES - Apply to entire router
 contentRouter.use(requireAuth);
 
 // All routes below this point require authentication

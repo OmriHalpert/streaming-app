@@ -6,7 +6,7 @@ const { requireAuthAndOwnership, requireProfileOwnership } = require('../middlew
 
 const profilesRouter = Router();
 
-// 🔒 PROFILE OPERATIONS - Require user ownership
+// PROFILE OPERATIONS - Require user ownership
 profilesRouter.post('/add', requireAuthAndOwnership, addProfile);
 profilesRouter.put('/update', requireProfileOwnership, updateProfile);
 profilesRouter.delete('/delete', requireProfileOwnership, deleteProfile);

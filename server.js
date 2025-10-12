@@ -21,7 +21,7 @@ async function startServer() {
     // Middleware to parse JSON bodies
     app.use(express.json());
 
-    // Session middleware (must be before routes)
+    // Session middleware
     app.use(
       session({
         secret: process.env.SESSION_SECRET,
