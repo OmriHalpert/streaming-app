@@ -19,6 +19,7 @@ async function register(req, res) {
     }
 }
 
+// Login controller
 async function login(req, res) {
     try {
         const { email, password } = req.body;
@@ -26,12 +27,40 @@ async function login(req, res) {
         // Delegate to service layer
         const user = await loginUser(email, password);
 
+        // Create session and store user data in it
+        req.session.user = {
+            id: user.id,
+            email: user.email,
+            username: user.username,
+            profiles: user.profiles
+        };
+
         return res.status(200).json({ 
             message: 'Login successful',
             user: user
         });
     } catch (error) {
         return handleAuthError(error, res, 'login');
+    }
+}
+
+// Logout controller - destroy session and redirect to login
+async function logout(req, res) {
+    try {
+        // Destroy the session
+        req.session.destroy((err) => {
+            if (err) {
+                console.error('Session destruction error:', err);
+            }
+            // Clear the session cookie
+            res.clearCookie('connect.sid');
+            // Redirect to login page
+            res.redirect('/login');
+        });
+    } catch (error) {
+        console.error('Logout error:', error);
+        // Even if there's an error, redirect to login
+        res.redirect('/login');
     }
 }
 
@@ -68,5 +97,6 @@ function handleAuthError(error, res, context = 'authentication') {
 
 module.exports = {
     register,
-    login
+    login,
+    logout
 };

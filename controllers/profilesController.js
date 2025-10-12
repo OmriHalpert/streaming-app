@@ -1,23 +1,5 @@
 const { getUserById, getUserProfiles: getUserProfilesService, addProfile: addProfileService, updateUserProfile, deleteUserProfile } = require("../services/userService");
 
-// Make internal API calls
-async function makeInternalAPICall(url) {
-  const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
-  
-  try {
-    const response = await fetch(`${baseUrl}${url}`);
-    
-    if (!response.ok) {
-      throw new Error(`API call failed: ${response.status} ${response.statusText}`);
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error(`Internal API call failed for ${url}:`, error.message);
-    throw error;
-  }
-}
-
 // Render profiles page
 async function renderProfilesPage(req, res) {
   try {
@@ -40,12 +22,8 @@ async function renderProfilesPage(req, res) {
 
 // Render manage profiles page
 async function renderManageProfilesPage(req, res) {
-  console.log("=== MANAGE PROFILES DEBUG START ===");
-  console.log("Query parameters:", req.query);
-  
   try {
     const userId = req.query.userId;
-    console.log("Extracted userId:", userId);
 
     // Redirect to login if no userId provided
     if (!userId) {
@@ -53,20 +31,14 @@ async function renderManageProfilesPage(req, res) {
       return res.redirect("/login");
     }
 
-    console.log("userId check passed, proceeding to API calls...");
-
-    // TODO: Add proper session validation when express-session is implemented
+    console.log("userId check passed, proceeding to fetch data...");
 
     try {
-      // Fetch user data via internal API calls
-      console.log(`Debug: Trying to fetch user with ID: ${userId}`);
-      const userResponse = await makeInternalAPICall(`/api/users/${userId}`);
-      const profilesResponse = await makeInternalAPICall(`/api/users/${userId}/profiles`);
-      
-      const user = userResponse.user;
-      const profiles = profilesResponse.profiles;
+      // Call services directly (bypasses authentication middleware)
+      const user = await getUserById(parseInt(userId));
+      const profiles = await getUserProfilesService(parseInt(userId));
 
-      console.log("API calls successful, rendering page...");
+      console.log("Service calls successful, rendering page...");
       res.render("manage-profiles", { profiles, user });
     } catch (error) {
       console.log("Could not fetch user data:", error.message);
@@ -101,6 +73,12 @@ async function addProfile(req, res) {
     try {
       // Add the new profile using UserService
       const newProfile = await addProfileService(parseInt(userId), profileName);
+      
+      // 🔧 FIX: Update session with new profile list
+      if (req.session && req.session.user && req.session.user.id === parseInt(userId)) {
+        // Add the new profile to the session
+        req.session.user.profiles.push(newProfile);
+      }
       
       // Return success response with the new profile
       res.json({
@@ -181,6 +159,15 @@ async function updateProfile(req, res) {
         profileName
       );
       
+      // 🔧 FIX: Update session with updated profile data
+      if (req.session && req.session.user && req.session.user.id === parseInt(userId)) {
+        // Find and update the profile in the session
+        const sessionProfile = req.session.user.profiles.find(p => p.id === parseInt(profileId));
+        if (sessionProfile) {
+          sessionProfile.name = updatedProfile.name;
+        }
+      }
+      
       // Return success response with the updated profile
       res.json({
         success: true,
@@ -250,6 +237,14 @@ async function deleteProfile(req, res) {
         parseInt(userId),
         parseInt(profileId)
       );
+      
+      // 🔧 FIX: Update session by removing the deleted profile
+      if (req.session && req.session.user && req.session.user.id === parseInt(userId)) {
+        // Remove the deleted profile from the session
+        req.session.user.profiles = req.session.user.profiles.filter(
+          p => p.id !== parseInt(profileId)
+        );
+      }
       
       // Return success response with the deleted profile
       res.json({
