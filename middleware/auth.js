@@ -1,10 +1,8 @@
-// Authentication middleware for protected routes
+// Check if user is logged in
 function requireAuth(req, res, next) {
     if (req.session && req.session.user) {
-        // User is authenticated
         return next();
     } else {
-        // User is not authenticated
         return res.status(401).json({ 
             error: 'Authentication required',
             message: 'Please log in to access this resource'
@@ -12,20 +10,23 @@ function requireAuth(req, res, next) {
     }
 }
 
-// Ensure user can only access their own data
+// Helper to check authentication
+function isAuthenticated(req) {
+    return req.session && req.session.user;
+}
+
+// Verify user can only access their own data
 function requireOwnership(req, res, next) {
-    if (!req.session || !req.session.user) {
+    if (!isAuthenticated(req)) {
         return res.status(401).json({ 
             error: 'Authentication required',
             message: 'Please log in to access this resource'
         });
     }
 
-    // Get userId from different possible sources
     const requestedUserId = req.params.id || req.params.userId || req.body.userId || req.query.userId;
     const loggedInUserId = req.session.user.id;
 
-    // Convert to numbers for comparison (in case one is string)
     if (parseInt(requestedUserId) !== parseInt(loggedInUserId)) {
         return res.status(403).json({
             error: 'Access denied',
@@ -33,11 +34,10 @@ function requireOwnership(req, res, next) {
         });
     }
 
-    // User owns this data, proceed
     next();
 }
 
-// Combined middleware - authentication + ownership check
+// Authentication + ownership combined
 function requireAuthAndOwnership(req, res, next) {
     requireAuth(req, res, (err) => {
         if (err) return next(err);
@@ -45,37 +45,32 @@ function requireAuthAndOwnership(req, res, next) {
     });
 }
 
-// Page-specific authorization - redirects instead of JSON errors
+// Page ownership check with redirect instead of JSON error
 function requirePageOwnership(req, res, next) {
-    if (!req.session || !req.session.user) {
+    if (!isAuthenticated(req)) {
         return res.redirect('/login');
     }
 
-    // Get userId from query parameters (common for page routes)
     const requestedUserId = req.query.userId;
     const loggedInUserId = req.session.user.id;
 
-    // Convert to numbers for comparison (in case one is string)
     if (parseInt(requestedUserId) !== parseInt(loggedInUserId)) {
-        // Redirect to their own page instead of showing error
         const currentPath = req.path;
         return res.redirect(`${currentPath}?userId=${loggedInUserId}`);
     }
 
-    // User owns this data, proceed
     next();
 }
 
-// Profile ownership middleware - for profile-specific operations
+// Check if user owns the specific profile
 function requireProfileOwnership(req, res, next) {
-    if (!req.session || !req.session.user) {
+    if (!isAuthenticated(req)) {
         return res.status(401).json({ 
             error: 'Authentication required',
             message: 'Please log in to access this resource'
         });
     }
 
-    // For profile operations, check if the profileId belongs to the logged-in user
     const profileId = parseInt(req.body.profileId || req.params.profileId || req.query.profileId);
     const userProfiles = req.session.user.profiles || [];
     
@@ -91,18 +86,16 @@ function requireProfileOwnership(req, res, next) {
     next();
 }
 
-// Middleware to check if user is already logged in (for login/register pages)
+// Redirect logged-in users away from login/signup pages
 function redirectIfAuthenticated(req, res, next) {
     if (req.session && req.session.user) {
-        // User is already logged in, redirect to profiles
         return res.redirect(`/profiles?userId=${req.session.user.id}`);
     } else {
-        // User is not logged in, proceed to login/register page
         return next();
     }
 }
 
-// Middleware to add user info to templates (for EJS views)
+// Make user data available in EJS templates
 function addUserToLocals(req, res, next) {
     res.locals.user = req.session ? req.session.user : null;
     res.locals.isAuthenticated = !!(req.session && req.session.user);

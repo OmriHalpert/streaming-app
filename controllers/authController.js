@@ -19,6 +19,7 @@ async function register(req, res) {
     }
 }
 
+// Login controller
 async function login(req, res) {
     try {
         const { email, password } = req.body;
@@ -26,7 +27,7 @@ async function login(req, res) {
         // Delegate to service layer
         const user = await loginUser(email, password);
 
-        // 🎯 CREATE SESSION - Store user data in session
+        // Create session and store user data in it
         req.session.user = {
             id: user.id,
             email: user.email,
