@@ -6,10 +6,10 @@ const { requireAuth } = require('../middleware/auth');
 
 const contentRouter = Router();
 
-// PROTECT ALL CONTENT ROUTES - Apply to entire router
+// Protected routes - Apply to entire router
 contentRouter.use(requireAuth);
 
-// All routes below this point require authentication
+// Content routes
 contentRouter.get('/', getContent);
 contentRouter.post('/like', toggleContentLike);
 contentRouter.get('/search', searchContent);

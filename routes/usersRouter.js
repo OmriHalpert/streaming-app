@@ -6,7 +6,7 @@ const { requireAuthAndOwnership } = require('../middleware/auth');
 
 const usersRouter = Router();
 
-// 🔒 PROTECTED ROUTES - Require authentication AND ownership
+// Protected routes - Require authentication AND ownership
 usersRouter.get('/:id', requireAuthAndOwnership, getUserById);
 usersRouter.get('/:id/profiles', requireAuthAndOwnership, getUserProfiles);
 
