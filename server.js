@@ -34,7 +34,7 @@ async function startServer() {
         cookie: {
           secure: false,
           httpOnly: true, // Prevent XSS
-          maxAge: 1000 * 60 * 60 * 24, // 24 hours
+          maxAge: 1000 * 60 * 60 * 24,
         },
       })
     );
