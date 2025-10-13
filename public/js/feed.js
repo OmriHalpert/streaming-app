@@ -8,6 +8,83 @@ function getUserId() {
     return document.body.getAttribute('data-user-id');
 }
 
+// Load recommendations
+async function loadRecommendations() {
+    const profileId = getProfileId();
+    const userId = getUserId();
+    const container = document.getElementById('recommendations-container');
+    
+    try {
+        container.innerHTML = '<div class="loading">Loading recommendations...</div>';
+        
+        const recommendations = await UserAPI.fetchRecommendations(userId, profileId, 10);
+        
+        container.innerHTML = '';
+        
+        if (recommendations && recommendations.length > 0) {
+            // Use same structure as genre sections
+            const recommendationsRow = document.createElement('div');
+            recommendationsRow.className = 'genre-row';
+            
+            // Build cards same way as regular content
+            recommendations.forEach(item => {
+                const contentDiv = document.createElement('div');
+                contentDiv.className = `genre-file ${item.thumbnail ? 'file-with-thumbnail' : ''}`;
+                contentDiv.setAttribute('data-content-name', item.name);
+                contentDiv.setAttribute('data-content-year', item.year);
+                contentDiv.setAttribute('data-content-genre', item.genre.join(', '));
+                contentDiv.setAttribute('data-is-liked', item.isLiked);
+                
+                // Handle thumbnails same way as other content
+                if (item.thumbnail) {
+                    contentDiv.style.backgroundImage = `url('${item.thumbnail}')`;
+                    contentDiv.style.backgroundSize = 'cover';
+                    contentDiv.style.backgroundPosition = 'center';
+                    
+                    contentDiv.innerHTML = `
+                        <div class="file-overlay">
+                            <div class="file-content">
+                                <h3 title="${item.name}">${item.name} (${item.year})</h3>
+                                <p>Genre: ${item.genre.join(', ')}</p>
+                            </div>
+                            <span class="like-icon ${item.isLiked ? 'liked' : ''}" data-content-name="${item.name}"></span>
+                        </div>
+                    `;
+                } else {
+                    contentDiv.innerHTML = `
+                        <div class="file-text-content">
+                            <h3 title="${item.name}">${item.name} (${item.year})</h3>
+                            <p>Genre: ${item.genre.join(', ')}</p>
+                        </div>
+                        <span class="like-icon ${item.isLiked ? 'liked' : ''}" data-content-name="${item.name}"></span>
+                    `;
+                }
+                
+                recommendationsRow.appendChild(contentDiv);
+            });
+            
+            container.appendChild(recommendationsRow);
+            
+            setupWatchTracking();
+            
+        } else {
+            container.innerHTML = `
+                <div class="no-content">
+                    <p>Watch and like some content to get personalized recommendations!</p>
+                </div>
+            `;
+        }
+        
+    } catch (error) {
+        console.error('Error loading recommendations:', error);
+        container.innerHTML = `
+            <div class="no-content">
+                <p>Unable to load recommendations right now.</p>
+            </div>
+        `;
+    }
+}
+
 // Load content from server
 async function loadContent() {
     const profileId = getProfileId();
@@ -91,9 +168,6 @@ async function loadContent() {
                 genreSection.appendChild(genreRow);
                 container.appendChild(genreSection);
             });
-            
-            // Set up like buttons for the content we just created
-            setupLikeButtons();
             
             // Set up watch tracking for content clicks
             setupWatchTracking();
@@ -516,10 +590,16 @@ function setupLogout() {
 
 // Main initialization
 document.addEventListener('DOMContentLoaded', async () => {
-    // Load content first
+    // Load recommendations first
+    await loadRecommendations();
+    
+    // Load content
     await loadContent();
     
-    // Initialize other functionality
+    // Set up like buttons for everything
+    setupLikeButtons();
+    
+    // Initialize other stuff
     setupSearch();
     setupHamburgerMenu();
     setupLogout();
