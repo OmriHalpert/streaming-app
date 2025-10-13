@@ -33,6 +33,10 @@ const contentSchema = new mongoose.Schema({
         type: [Number],
         default: []
     },
+    profileWatched: {
+        type: [Number],
+        default: []
+    },
     thumbnail: {
         type: String,
         required: false  // Made optional since not all content has thumbnails

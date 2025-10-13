@@ -1,4 +1,4 @@
-const { getContentForFeed, toggleContentLike: toggleLike, searchContent: searchContentService } = require('../services/contentService');
+const { getContentForFeed, toggleContentLike: toggleLike, searchContent: searchContentService, markAsWatched } = require('../services/contentService');
 const { getUserProfiles: getUserProfilesService } = require('../services/userService');
 
 // Renders feed page with content
@@ -112,9 +112,41 @@ async function searchContent(req, res) {
     }
 }
 
+// Mark content as watched
+async function markContentAsWatched(req, res) {
+    try {
+        const { contentName } = req.params;
+        const { profileId } = req.body;
+        
+        if (!contentName || !profileId) {
+            return res.status(400).json({
+                success: false,
+                error: 'Content name and profile ID are required'
+            });
+        }
+
+        const result = await markAsWatched(contentName, parseInt(profileId));
+        
+        res.json({
+            success: true,
+            message: result.message,
+            alreadyWatched: result.alreadyWatched
+        });
+        
+    } catch (error) {
+        console.error('Error marking content as watched:', error);
+        
+        res.status(500).json({
+            success: false,
+            error: 'Unable to mark content as watched. Please try again.'
+        });
+    }
+}
+
 module.exports = {
     renderFeedPage,
     getContent,
     toggleContentLike,
-    searchContent
+    searchContent,
+    markContentAsWatched
 };
