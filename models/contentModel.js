@@ -75,8 +75,39 @@ async function searchContent(query) {
     }
 }
 
+// Mark content as watched by a profile
+async function markContentAsWatched(contentName, profileId) {
+    try {
+        // Find content by name
+        const content = await Content.findOne({ name: contentName });
+        
+        if (!content) {
+            throw new Error('Content not found');
+        }
+
+        // Check if profile already watched this content
+        const alreadyWatched = content.profileWatched.includes(profileId);
+        
+        if (!alreadyWatched) {
+            // Add profile to watched list
+            content.profileWatched.push(profileId);
+            await content.save();
+        }
+
+        return {
+            success: true,
+            message: alreadyWatched ? 'Already marked as watched' : 'Marked as watched',
+            alreadyWatched: alreadyWatched
+        };
+        
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     getContent,
     updateContentLikes,
-    searchContent
+    searchContent,
+    markContentAsWatched
 };

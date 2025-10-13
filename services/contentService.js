@@ -143,10 +143,21 @@ async function getContentForFeed(profileId) {
     }
 }
 
+// Mark content as watched by profile
+async function markAsWatched(contentName, profileId) {
+    try {
+        const result = await contentModel.markContentAsWatched(contentName, profileId);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     getAllContent,
     getContentByName,
-    searchContent,
     toggleContentLike,
-    getContentForFeed
+    getContentForFeed,
+    searchContent,
+    markAsWatched
 };
