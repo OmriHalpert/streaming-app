@@ -4,9 +4,11 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
+const { logRequest, logAuthEvents, logErrors } = require('./middleware/loggerMiddleware');
 const { connectToDatabase } = require("./config/database");
 const { indexRouter } = require("./routes/indexRouter.js");
 const { pagesRouter } = require("./routes/pagesRouter.js");
+const { logSystem } = require("./services/loggerService.js");
 
 // Variables
 const app = express();
@@ -15,8 +17,12 @@ const port = process.env.PORT || 3000;
 // Initialize database connection
 async function startServer() {
   try {
+    // Log server startup
+    logSystem('info', 'Server startup initiated', { port: port });
+
     // Connect to MongoDB Atlas
     await connectToDatabase();
+    logSystem('info', 'Database connection established');
 
     // Middleware to parse JSON bodies
     app.use(express.json());
@@ -39,7 +45,11 @@ async function startServer() {
       })
     );
 
-    // Import middleware
+    // Logging middleware
+    // app.use(logRequest);      // Log all HTTP requests
+    app.use(logAuthEvents);   // Log authentication events
+
+    // Import auth middleware
     const { addUserToLocals } = require('./middleware/auth');
     
     // Add user info to all templates
@@ -69,14 +79,31 @@ async function startServer() {
     // API routes (JSON responses)
     app.use("/api", indexRouter);
 
+    // Error logging middleware
+    app.use(logErrors);
+
     // Start the server
     app.listen(port, () => {
-      console.log(`Server is running on http://localhost:${port}`);
+      const message = `Server is running on http://localhost:${port}`;
+      console.log(message);
       console.log(`Health check available at http://localhost:${port}/health`);
+      
+      // Log successful server start
+      logSystem('info', 'Server started successfully', { 
+        port: port,
+        environment: process.env.NODE_ENV || 'development'
+      });
     });
 
   } catch (error) {
     console.error("Failed to start server:", error);
+    
+    // Log server startup failure
+    logSystem('error', 'Server startup failed', { 
+      error: error.message,
+      stack: error.stack 
+    });
+    
     process.exit(1);
   }
 }
