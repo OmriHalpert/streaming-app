@@ -37,13 +37,13 @@ async function fetchUser(userId) {
 }
 
 // Fetch content from the API
-async function fetchContent(profileId) {
+async function fetchContent(userId, profileId) {
     try {
-        const response = await fetch(`/api/content?profileId=${profileId}`);
+        const response = await fetch(`/api/content?userId=${userId}&profileId=${profileId}`);
         const result = await response.json();
         
         if (response.ok) {
-            return result;
+            return result.data;
         } else {
             console.error('Failed to fetch content:', result.error);
             return null;
@@ -54,9 +54,87 @@ async function fetchContent(profileId) {
     }
 }
 
+// Mark content as watched
+async function markContentAsWatched(userId, profileId, contentName) {
+    try {
+        const response = await fetch(`/api/content/${encodeURIComponent(contentName)}/watch`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId: parseInt(userId),
+                profileId: parseInt(profileId)
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            return result;
+        } else {
+            console.error('Failed to mark as watched:', result.error);
+            return null;
+        }
+    } catch (error) {
+        console.error('Error marking content as watched:', error);
+        return null;
+    }
+}
+
+// Get recommendations
+async function fetchRecommendations(userId, profileId, limit = 10) {
+    try {
+        const response = await fetch(`/api/content/recommendations/${userId}/${profileId}?limit=${limit}`);
+        const result = await response.json();
+        
+        if (response.ok) {
+            return result.data;
+        } else {
+            console.error('Failed to fetch recommendations:', result.error);
+            return [];
+        }
+    } catch (error) {
+        console.error('Error fetching recommendations:', error);
+        return [];
+    }
+}
+
+// Toggle content like
+async function toggleContentLike(userId, profileId, contentName) {
+    try {
+        const response = await fetch('/api/content/like', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                contentName: contentName,
+                userId: parseInt(userId),
+                profileId: parseInt(profileId)
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            return result;
+        } else {
+            console.error('Failed to toggle like:', result.error);
+            return null;
+        }
+    } catch (error) {
+        console.error('Error toggling like:', error);
+        return null;
+    }
+}
+
 // Make functions available globally
 window.UserAPI = {
     fetchUserProfiles,
     fetchUser,
-    fetchContent
+    fetchContent,
+    markContentAsWatched,
+    fetchRecommendations,
+    toggleContentLike
 };
