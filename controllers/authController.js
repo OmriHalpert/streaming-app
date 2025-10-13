@@ -1,4 +1,5 @@
 const { register: registerUser, login: loginUser } = require('../services/userService');
+const { logAuth } = require('../services/loggerService');
 
 // Register controller
 async function register(req, res) {
@@ -47,11 +48,42 @@ async function login(req, res) {
 // Logout controller - destroy session and redirect to login
 async function logout(req, res) {
     try {
+        // Get user info before destroying session
+        const userId = req.session?.user?.id || 'unknown';
+        const userEmail = req.session?.user?.email || 'unknown';
+        
+        // Log the logout attempt
+        logAuth('info', 'User logout initiated', {
+            userId: userId,
+            email: userEmail,
+            ip: req.ip,
+            userAgent: req.get('User-Agent'),
+            action: 'logout_initiated'
+        });
+
         // Destroy the session
         req.session.destroy((err) => {
             if (err) {
                 console.error('Session destruction error:', err);
+                
+                // Log logout failure
+                logAuth('error', 'User logout failed - session destruction error', {
+                    userId: userId,
+                    email: userEmail,
+                    ip: req.ip,
+                    error: err.message,
+                    action: 'logout_failure'
+                });
+            } else {
+                // Log successful logout
+                logAuth('info', 'User logout successful', {
+                    userId: userId,
+                    email: userEmail,
+                    ip: req.ip,
+                    action: 'logout_success'
+                });
             }
+            
             // Clear the session cookie
             res.clearCookie('connect.sid');
             // Redirect to login page
@@ -59,6 +91,15 @@ async function logout(req, res) {
         });
     } catch (error) {
         console.error('Logout error:', error);
+        
+        // Log logout error
+        logAuth('error', 'User logout failed - unexpected error', {
+            userId: req.session?.user?.id || 'unknown',
+            ip: req.ip,
+            error: error.message,
+            action: 'logout_error'
+        });
+        
         // Even if there's an error, redirect to login
         res.redirect('/login');
     }
