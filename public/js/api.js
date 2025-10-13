@@ -54,9 +54,38 @@ async function fetchContent(userId, profileId) {
     }
 }
 
+// Mark content as watched
+async function markContentAsWatched(userId, profileId, contentName) {
+    try {
+        const response = await fetch(`/api/content/${encodeURIComponent(contentName)}/watch`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId: parseInt(userId),
+                profileId: parseInt(profileId)
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            return result;
+        } else {
+            console.error('Failed to mark as watched:', result.error);
+            return null;
+        }
+    } catch (error) {
+        console.error('Error marking content as watched:', error);
+        return null;
+    }
+}
+
 // Make functions available globally
 window.UserAPI = {
     fetchUserProfiles,
     fetchUser,
-    fetchContent
+    fetchContent,
+    markContentAsWatched
 };

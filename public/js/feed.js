@@ -95,6 +95,9 @@ async function loadContent() {
             // Set up like buttons for the content we just created
             setupLikeButtons();
             
+            // Set up watch tracking for content clicks
+            setupWatchTracking();
+            
         } else {
             // Fallback for when content is empty
             container.innerHTML = `
@@ -248,6 +251,60 @@ function setupLikeButtons() {
     });
 }
 
+// Set up watch tracking for content cards
+function setupWatchTracking() {
+    // Get all content cards (but not like buttons)
+    const contentCards = document.querySelectorAll('.genre-file, .file');
+    
+    contentCards.forEach(card => {
+        // Remove any existing click listeners to avoid duplicates
+        card.replaceWith(card.cloneNode(true));
+    });
+    
+    // Re-get the cloned elements and add fresh listeners
+    const freshContentCards = document.querySelectorAll('.genre-file, .file');
+    
+    freshContentCards.forEach(card => {
+        card.addEventListener('click', async (e) => {
+            // Don't trigger if clicking on like button
+            if (e.target.classList.contains('like-icon')) {
+                return;
+            }
+            
+            const contentName = card.getAttribute('data-content-name');
+            const userId = getUserId();
+            const profileId = getProfileId();
+            
+            if (!contentName || !userId || !profileId) {
+                console.error('Missing content name, user ID, or profile ID for watch tracking');
+                return;
+            }
+            
+            try {
+                // Mark content as watched
+                const result = await UserAPI.markContentAsWatched(userId, profileId, contentName);
+                
+                if (result && result.success) {
+                    // Show notification if it's the first time watching
+                    if (!result.alreadyWatched) {
+                        showNotification(`📺 Added "${contentName}" to your watch history!`);
+                    }
+                    
+                    // Future: Navigate to content details page
+                    // For now, just log the action
+                    console.log(`Marked "${contentName}" as watched for profile ${profileId}`);
+                    
+                } else {
+                    console.error('Failed to mark content as watched');
+                }
+                
+            } catch (error) {
+                console.error('Error tracking watch:', error);
+            }
+        });
+    });
+}
+
 // Initialize search functionality
 function setupSearch() {
     const searchIcon = document.querySelector('.search-icon');
@@ -395,6 +452,9 @@ function updateContentDisplay(content) {
     
     // Re-initialize like buttons for new content
     setupLikeButtons();
+    
+    // Re-initialize watch tracking for new content
+    setupWatchTracking();
 }
 
 // Show a notification message to the user
