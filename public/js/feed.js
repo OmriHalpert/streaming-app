@@ -8,6 +8,83 @@ function getUserId() {
     return document.body.getAttribute('data-user-id');
 }
 
+// Load recommendations
+async function loadRecommendations() {
+    const profileId = getProfileId();
+    const userId = getUserId();
+    const container = document.getElementById('recommendations-container');
+    
+    try {
+        container.innerHTML = '<div class="loading">Loading recommendations...</div>';
+        
+        const recommendations = await UserAPI.fetchRecommendations(userId, profileId, 10);
+        
+        container.innerHTML = '';
+        
+        if (recommendations && recommendations.length > 0) {
+            // Use same structure as genre sections
+            const recommendationsRow = document.createElement('div');
+            recommendationsRow.className = 'genre-row';
+            
+            // Build cards same way as regular content
+            recommendations.forEach(item => {
+                const contentDiv = document.createElement('div');
+                contentDiv.className = `genre-file ${item.thumbnail ? 'file-with-thumbnail' : ''}`;
+                contentDiv.setAttribute('data-content-name', item.name);
+                contentDiv.setAttribute('data-content-year', item.year);
+                contentDiv.setAttribute('data-content-genre', item.genre.join(', '));
+                contentDiv.setAttribute('data-is-liked', item.isLiked);
+                
+                // Handle thumbnails same way as other content
+                if (item.thumbnail) {
+                    contentDiv.style.backgroundImage = `url('${item.thumbnail}')`;
+                    contentDiv.style.backgroundSize = 'cover';
+                    contentDiv.style.backgroundPosition = 'center';
+                    
+                    contentDiv.innerHTML = `
+                        <div class="file-overlay">
+                            <div class="file-content">
+                                <h3 title="${item.name}">${item.name} (${item.year})</h3>
+                                <p>Genre: ${item.genre.join(', ')}</p>
+                            </div>
+                            <span class="like-icon ${item.isLiked ? 'liked' : ''}" data-content-name="${item.name}"></span>
+                        </div>
+                    `;
+                } else {
+                    contentDiv.innerHTML = `
+                        <div class="file-text-content">
+                            <h3 title="${item.name}">${item.name} (${item.year})</h3>
+                            <p>Genre: ${item.genre.join(', ')}</p>
+                        </div>
+                        <span class="like-icon ${item.isLiked ? 'liked' : ''}" data-content-name="${item.name}"></span>
+                    `;
+                }
+                
+                recommendationsRow.appendChild(contentDiv);
+            });
+            
+            container.appendChild(recommendationsRow);
+            
+            setupWatchTracking();
+            
+        } else {
+            container.innerHTML = `
+                <div class="no-content">
+                    <p>Watch and like some content to get personalized recommendations!</p>
+                </div>
+            `;
+        }
+        
+    } catch (error) {
+        console.error('Error loading recommendations:', error);
+        container.innerHTML = `
+            <div class="no-content">
+                <p>Unable to load recommendations right now.</p>
+            </div>
+        `;
+    }
+}
+
 // Load content from server
 async function loadContent() {
     const profileId = getProfileId();
@@ -21,7 +98,7 @@ async function loadContent() {
         titleElement.textContent = 'Loading your content...';
         
         // Fetch content via API
-        const feedData = await UserAPI.fetchContent(profileId);
+        const feedData = await UserAPI.fetchContent(userId, profileId);
         
         if (!feedData) {
             throw new Error('Failed to load content');
@@ -69,7 +146,6 @@ async function loadContent() {
                                 <div class="file-content">
                                     <h3 title="${item.name}">${item.name} (${item.year})</h3>
                                     <p>Genre: ${item.genre.join(', ')}</p>
-                                    <p>Likes: <span class="likes-count">${item.likes}</span></p>
                                 </div>
                                 <span class="like-icon ${item.isLiked ? 'liked' : ''}" data-content-name="${item.name}"></span>
                             </div>
@@ -79,7 +155,6 @@ async function loadContent() {
                             <div class="file-text-content">
                                 <h3 title="${item.name}">${item.name} (${item.year})</h3>
                                 <p>Genre: ${item.genre.join(', ')}</p>
-                                <p>Likes: <span class="likes-count">${item.likes}</span></p>
                             </div>
                             <span class="like-icon ${item.isLiked ? 'liked' : ''}" data-content-name="${item.name}"></span>
                         `;
@@ -94,8 +169,8 @@ async function loadContent() {
                 container.appendChild(genreSection);
             });
             
-            // Set up like buttons for the content we just created
-            setupLikeButtons();
+            // Set up watch tracking for content clicks
+            setupWatchTracking();
             
         } else {
             // Fallback for when content is empty
@@ -176,7 +251,7 @@ function truncateText(text, maxLength = 50) {
 }
 
 // Update all instances of a specific content across the page
-function updateAllContentCards(contentName, isLiked, likeCount) {
+function updateAllContentCards(contentName, isLiked) {
     // Find all elements with matching content name
     const allContentElements = document.querySelectorAll(`[data-content-name="${contentName}"]`);
     
@@ -190,12 +265,6 @@ function updateAllContentCards(contentName, isLiked, likeCount) {
             } else {
                 likeIcon.classList.remove('liked');
             }
-        }
-        
-        // Find and update likes count
-        const likesCountSpan = element.querySelector('.likes-count');
-        if (likesCountSpan) {
-            likesCountSpan.textContent = likeCount;
         }
         
         // Update the data attribute as well
@@ -213,10 +282,11 @@ function setupLikeButtons() {
             e.stopPropagation();
             
             const contentName = icon.getAttribute('data-content-name');
+            const userId = getUserId();
             const profileId = getProfileId();
             
-            if (!contentName || !profileId) {
-                console.error('Missing content name or profile ID');
+            if (!contentName || !userId || !profileId) {
+                console.error('Missing content name, user ID, or profile ID');
                 return;
             }
             
@@ -231,6 +301,7 @@ function setupLikeButtons() {
                     },
                     body: JSON.stringify({
                         contentName: contentName,
+                        userId: parseInt(userId),
                         profileId: parseInt(profileId)
                     })
                 });
@@ -239,7 +310,7 @@ function setupLikeButtons() {
                 
                 if (response.ok && result.success) {
                     // Update ALL instances of this content across the page
-                    updateAllContentCards(contentName, result.data.isLiked, result.data.likeCount);
+                    updateAllContentCards(contentName, result.data.isLiked);
                     
                 } else {
                     console.error('Failed to toggle like:', result.error);
@@ -249,6 +320,60 @@ function setupLikeButtons() {
             } catch (error) {
                 console.error('Error toggling like:', error);
                 showNotification('Network error. Please try again.', 'error');
+            }
+        });
+    });
+}
+
+// Set up watch tracking for content cards
+function setupWatchTracking() {
+    // Get all content cards (but not like buttons)
+    const contentCards = document.querySelectorAll('.genre-file, .file');
+    
+    contentCards.forEach(card => {
+        // Remove any existing click listeners to avoid duplicates
+        card.replaceWith(card.cloneNode(true));
+    });
+    
+    // Re-get the cloned elements and add fresh listeners
+    const freshContentCards = document.querySelectorAll('.genre-file, .file');
+    
+    freshContentCards.forEach(card => {
+        card.addEventListener('click', async (e) => {
+            // Don't trigger if clicking on like button
+            if (e.target.classList.contains('like-icon')) {
+                return;
+            }
+            
+            const contentName = card.getAttribute('data-content-name');
+            const userId = getUserId();
+            const profileId = getProfileId();
+            
+            if (!contentName || !userId || !profileId) {
+                console.error('Missing content name, user ID, or profile ID for watch tracking');
+                return;
+            }
+            
+            try {
+                // Mark content as watched
+                const result = await UserAPI.markContentAsWatched(userId, profileId, contentName);
+                
+                if (result && result.success) {
+                    // Show notification if it's the first time watching
+                    if (!result.alreadyWatched) {
+                        showNotification(`📺 Added "${contentName}" to your watch history!`);
+                    }
+                    
+                    // Future: Navigate to content details page
+                    // For now, just log the action
+                    console.log(`Marked "${contentName}" as watched for profile ${profileId}`);
+                    
+                } else {
+                    console.error('Failed to mark content as watched');
+                }
+                
+            } catch (error) {
+                console.error('Error tracking watch:', error);
             }
         });
     });
@@ -311,6 +436,7 @@ function debounce(func, wait) {
 async function searchContent() {
     const searchInput = document.querySelector('.search-input');
     const query = searchInput.value.trim();
+    const userId = getUserId();
     const profileId = getProfileId();
     
     // If query is too short, just return without doing anything
@@ -319,7 +445,7 @@ async function searchContent() {
     }
     
     try {
-        const response = await fetch(`/api/content/search?q=${encodeURIComponent(query)}&profileId=${profileId}`);
+        const response = await fetch(`/api/content/search?q=${encodeURIComponent(query)}&userId=${userId}&profileId=${profileId}`);
         const result = await response.json();
         
         if (response.ok && result.success) {
@@ -359,7 +485,6 @@ function createContentCard(item) {
                     <div class="file-content">
                         <h3 title="${item.name}">${truncatedTitle} (${item.year})</h3>
                         <p>Genre: ${item.genre.join(', ')}</p>
-                        <p>Likes: <span class="likes-count">${item.likes}</span></p>
                     </div>
                     <span class="like-icon ${item.isLiked ? 'liked' : ''}" 
                           data-content-name="${item.name}"></span>
@@ -376,7 +501,6 @@ function createContentCard(item) {
                 <div class="file-text-content">
                     <h3 title="${item.name}">${truncatedTitle} (${item.year})</h3>
                     <p>Genre: ${item.genre.join(', ')}</p>
-                    <p>Likes: <span class="likes-count">${item.likes}</span></p>
                 </div>
                 <span class="like-icon ${item.isLiked ? 'liked' : ''}" 
                       data-content-name="${item.name}"></span>
@@ -402,6 +526,9 @@ function updateContentDisplay(content) {
     
     // Re-initialize like buttons for new content
     setupLikeButtons();
+    
+    // Re-initialize watch tracking for new content
+    setupWatchTracking();
 }
 
 // Show a notification message to the user
@@ -463,10 +590,16 @@ function setupLogout() {
 
 // Main initialization
 document.addEventListener('DOMContentLoaded', async () => {
-    // Load content first
+    // Load recommendations first
+    await loadRecommendations();
+    
+    // Load content
     await loadContent();
     
-    // Initialize other functionality
+    // Set up like buttons for everything
+    setupLikeButtons();
+    
+    // Initialize other stuff
     setupSearch();
     setupHamburgerMenu();
     setupLogout();

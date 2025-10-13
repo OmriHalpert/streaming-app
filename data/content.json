@@ -12,6 +12,10 @@
       1,
       2
     ],
+    "profileWatched": [
+      1,
+      3
+    ],
     "thumbnail": "/resources/thumbnails/the_dark_knight.jpg"
   },
   {
@@ -27,6 +31,11 @@
       1,
       2
     ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ],
     "thumbnail": "/resources/thumbnails/deadpool.jpg"
   },
   {
@@ -38,6 +47,10 @@
     "likes": 81,
     "profileLikes": [
       1
+    ],
+    "profileWatched": [
+      1,
+      2
     ],
     "thumbnail": "/resources/thumbnails/the_shawshank_redemption.jpg"
   },
@@ -51,6 +64,9 @@
     ],
     "likes": 200,
     "profileLikes": [],
+    "profileWatched": [
+      2
+    ],
     "thumbnail": "/resources/thumbnails/inception.jpg"
   },
   {
@@ -64,6 +80,10 @@
     "profileLikes": [
       2
     ],
+    "profileWatched": [
+      2,
+      3
+    ],
     "thumbnail": "/resources/thumbnails/the_conjuring.jpg"
   },
   {
@@ -76,6 +96,7 @@
     ],
     "likes": 180,
     "profileLikes": [],
+    "profileWatched": [],
     "thumbnail": "/resources/thumbnails/interstellar.jpg"
   },
   {
@@ -88,6 +109,9 @@
     ],
     "likes": 90,
     "profileLikes": [],
+    "profileWatched": [
+      1
+    ],
     "thumbnail": "/resources/thumbnails/avatar.jpg"
   },
   {
@@ -99,6 +123,7 @@
     ],
     "likes": 160,
     "profileLikes": [],
+    "profileWatched": [],
     "thumbnail": "/resources/thumbnails/titanic.jpg"
   },
   {
@@ -111,6 +136,9 @@
     ],
     "likes": 140,
     "profileLikes": [],
+    "profileWatched": [
+      3
+    ],
     "thumbnail": "/resources/thumbnails/gone_girl.jpg"
   },
   {
@@ -122,6 +150,9 @@
     ],
     "likes": 170,
     "profileLikes": [],
+    "profileWatched": [
+      1
+    ],
     "thumbnail": "/resources/thumbnails/harry_potter.jpg"
   },
   {
@@ -132,6 +163,7 @@
     ],
     "likes": 110,
     "profileLikes": [],
+    "profileWatched": [],
     "thumbnail": "/resources/thumbnails/planet_earth.jpg"
   },
   {
@@ -144,6 +176,9 @@
     ],
     "likes": 190,
     "profileLikes": [],
+    "profileWatched": [
+      1
+    ],
     "thumbnail": "/resources/thumbnails/toy_story.jpg"
   },
   {
@@ -155,7 +190,10 @@
       "Thriller"
     ],
     "likes": 220,
-    "profileLikes": []
+    "profileLikes": [],
+    "profileWatched": [
+      2
+    ]
   },
   {
     "name": "Stranger Things",
@@ -166,7 +204,10 @@
       "Horror"
     ],
     "likes": 180,
-    "profileLikes": []
+    "profileLikes": [],
+    "profileWatched": [
+      3
+    ]
   },
   {
     "name": "The Office",
@@ -175,7 +216,8 @@
       "Comedy"
     ],
     "likes": 200,
-    "profileLikes": []
+    "profileLikes": [],
+    "profileWatched": []
   },
   {
     "name": "Game of Thrones",
@@ -186,7 +228,11 @@
       "Adventure"
     ],
     "likes": 170,
-    "profileLikes": []
+    "profileLikes": [],
+    "profileWatched": [
+      2,
+      3
+    ]
   },
   {
     "name": "Friends",
@@ -196,7 +242,10 @@
       "Romance"
     ],
     "likes": 190,
-    "profileLikes": []
+    "profileLikes": [],
+    "profileWatched": [
+      1
+    ]
   },
   {
     "name": "The Crown",
@@ -206,7 +255,8 @@
       "Biography"
     ],
     "likes": 150,
-    "profileLikes": []
+    "profileLikes": [],
+    "profileWatched": []
   },
   {
     "name": "Sherlock",
@@ -217,7 +267,11 @@
       "Mystery"
     ],
     "likes": 165,
-    "profileLikes": []
+    "profileLikes": [],
+    "profileWatched": [
+      1,
+      2
+    ]
   },
   {
     "name": "The Mandalorian",
@@ -230,6 +284,10 @@
     "likes": 176,
     "profileLikes": [
       1
+    ],
+    "profileWatched": [
+      1,
+      3
     ]
   },
   {
@@ -241,7 +299,10 @@
       "Sci-Fi"
     ],
     "likes": 160,
-    "profileLikes": []
+    "profileLikes": [],
+    "profileWatched": [
+      2
+    ]
   },
   {
     "name": "The Witcher",
@@ -252,7 +313,8 @@
       "Drama"
     ],
     "likes": 155,
-    "profileLikes": []
+    "profileLikes": [],
+    "profileWatched": []
   },
   {
     "name": "House of Cards",
@@ -262,7 +324,10 @@
       "Thriller"
     ],
     "likes": 140,
-    "profileLikes": []
+    "profileLikes": [],
+    "profileWatched": [
+      3
+    ]
   },
   {
     "name": "Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test ",
@@ -272,6 +337,7 @@
       "Thriller"
     ],
     "likes": 140,
-    "profileLikes": []
+    "profileLikes": [],
+    "profileWatched": []
   }
 ]
