@@ -37,13 +37,13 @@ async function fetchUser(userId) {
 }
 
 // Fetch content from the API
-async function fetchContent(profileId) {
+async function fetchContent(userId, profileId) {
     try {
-        const response = await fetch(`/api/content?profileId=${profileId}`);
+        const response = await fetch(`/api/content?userId=${userId}&profileId=${profileId}`);
         const result = await response.json();
         
         if (response.ok) {
-            return result;
+            return result.data;
         } else {
             console.error('Failed to fetch content:', result.error);
             return null;
