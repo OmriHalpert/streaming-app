@@ -21,7 +21,7 @@ async function loadContent() {
         titleElement.textContent = 'Loading your content...';
         
         // Fetch content via API
-        const feedData = await UserAPI.fetchContent(profileId);
+        const feedData = await UserAPI.fetchContent(userId, profileId);
         
         if (!feedData) {
             throw new Error('Failed to load content');
@@ -69,7 +69,6 @@ async function loadContent() {
                                 <div class="file-content">
                                     <h3 title="${item.name}">${item.name} (${item.year})</h3>
                                     <p>Genre: ${item.genre.join(', ')}</p>
-                                    <p>Likes: <span class="likes-count">${item.likes}</span></p>
                                 </div>
                                 <span class="like-icon ${item.isLiked ? 'liked' : ''}" data-content-name="${item.name}"></span>
                             </div>
@@ -79,7 +78,6 @@ async function loadContent() {
                             <div class="file-text-content">
                                 <h3 title="${item.name}">${item.name} (${item.year})</h3>
                                 <p>Genre: ${item.genre.join(', ')}</p>
-                                <p>Likes: <span class="likes-count">${item.likes}</span></p>
                             </div>
                             <span class="like-icon ${item.isLiked ? 'liked' : ''}" data-content-name="${item.name}"></span>
                         `;
@@ -176,7 +174,7 @@ function truncateText(text, maxLength = 50) {
 }
 
 // Update all instances of a specific content across the page
-function updateAllContentCards(contentName, isLiked, likeCount) {
+function updateAllContentCards(contentName, isLiked) {
     // Find all elements with matching content name
     const allContentElements = document.querySelectorAll(`[data-content-name="${contentName}"]`);
     
@@ -190,12 +188,6 @@ function updateAllContentCards(contentName, isLiked, likeCount) {
             } else {
                 likeIcon.classList.remove('liked');
             }
-        }
-        
-        // Find and update likes count
-        const likesCountSpan = element.querySelector('.likes-count');
-        if (likesCountSpan) {
-            likesCountSpan.textContent = likeCount;
         }
         
         // Update the data attribute as well
@@ -213,10 +205,11 @@ function setupLikeButtons() {
             e.stopPropagation();
             
             const contentName = icon.getAttribute('data-content-name');
+            const userId = getUserId();
             const profileId = getProfileId();
             
-            if (!contentName || !profileId) {
-                console.error('Missing content name or profile ID');
+            if (!contentName || !userId || !profileId) {
+                console.error('Missing content name, user ID, or profile ID');
                 return;
             }
             
@@ -231,6 +224,7 @@ function setupLikeButtons() {
                     },
                     body: JSON.stringify({
                         contentName: contentName,
+                        userId: parseInt(userId),
                         profileId: parseInt(profileId)
                     })
                 });
@@ -239,7 +233,7 @@ function setupLikeButtons() {
                 
                 if (response.ok && result.success) {
                     // Update ALL instances of this content across the page
-                    updateAllContentCards(contentName, result.data.isLiked, result.data.likeCount);
+                    updateAllContentCards(contentName, result.data.isLiked);
                     
                 } else {
                     console.error('Failed to toggle like:', result.error);
@@ -311,6 +305,7 @@ function debounce(func, wait) {
 async function searchContent() {
     const searchInput = document.querySelector('.search-input');
     const query = searchInput.value.trim();
+    const userId = getUserId();
     const profileId = getProfileId();
     
     // If query is too short, just return without doing anything
@@ -319,7 +314,7 @@ async function searchContent() {
     }
     
     try {
-        const response = await fetch(`/api/content/search?q=${encodeURIComponent(query)}&profileId=${profileId}`);
+        const response = await fetch(`/api/content/search?q=${encodeURIComponent(query)}&userId=${userId}&profileId=${profileId}`);
         const result = await response.json();
         
         if (response.ok && result.success) {
@@ -359,7 +354,6 @@ function createContentCard(item) {
                     <div class="file-content">
                         <h3 title="${item.name}">${truncatedTitle} (${item.year})</h3>
                         <p>Genre: ${item.genre.join(', ')}</p>
-                        <p>Likes: <span class="likes-count">${item.likes}</span></p>
                     </div>
                     <span class="like-icon ${item.isLiked ? 'liked' : ''}" 
                           data-content-name="${item.name}"></span>
@@ -376,7 +370,6 @@ function createContentCard(item) {
                 <div class="file-text-content">
                     <h3 title="${item.name}">${truncatedTitle} (${item.year})</h3>
                     <p>Genre: ${item.genre.join(', ')}</p>
-                    <p>Likes: <span class="likes-count">${item.likes}</span></p>
                 </div>
                 <span class="like-icon ${item.isLiked ? 'liked' : ''}" 
                       data-content-name="${item.name}"></span>

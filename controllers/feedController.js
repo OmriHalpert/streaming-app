@@ -31,46 +31,47 @@ async function renderFeedPage(req, res) {
 // Get content data for API
 async function getContent(req, res) {
     try {
-        const profileId = req.query.profileId;
+        const { userId, profileId } = req.query;
         
-        if (!profileId) {
+        // Validate required parameters
+        if (!userId || !profileId) {
             return res.status(400).json({
-                error: 'Profile ID is required'
+                success: false,
+                error: 'User ID and Profile ID are required'
             });
         }
-
-        // Get content data for feed
-        const feedData = await getContentForFeed(profileId);
         
-        res.json(feedData);
+        // Get content for feed with profile-specific data
+        const feedData = await getContentForFeed(userId, profileId);
+        
+        res.json({
+            success: true,
+            data: feedData
+        });
         
     } catch (error) {
-        console.error('Error fetching content via API:', error);
-        
-        if (error.message === 'Valid profile ID is required for feed') {
-            return res.status(400).json({
-                error: 'Invalid profile ID'
-            });
-        }
+        console.error('Error fetching content:', error);
         
         res.status(500).json({
+            success: false,
             error: 'Unable to fetch content. Please try again.'
         });
     }
 }
 
-// Toggle like for content
+// Toggle content like
 async function toggleContentLike(req, res) {
     try {
-        const { contentName, profileId } = req.body;
+        const { contentName, userId, profileId } = req.body;
         
-        if (!contentName || !profileId) {
+        if (!contentName || !userId || !profileId) {
             return res.status(400).json({
-                error: 'Content name and profile ID are required'
+                success: false,
+                error: 'Content name, user ID, and profile ID are required'
             });
         }
-        
-        const result = await toggleLike(contentName, profileId);
+
+        const result = await toggleLike(contentName, userId, profileId);
         
         res.json({
             success: true,
@@ -82,7 +83,7 @@ async function toggleContentLike(req, res) {
         
         res.status(500).json({
             success: false,
-            error: 'Unable to update like. Please try again.'
+            error: 'Unable to toggle like. Please try again.'
         });
     }
 }
@@ -90,12 +91,13 @@ async function toggleContentLike(req, res) {
 // Search content
 async function searchContent(req, res) {
     try {
-        const { q: query, profileId } = req.query;
+        const { q: query, userId, profileId } = req.query;
         
-        // Convert profileId to integer if provided
+        // Convert to integers if provided
+        const userIdInt = userId ? parseInt(userId) : null;
         const profileIdInt = profileId ? parseInt(profileId) : null;
         
-        const results = await searchContentService(query, profileIdInt);
+        const results = await searchContentService(query, userIdInt, profileIdInt);
         
         res.json({
             success: true,
@@ -116,16 +118,16 @@ async function searchContent(req, res) {
 async function markContentAsWatched(req, res) {
     try {
         const { contentName } = req.params;
-        const { profileId } = req.body;
+        const { userId, profileId } = req.body;
         
-        if (!contentName || !profileId) {
+        if (!contentName || !userId || !profileId) {
             return res.status(400).json({
                 success: false,
-                error: 'Content name and profile ID are required'
+                error: 'Content name, user ID, and profile ID are required'
             });
         }
 
-        const result = await markAsWatched(contentName, parseInt(profileId));
+        const result = await markAsWatched(contentName, parseInt(userId), parseInt(profileId));
         
         res.json({
             success: true,
