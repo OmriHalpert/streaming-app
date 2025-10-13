@@ -1,5 +1,6 @@
 const { getContentForFeed, toggleContentLike: toggleLike, searchContent: searchContentService, markAsWatched } = require('../services/contentService');
 const { getUserProfiles: getUserProfilesService } = require('../services/userService');
+const { getRecommendations: getRecommendationsService } = require('../services/recommendationService');
 
 // Renders feed page with content
 async function renderFeedPage(req, res) {
@@ -145,10 +146,41 @@ async function markContentAsWatched(req, res) {
     }
 }
 
+// Get recommendations
+async function getRecommendations(req, res) {
+    try {
+        const { userId, profileId } = req.params;
+        const limit = parseInt(req.query.limit) || 10;
+        
+        if (!userId || !profileId) {
+            return res.status(400).json({
+                success: false,
+                error: 'User ID and Profile ID are required'
+            });
+        }
+        
+        const recommendations = await getRecommendationsService(parseInt(userId), parseInt(profileId), limit);
+        
+        res.json({
+            success: true,
+            data: recommendations
+        });
+        
+    } catch (error) {
+        console.error('Error fetching recommendations:', error);
+        
+        res.status(500).json({
+            success: false,
+            error: 'Unable to fetch recommendations right now.'
+        });
+    }
+}
+
 module.exports = {
     renderFeedPage,
     getContent,
     toggleContentLike,
     searchContent,
-    markContentAsWatched
+    markContentAsWatched,
+    getRecommendations
 };
