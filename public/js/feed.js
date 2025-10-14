@@ -376,18 +376,22 @@ function handleGenreClick() {
                 try {
                     const userId = getUserId();
                     const profileId = getProfileId();
-                    const result = await UserAPI.fetchContentByGenre(genreName, userId, profileId);
+                    const result = await UserAPI.fetchContentByGenre(genreName, userId, profileId, 1);
 
-                    if (result && result.length > 0) {
+                    if (result && result.content && result.content.length > 0) {
                         // Reset any existing filter when switching to a new genre
                         currentGenreData = {
                             genreName: '',
                             allContent: [],
-                            currentFilter: 'all'
+                            currentFilter: 'all',
+                            currentPage: 1,
+                            isLoading: false,
+                            hasMore: true,
+                            isInfiniteScrollEnabled: true
                         };
                         
                         // Switch to genre view
-                        switchToGenreView(genreName, result);
+                        switchToGenreView(genreName, result.content, result.pagination);
                     } else {
                         console.error('No content found for genre:', genreName);
                         const container = document.getElementById('files-container');
@@ -415,18 +419,26 @@ function handleGenreClick() {
 let currentGenreData = {
     genreName: '',
     allContent: [],
-    currentFilter: 'all' // 'all', 'watched', 'unwatched'
+    currentFilter: 'all', // 'all', 'watched', 'unwatched'
+    currentPage: 1,
+    isLoading: false,
+    hasMore: true,
+    isInfiniteScrollEnabled: true
 };
 
 // Switch to genre view (hide recommendations, show back button)
-function switchToGenreView(genreName, content) {
+function switchToGenreView(genreName, content, pagination = null) {
     console.log(`Switching to genre view for: ${genreName} with ${content.length} items`); // Debug log
     
-    // Store genre data globally for filtering
+    // Store genre data globally for filtering and pagination
     currentGenreData = {
         genreName: genreName,
         allContent: content,
-        currentFilter: 'all'
+        currentFilter: 'all',
+        currentPage: pagination ? pagination.page : 1,
+        isLoading: false,
+        hasMore: pagination ? pagination.hasMore : false,
+        isInfiniteScrollEnabled: true
     };
     
     // Update page title with back button and toggle button
@@ -439,11 +451,166 @@ function switchToGenreView(genreName, content) {
         `;
     }
 
-    // Update content display (this will handle hiding recommendations)
+    // Update content display
     updateContentDisplay(content, 'genre');
+    
+    // Set up infinite scroll for genre view
+    setupInfiniteScroll();
 }
 
-// Toggle between All -> Watched -> Unwatched -> All
+// Set up infinite scroll for genre view
+function setupInfiniteScroll() {
+    // Remove any existing scroll listeners
+    window.removeEventListener('scroll', handleInfiniteScroll);
+    
+    // Add new scroll listener only if we're in genre view
+    if (currentGenreData.genreName) {
+        window.addEventListener('scroll', handleInfiniteScroll);
+        console.log('Infinite scroll setup for genre:', currentGenreData.genreName);
+    }
+}
+
+// Handle infinite scroll events
+async function handleInfiniteScroll() {
+    // Only proceed if we're in genre view and not currently loading
+    if (!currentGenreData.genreName || currentGenreData.isLoading || !currentGenreData.hasMore) {
+        return;
+    }
+    
+    // Disable infinite scroll when filtering is active (only works with 'all' content)
+    if (currentGenreData.currentFilter !== 'all') {
+        return;
+    }
+    
+    // Check if user has scrolled near the bottom
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    
+    // Trigger loading when user is 200px from bottom
+    if (scrollTop + windowHeight >= documentHeight - 200) {
+        await loadMoreGenreContent();
+    }
+}
+
+// Load more content for current genre
+async function loadMoreGenreContent() {
+    if (currentGenreData.isLoading || !currentGenreData.genreName) {
+        return;
+    }
+    
+    currentGenreData.isLoading = true;
+    
+    try {
+        // Show loading indicator
+        showLoadingIndicator();
+        
+        const userId = getUserId();
+        const profileId = getProfileId();
+        const nextPage = currentGenreData.currentPage + 1;
+        
+        console.log(`Loading page ${nextPage} for genre: ${currentGenreData.genreName}`);
+        
+        const result = await UserAPI.fetchContentByGenre(
+            currentGenreData.genreName, 
+            userId, 
+            profileId, 
+            nextPage
+        );
+        
+        if (result && result.content && result.content.length > 0) {
+            // Update state
+            currentGenreData.currentPage = nextPage;
+            currentGenreData.allContent.push(...result.content);
+            currentGenreData.hasMore = result.pagination ? result.pagination.hasMore : true;
+            
+            // Append new content to existing display (only when viewing "all" content)
+            if (currentGenreData.currentFilter === 'all') {
+                appendContentToDisplay(result.content);
+            }
+            
+            // Update title with new count
+            updateGenreTitle(currentGenreData.genreName, currentGenreData.allContent.length);
+            
+            console.log(`Loaded ${result.content.length} more items. Total: ${currentGenreData.allContent.length}`);
+        }
+        
+    } catch (error) {
+        console.error('Error loading more content:', error);
+        showNotification('Failed to load more content', 'error');
+    } finally {
+        currentGenreData.isLoading = false;
+        hideLoadingIndicator();
+    }
+}
+
+// Show loading indicator at bottom of content
+function showLoadingIndicator() {
+    const container = document.getElementById('files-container');
+    const existingLoader = document.getElementById('infinite-scroll-loader');
+    
+    if (!existingLoader && container) {
+        const loader = document.createElement('div');
+        loader.id = 'infinite-scroll-loader';
+        loader.className = 'loading-indicator';
+        loader.innerHTML = '<div class="loading">Loading more content...</div>';
+        container.appendChild(loader);
+    }
+}
+
+// Hide loading indicator
+function hideLoadingIndicator() {
+    const loader = document.getElementById('infinite-scroll-loader');
+    if (loader) {
+        loader.remove();
+    }
+}
+
+// Append new content to existing display
+function appendContentToDisplay(newContent) {
+    const container = document.getElementById('files-container');
+    if (!container) return;
+    
+    // Create new content elements
+    const newContentHTML = newContent.map(item => createContentCard(item)).join('');
+    
+    // Create a temporary container to hold the new content
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = newContentHTML;
+    
+    // Append each new element to the container
+    while (tempDiv.firstChild) {
+        container.appendChild(tempDiv.firstChild);
+    }
+    
+    // Re-setup event listeners for new content
+    setTimeout(() => {
+        setupWatchTracking();
+        setupLikeButtons();
+    }, 100);
+}
+
+// Update genre title with current count
+function updateGenreTitle(genreName, totalCount) {
+    const titleText = document.querySelector('.genre-title-text');
+    if (titleText) {
+        titleText.textContent = `${genreName} Movies and TV Shows (${totalCount} items)`;
+    }
+}
+
+// Helper function to deduplicate content by ID
+function deduplicateContent(contentArray) {
+    const seen = new Set();
+    return contentArray.filter(item => {
+        const id = item._id || item.id;
+        if (seen.has(id)) {
+            return false;
+        }
+        seen.add(id);
+        return true;
+    });
+}
+
 function toggleWatchedFilter() {
     const toggleButton = document.querySelector('.toggle-watched-button');
     const titleText = document.querySelector('.genre-title-text');
@@ -464,23 +631,23 @@ function toggleWatchedFilter() {
     // Cycle through states: all -> watched -> unwatched -> all
     switch (currentGenreData.currentFilter) {
         case 'all':
-            // Show only watched content
-            filteredContent = currentGenreData.allContent.filter(item => item.isWatched === true);
+            // Show only watched content (deduplicated to avoid duplicates from infinite scroll)
+            filteredContent = deduplicateContent(currentGenreData.allContent).filter(item => item.isWatched === true);
             newFilter = 'watched';
             buttonText = 'Watched Only';
             buttonClass = 'filter-watched';
             break;
             
         case 'watched':
-            // Show only unwatched content
-            filteredContent = currentGenreData.allContent.filter(item => item.isWatched === false);
+            // Show only unwatched content (deduplicated to avoid duplicates from infinite scroll)
+            filteredContent = deduplicateContent(currentGenreData.allContent).filter(item => item.isWatched === false);
             newFilter = 'unwatched';
             buttonText = 'Unwatched Only';
             buttonClass = 'filter-unwatched';
             break;
             
         case 'unwatched':
-            // Show all content (back to original)
+            // Show all content (keep original array with potential duplicates for infinite scroll)
             filteredContent = currentGenreData.allContent;
             newFilter = 'all';
             buttonText = 'All Content';
@@ -527,6 +694,17 @@ function toggleWatchedFilter() {
         updateContentDisplay(filteredContent, 'genre');
     }
 
+    // Manage infinite scroll state based on filter
+    if (newFilter === 'all') {
+        // Re-enable infinite scroll when showing all content
+        currentGenreData.isInfiniteScrollEnabled = true;
+        console.log('Infinite scroll enabled for "all content" view');
+    } else {
+        // Disable infinite scroll when filtering (watched/unwatched)
+        currentGenreData.isInfiniteScrollEnabled = false;
+        console.log(`Infinite scroll disabled for "${newFilter}" filter view`);
+    }
+
     // Show notification about filter change
     const filterMessages = {
         'watched': `Showing ${filteredContent.length} watched items`,
@@ -543,7 +721,11 @@ function returnToMainFeed() {
     currentGenreData = {
         genreName: '',
         allContent: [],
-        currentFilter: 'all'
+        currentFilter: 'all',
+        currentPage: 1,
+        isLoading: false,
+        hasMore: true,
+        isInfiniteScrollEnabled: true
     };
 
     // Show recommendations section again
@@ -745,10 +927,12 @@ async function searchContent() {
 function createContentCard(item) {
     const hasThumb = item.thumbnail;
     const truncatedTitle = truncateText(item.name, 40);
+    const contentId = item._id || item.id;
     
     if (hasThumb) {
         return `
             <div class="file file-with-thumbnail" 
+                 data-content-id="${contentId}"
                  data-content-name="${item.name}" 
                  data-content-year="${item.year}"
                  data-content-genre="${item.genre.join(', ')}"
@@ -767,6 +951,7 @@ function createContentCard(item) {
     } else {
         return `
             <div class="file" 
+                 data-content-id="${contentId}"
                  data-content-name="${item.name}" 
                  data-content-year="${item.year}"
                  data-content-genre="${item.genre.join(', ')}"
@@ -916,9 +1101,9 @@ async function setupAside() {
                         newGenreItem.classList.add('active');
                         
                         // Fetch and display genre content
-                        const result = await UserAPI.fetchContentByGenre(genreName, userId, profileId);
-                        if (result && result.length > 0) {
-                            switchToGenreView(genreName, result);
+                        const result = await UserAPI.fetchContentByGenre(genreName, userId, profileId, 1);
+                        if (result && result.content && result.content.length > 0) {
+                            switchToGenreView(genreName, result.content, result.pagination);
                         }
                     } catch (error) {
                         console.error('Error loading genre from aside:', error);

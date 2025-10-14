@@ -52,12 +52,16 @@ async function getContentByName(contentName) {
     return foundContent;
 }
 
-// Get content by genre
-async function getContentByGenre(genreName, userId = null, profileId = null) {
+// Get content by genre with pagination support
+async function getContentByGenre(genreName, userId = null, profileId = null, page = 1, limit = null) {
     // Validate genre name
     if (!genreName || genreName.trim() === '') {
         throw new Error('Genre name is required');
     }
+
+    // Get pagination limit from environment variable or use provided limit
+    const itemsPerPage = limit || parseInt(process.env.ITEMS_PER_PAGE) || 10;
+    const pageNumber = Math.max(1, parseInt(page) || 1);
 
     // Fetch all content
     const content = await contentModel.getContent();
@@ -69,27 +73,54 @@ async function getContentByGenre(genreName, userId = null, profileId = null) {
         throw new Error('Content not found');
     }
 
+    // Calculate pagination with cycling (repeat content when reaching end)
+    const totalItems = foundContent.length;
+    const startIndex = ((pageNumber - 1) * itemsPerPage) % totalItems;
+    let paginatedContent = [];
+
+    // Handle pagination with cycling
+    for (let i = 0; i < itemsPerPage; i++) {
+        const index = (startIndex + i) % totalItems;
+        paginatedContent.push(foundContent[index]);
+    }
+
     // If userId and profileId provided, add isLiked and isWatched status
     if (userId && profileId) {
         const interactions = await profileInteractionService.getProfileInteractions(userId, profileId);
         
-        const transformedContent = foundContent.map(item => ({
+        const transformedContent = paginatedContent.map(item => ({
             ...item.toObject(), // Convert Mongoose document to plain object
             isLiked: interactions.profileLikes.includes(item.name),
             isWatched: interactions.profileWatched.includes(item.name)
         }));
         
-        return transformedContent;
+        return {
+            content: transformedContent,
+            pagination: {
+                page: pageNumber,
+                limit: itemsPerPage,
+                total: totalItems,
+                hasMore: true // Always true since we cycle content
+            }
+        };
     }
 
     // Return plain content without interaction status
-    const plainContent = foundContent.map(item => ({
+    const plainContent = paginatedContent.map(item => ({
         ...item.toObject(),
         isLiked: false,
         isWatched: false
     }));
 
-    return plainContent;
+    return {
+        content: plainContent,
+        pagination: {
+            page: pageNumber,
+            limit: itemsPerPage,
+            total: totalItems,
+            hasMore: true // Always true since we cycle content
+        }
+    };
 }
 
 // Search content

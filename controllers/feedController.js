@@ -179,7 +179,7 @@ async function getRecommendations(req, res) {
 async function getGenreContent(req, res) {
     try {
         const { genreName } = req.params;
-        const { userId, profileId } = req.query;
+        const { userId, profileId, page, limit } = req.query;
 
         if (!genreName) {
             return res.status(400).json({
@@ -191,12 +191,15 @@ async function getGenreContent(req, res) {
         // Convert to integers if provided
         const userIdInt = userId ? parseInt(userId) : null;
         const profileIdInt = profileId ? parseInt(profileId) : null;
+        const pageInt = page ? parseInt(page) : 1;
+        const limitInt = limit ? parseInt(limit) : null;
 
-        const genreContent = await getContentByGenre(genreName, userIdInt, profileIdInt);
+        const genreData = await getContentByGenre(genreName, userIdInt, profileIdInt, pageInt, limitInt);
 
         res.json({
             success: true,
-            data: genreContent
+            data: genreData.content,
+            pagination: genreData.pagination
         });
     } catch (error) {
         console.error('Error fetching content by genre', error);
