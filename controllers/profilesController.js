@@ -1,5 +1,13 @@
-const { getUserById, getUserProfiles: getUserProfilesService, addProfile: addProfileService, updateUserProfile, deleteUserProfile } = require("../services/userService");
+// Imports
+const {
+  getUserById,
+  getUserProfiles: getUserProfilesService,
+  addProfile: addProfileService,
+  updateUserProfile,
+  deleteUserProfile,
+} = require("../services/userService");
 
+// Main functions
 // Render profiles page
 async function renderProfilesPage(req, res) {
   try {
@@ -11,9 +19,8 @@ async function renderProfilesPage(req, res) {
       return res.redirect("/login");
     }
 
-    // Renders page
+    // Renders profiles page
     res.render("profiles", { userId });
-    
   } catch (error) {
     console.error("Error rendering profiles page:", error);
     res.redirect("/login");
@@ -31,14 +38,11 @@ async function renderManageProfilesPage(req, res) {
       return res.redirect("/login");
     }
 
-    console.log("userId check passed, proceeding to fetch data...");
-
     try {
-      // Call services directly (bypasses authentication middleware)
       const user = await getUserById(parseInt(userId));
       const profiles = await getUserProfilesService(parseInt(userId));
 
-      console.log("Service calls successful, rendering page...");
+      // Render manage profiles page
       res.render("manage-profiles", { profiles, user });
     } catch (error) {
       console.log("Could not fetch user data:", error.message);
@@ -50,6 +54,7 @@ async function renderManageProfilesPage(req, res) {
   }
 }
 
+// Adds a new profile
 async function addProfile(req, res) {
   try {
     const userId = req.query.userId || req.body.userId;
@@ -59,70 +64,74 @@ async function addProfile(req, res) {
     if (!userId) {
       return res.status(400).json({
         success: false,
-        error: 'User ID is required'
+        error: "User ID is required",
       });
     }
 
     if (!profileName) {
       return res.status(400).json({
         success: false,
-        error: 'Profile name is required'
+        error: "Profile name is required",
       });
     }
 
     try {
-      // Add the new profile using UserService
+      // Add the new profile using user service
       const newProfile = await addProfileService(parseInt(userId), profileName);
-      
-      // 🔧 FIX: Update session with new profile list
-      if (req.session && req.session.user && req.session.user.id === parseInt(userId)) {
+
+      // Update session with new profile list
+      if (
+        req.session &&
+        req.session.user &&
+        req.session.user.id === parseInt(userId)
+      ) {
         // Add the new profile to the session
         req.session.user.profiles.push(newProfile);
       }
-      
+
       // Return success response with the new profile
       res.json({
         success: true,
-        message: 'Profile added successfully',
+        message: "Profile added successfully",
         data: {
-          profile: newProfile
-        }
+          profile: newProfile,
+        },
       });
-
     } catch (error) {
       console.log("Could not add profile:", error.message);
-      
+
       // Handle specific error cases
-      if (error.message === 'User not found') {
+      if (error.message === "User not found") {
         return res.status(404).json({
           success: false,
-          error: 'User not found'
+          error: "User not found",
         });
       }
-      
-      if (error.message === 'Maximum number of profiles (5) reached') {
+
+      if (error.message === "Maximum number of profiles (5) reached") {
         return res.status(400).json({
           success: false,
-          error: 'Maximum number of profiles reached. You can only have up to 5 profiles.'
+          error:
+            "Maximum number of profiles reached. You can only have up to 5 profiles.",
         });
       }
-      
+
       // Generic validation errors
       return res.status(400).json({
         success: false,
-        error: error.message
+        error: error.message,
       });
     }
-    
   } catch (error) {
     console.error("Error adding profile:", error);
     res.status(500).json({
       success: false,
-      error: 'Internal server error. Please try again.'
+      error: "Internal server error. Please try again.",
     });
   }
 }
 
+// Updates a profile's name
 async function updateProfile(req, res) {
   try {
     const userId = req.query.userId || req.body.userId;
@@ -133,84 +142,89 @@ async function updateProfile(req, res) {
     if (!userId) {
       return res.status(400).json({
         success: false,
-        error: 'User ID is required'
+        error: "User ID is required",
       });
     }
 
     if (!profileId) {
       return res.status(400).json({
         success: false,
-        error: 'Profile ID is required'
+        error: "Profile ID is required",
       });
     }
 
     if (!profileName) {
       return res.status(400).json({
         success: false,
-        error: 'Profile name is required'
+        error: "Profile name is required",
       });
     }
 
     try {
-      // Update the profile using UserService
+      // Update the profile using user service
       const updatedProfile = await updateUserProfile(
         parseInt(userId),
         parseInt(profileId),
         profileName
       );
-      
-      // 🔧 FIX: Update session with updated profile data
-      if (req.session && req.session.user && req.session.user.id === parseInt(userId)) {
+
+      // Update session with updated profile data
+      if (
+        req.session &&
+        req.session.user &&
+        req.session.user.id === parseInt(userId)
+      ) {
         // Find and update the profile in the session
-        const sessionProfile = req.session.user.profiles.find(p => p.id === parseInt(profileId));
+        const sessionProfile = req.session.user.profiles.find(
+          (p) => p.id === parseInt(profileId)
+        );
         if (sessionProfile) {
           sessionProfile.name = updatedProfile.name;
         }
       }
-      
+
       // Return success response with the updated profile
       res.json({
         success: true,
-        message: 'Profile updated successfully',
+        message: "Profile updated successfully",
         data: {
-          profile: updatedProfile
-        }
+          profile: updatedProfile,
+        },
       });
-
     } catch (error) {
       console.log("Could not update profile:", error.message);
-      
+
       // Handle specific error cases
-      if (error.message === 'User not found') {
+      if (error.message === "User not found") {
         return res.status(404).json({
           success: false,
-          error: 'User not found'
+          error: "User not found",
         });
       }
-      
-      if (error.message === 'Profile not found') {
+
+      if (error.message === "Profile not found") {
         return res.status(404).json({
           success: false,
-          error: 'Profile not found'
+          error: "Profile not found",
         });
       }
-      
+
       // Generic validation errors
       return res.status(400).json({
         success: false,
-        error: error.message
+        error: error.message,
       });
     }
-    
   } catch (error) {
     console.error("Error updating profile:", error);
     res.status(500).json({
       success: false,
-      error: 'Internal server error. Please try again.'
+      error: "Internal server error. Please try again.",
     });
   }
 }
 
+// Deletes a profile
 async function deleteProfile(req, res) {
   try {
     const userId = req.query.userId || req.body.userId;
@@ -220,71 +234,73 @@ async function deleteProfile(req, res) {
     if (!userId) {
       return res.status(400).json({
         success: false,
-        error: 'User ID is required'
+        error: "User ID is required",
       });
     }
 
     if (!profileId) {
       return res.status(400).json({
         success: false,
-        error: 'Profile ID is required'
+        error: "Profile ID is required",
       });
     }
 
     try {
-      // Delete the profile using UserService
+      // Delete the profile using user service
       const deletedProfile = await deleteUserProfile(
         parseInt(userId),
         parseInt(profileId)
       );
-      
-      // 🔧 FIX: Update session by removing the deleted profile
-      if (req.session && req.session.user && req.session.user.id === parseInt(userId)) {
+
+      // Update session by removing the deleted profile
+      if (
+        req.session &&
+        req.session.user &&
+        req.session.user.id === parseInt(userId)
+      ) {
         // Remove the deleted profile from the session
         req.session.user.profiles = req.session.user.profiles.filter(
-          p => p.id !== parseInt(profileId)
+          (p) => p.id !== parseInt(profileId)
         );
       }
-      
+
       // Return success response with the deleted profile
       res.json({
         success: true,
-        message: 'Profile deleted successfully',
+        message: "Profile deleted successfully",
         data: {
-          profile: deletedProfile
-        }
+          profile: deletedProfile,
+        },
       });
-
     } catch (error) {
       console.log("Could not delete profile:", error.message);
-      
+
       // Handle specific error cases
-      if (error.message === 'User not found') {
+      if (error.message === "User not found") {
         return res.status(404).json({
           success: false,
-          error: 'User not found'
+          error: "User not found",
         });
       }
-      
-      if (error.message === 'Profile not found') {
+
+      if (error.message === "Profile not found") {
         return res.status(404).json({
           success: false,
-          error: 'Profile not found'
+          error: "Profile not found",
         });
       }
-      
+
       // Generic validation errors
       return res.status(400).json({
         success: false,
-        error: error.message
+        error: error.message,
       });
     }
-    
   } catch (error) {
     console.error("Error deleting profile:", error);
     res.status(500).json({
       success: false,
-      error: 'Internal server error. Please try again.'
+      error: "Internal server error. Please try again.",
     });
   }
 }

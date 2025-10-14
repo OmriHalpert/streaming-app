@@ -116,6 +116,13 @@ body {
     border-right: 1px solid #333;
 }
 
+.feed-aside h3 {
+    color: white;
+    padding: 0 24px;
+    margin: 0 0 10px 0;
+    font-size: 18px;
+}
+
 .genre-list {
     width: 100%;
     list-style: none;
@@ -537,7 +544,8 @@ a:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 100%;
+    max-width: 250px; /* Specific width for truncation */
+    width: 100%;
 }
 
 .file p {
@@ -594,7 +602,8 @@ a:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 100%;
+    max-width: 250px; /* Specific width for truncation */
+    width: 100%;
 }
 
 .file-content p {
@@ -719,7 +728,8 @@ a:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 100%;
+    max-width: 250px; /* Specific width for truncation */
+    width: 100%;
 }
 
 .genre-file p {

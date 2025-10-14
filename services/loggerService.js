@@ -1,3 +1,4 @@
+// Imports
 const winston = require("winston");
 require("winston-mongodb");
 require("dotenv").config();
@@ -24,10 +25,10 @@ const logger = winston.createLogger({
 
     // MongoDB transport
     new winston.transports.MongoDB({
-      db: process.env.MONGODB_URI,  
+      db: process.env.MONGODB_URI,
       collection: "logs",
       options: {
-        useUnifiedTopology: true,
+        useUnifiedTopology: true, // Use latest connection management features, avoid connection failures
       },
       metaKey: "metadata", // keeps metadata in the 'metadata' key and not mixed
     }),

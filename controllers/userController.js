@@ -1,39 +1,9 @@
-const { getAllUsers, getUserById: getUserByIdService, getUserProfiles: getUserProfilesService } = require('../services/userService');
+// Imports
+const { getUserById: getUserByIdService, getUserProfiles: getUserProfilesService } = require('../services/userService');
 
-// Returns all users list
-async function getUsers(req, res) {
-    try {
-        const users = await getAllUsers();
-        return res.status(200).json({'users': users});
-    } catch (error) {
-        return handleUserError(error, res, 'fetching all users');
-    }
-}
 
-// Returns user by ID
-async function getUserById(req, res) {
-    try {
-        const userId = Number(req.params.id);
-        const user = await getUserByIdService(userId);
-
-        return res.status(200).json({'user': user});
-    } catch (error) {
-        return handleUserError(error, res, 'fetching user by ID');
-    }
-}
-
-async function getUserProfiles(req, res) {
-    try {
-        const userId = Number(req.params.id);
-        const profiles = await getUserProfilesService(userId);
-
-        return res.status(200).json({'profiles': profiles});
-    } catch (error) {
-        return handleUserError(error, res, 'fetching user profiles');
-    }
-}
-
-// Private helper function to handle user-related errors
+// Helper functions
+// Handle user-related errors
 function handleUserError(error, res, context = 'user operation') {
     console.error(`Error in ${context}:`, error);
     
@@ -51,8 +21,40 @@ function handleUserError(error, res, context = 'user operation') {
     return res.status(500).json({'error': 'Internal server error'});
 }
 
+// Main functions
+// Returns user by ID
+async function getUserById(req, res) {
+    try {
+        // Convert to integer
+        const userId = Number(req.params.id);
+
+        // Fetch user via user services
+        const user = await getUserByIdService(userId);
+
+        return res.status(200).json({'user': user});
+
+    } catch (error) {
+        return handleUserError(error, res, 'fetching user by ID');
+    }
+}
+
+// Returns the user's profiles list
+async function getUserProfiles(req, res) {
+    try {
+        // Convert to integer
+        const userId = Number(req.params.id);
+
+        // Fetch user profiles using user services
+        const profiles = await getUserProfilesService(userId);
+
+        return res.status(200).json({'profiles': profiles});
+
+    } catch (error) {
+        return handleUserError(error, res, 'fetching user profiles');
+    }
+}
+
 module.exports = {
-    getUsers,
     getUserById,
     getUserProfiles
 }
