@@ -379,6 +379,13 @@ function handleGenreClick() {
                     const result = await UserAPI.fetchContentByGenre(genreName, userId, profileId);
 
                     if (result && result.length > 0) {
+                        // Reset any existing filter when switching to a new genre
+                        currentGenreData = {
+                            genreName: '',
+                            allContent: [],
+                            currentFilter: 'all'
+                        };
+                        
                         // Switch to genre view
                         switchToGenreView(genreName, result);
                     } else {
@@ -404,15 +411,30 @@ function handleGenreClick() {
     }
 }
 
+// Global state for genre view
+let currentGenreData = {
+    genreName: '',
+    allContent: [],
+    currentFilter: 'all' // 'all', 'watched', 'unwatched'
+};
+
 // Switch to genre view (hide recommendations, show back button)
 function switchToGenreView(genreName, content) {
     console.log(`Switching to genre view for: ${genreName} with ${content.length} items`); // Debug log
     
-    // Update page title with back button
+    // Store genre data globally for filtering
+    currentGenreData = {
+        genreName: genreName,
+        allContent: content,
+        currentFilter: 'all'
+    };
+    
+    // Update page title with back button and toggle button
     const titleElement = document.getElementById('content-title');
     if (titleElement) {
         titleElement.innerHTML = `
             <span class="back-button" onclick="returnToMainFeed()">← Back to Feed</span>
+            <span class="toggle-watched-button" onclick="toggleWatchedFilter()" data-filter="all">All Content</span>
             <span class="genre-title-text">${genreName} Movies and TV Shows (${content.length} items)</span>
         `;
     }
@@ -421,8 +443,109 @@ function switchToGenreView(genreName, content) {
     updateContentDisplay(content, 'genre');
 }
 
+// Toggle between All -> Watched -> Unwatched -> All
+function toggleWatchedFilter() {
+    const toggleButton = document.querySelector('.toggle-watched-button');
+    const titleText = document.querySelector('.genre-title-text');
+    
+    if (!toggleButton || !currentGenreData.allContent.length) {
+        console.error('Toggle button or genre data not found');
+        return;
+    }
+
+    const userId = getUserId();
+    const profileId = getProfileId();
+
+    let filteredContent = [];
+    let newFilter = '';
+    let buttonText = '';
+    let buttonClass = '';
+
+    // Cycle through states: all -> watched -> unwatched -> all
+    switch (currentGenreData.currentFilter) {
+        case 'all':
+            // Show only watched content
+            filteredContent = currentGenreData.allContent.filter(item => item.isWatched === true);
+            newFilter = 'watched';
+            buttonText = 'Watched Only';
+            buttonClass = 'filter-watched';
+            break;
+            
+        case 'watched':
+            // Show only unwatched content
+            filteredContent = currentGenreData.allContent.filter(item => item.isWatched === false);
+            newFilter = 'unwatched';
+            buttonText = 'Unwatched Only';
+            buttonClass = 'filter-unwatched';
+            break;
+            
+        case 'unwatched':
+            // Show all content (back to original)
+            filteredContent = currentGenreData.allContent;
+            newFilter = 'all';
+            buttonText = 'All Content';
+            buttonClass = '';
+            break;
+            
+        default:
+            // Fallback to all content
+            filteredContent = currentGenreData.allContent;
+            newFilter = 'all';
+            buttonText = 'All Content';
+            buttonClass = '';
+    }
+
+    // Update current filter state
+    currentGenreData.currentFilter = newFilter;
+
+    // Update button appearance
+    toggleButton.textContent = buttonText;
+    toggleButton.className = `toggle-watched-button ${buttonClass}`;
+    toggleButton.setAttribute('data-filter', newFilter);
+
+    // Update title with new count
+    if (titleText) {
+        titleText.textContent = `${currentGenreData.genreName} Movies and TV Shows (${filteredContent.length} items)`;
+    }
+
+    // Update content display with filtered results
+    if (filteredContent.length === 0) {
+        const container = document.getElementById('files-container');
+        const emptyMessages = {
+            'watched': `No watched content found in ${currentGenreData.genreName}`,
+            'unwatched': `No unwatched content found in ${currentGenreData.genreName}`,
+            'all': `No content found in ${currentGenreData.genreName}`
+        };
+        
+        container.innerHTML = `
+            <div class="no-content">
+                <h3>${emptyMessages[newFilter]}</h3>
+                <p>Try a different filter or check back later!</p>
+            </div>
+        `;
+    } else {
+        updateContentDisplay(filteredContent, 'genre');
+    }
+
+    // Show notification about filter change
+    const filterMessages = {
+        'watched': `Showing ${filteredContent.length} watched items`,
+        'unwatched': `Showing ${filteredContent.length} unwatched items`,
+        'all': `Showing all ${filteredContent.length} items`
+    };
+    
+    showNotification(filterMessages[newFilter]);
+}
+
 // Return to main feed view
 function returnToMainFeed() {
+    // Reset genre data state
+    currentGenreData = {
+        genreName: '',
+        allContent: [],
+        currentFilter: 'all'
+    };
+
     // Show recommendations section again
     const recommendationsSection = document.querySelector('.recommendations-section');
     if (recommendationsSection) {
@@ -457,8 +580,9 @@ function returnToMainFeed() {
     loadContent();
 }
 
-// Make returnToMainFeed available globally for onclick handler
+// Make functions available globally for onclick handlers
 window.returnToMainFeed = returnToMainFeed;
+window.toggleWatchedFilter = toggleWatchedFilter;
 
 // Set up watch tracking for content cards
 function setupWatchTracking() {
