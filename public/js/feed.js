@@ -65,7 +65,11 @@ async function loadRecommendations() {
             
             container.appendChild(recommendationsRow);
             
-            setupWatchTracking();
+            // Set up functionality for recommendation content
+            setTimeout(() => {
+                setupWatchTracking();
+                setupLikeButtons();
+            }, 50);
             
         } else {
             container.innerHTML = `
@@ -105,7 +109,7 @@ async function loadContent() {
         }
         
         // Update title with count
-        titleElement.textContent = `Your Movies and TV shows (${feedData.totalCount || 0} items)`;
+        titleElement.innerHTML = `Your Movies and TV shows (${feedData.totalCount || 0} items)`;
         
         // Clear loading message
         container.innerHTML = '';
@@ -168,6 +172,9 @@ async function loadContent() {
                 genreSection.appendChild(genreRow);
                 container.appendChild(genreSection);
             });
+            
+            // Set up genre click handlers after all content is loaded
+            handleGenreClick();
             
             // Set up watch tracking for content clicks
             setupWatchTracking();
@@ -274,16 +281,23 @@ function updateAllContentCards(contentName, isLiked) {
 
 // Initialize like button handlers for server-rendered content
 function setupLikeButtons() {
+    // Get all like icons (fresh elements from innerHTML)
     const likeIcons = document.querySelectorAll('.like-icon');
+    
+    console.log(`Setting up ${likeIcons.length} like buttons`); // Debug log
     
     likeIcons.forEach(icon => {
         icon.addEventListener('click', async (e) => {
             e.preventDefault();
             e.stopPropagation();
             
+            console.log('Like button clicked!'); // Debug log
+            
             const contentName = icon.getAttribute('data-content-name');
             const userId = getUserId();
             const profileId = getProfileId();
+            
+            console.log('Like data:', { contentName, userId, profileId }); // Debug log
             
             if (!contentName || !userId || !profileId) {
                 console.error('Missing content name, user ID, or profile ID');
@@ -312,6 +326,12 @@ function setupLikeButtons() {
                     // Update ALL instances of this content across the page
                     updateAllContentCards(contentName, result.data.isLiked);
                     
+                    // Show feedback message
+                    const message = result.data.isLiked ? 
+                        `❤️ Added "${contentName}" to your liked content!` : 
+                        `💔 Removed "${contentName}" from your liked content!`;
+                    showNotification(message);
+                    
                 } else {
                     console.error('Failed to toggle like:', result.error);
                     showNotification('Failed to update like. Please try again.', 'error');
@@ -325,10 +345,121 @@ function setupLikeButtons() {
     });
 }
 
+// Handle clicking on genre -> redirect to genre page
+function handleGenreClick() {
+    try {
+        // Get all genre titles
+        const genreElems = document.querySelectorAll('.genre-title');
+
+        genreElems.forEach(element => {
+            // Remove any existing event listeners to prevent duplicates
+            element.replaceWith(element.cloneNode(true));
+        });
+
+        // Re-get the elements after cloning and add fresh listeners
+        const freshGenreElems = document.querySelectorAll('.genre-title');
+
+        freshGenreElems.forEach(element => {
+            element.addEventListener('click', async (e) => {
+                // Don't trigger for the recommendations section
+                if (element.textContent === 'Recommended for You') {
+                    return;
+                }
+
+                const genreName = element.innerText;
+
+                if (!genreName) {
+                    console.error('Failed to fetch genre name from html');
+                    return;
+                }
+
+                try {
+                    const userId = getUserId();
+                    const profileId = getProfileId();
+                    const result = await UserAPI.fetchContentByGenre(genreName, userId, profileId);
+
+                    if (result && result.length > 0) {
+                        // Switch to genre view
+                        switchToGenreView(genreName, result);
+                    } else {
+                        console.error('No content found for genre:', genreName);
+                        const container = document.getElementById('files-container');
+                        container.innerHTML = `
+                            <div class="no-content">
+                                <h3>No ${genreName} content found</h3>
+                                <p>Check back later for new movies and shows!</p>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch content by genre', error);
+                    showNotification('Failed to load genre content. Please try again.', 'error');
+                }
+            });
+        });
+
+    } catch (error) {
+        console.error('Failed to setup genre click handlers', error);
+        showNotification('Failed to setup genre navigation. Please try again.', 'error');
+    }
+}
+
+// Switch to genre view (hide recommendations, show back button)
+function switchToGenreView(genreName, content) {
+    console.log(`Switching to genre view for: ${genreName} with ${content.length} items`); // Debug log
+    
+    // Update page title with back button
+    const titleElement = document.getElementById('content-title');
+    if (titleElement) {
+        titleElement.innerHTML = `
+            <span class="back-button" onclick="returnToMainFeed()">← Back to Feed</span>
+            <span class="genre-title-text">${genreName} Movies and TV Shows (${content.length} items)</span>
+        `;
+    }
+
+    // Update content display (this will handle hiding recommendations)
+    updateContentDisplay(content, 'genre');
+}
+
+// Return to main feed view
+function returnToMainFeed() {
+    // Show recommendations section again
+    const recommendationsSection = document.querySelector('.recommendations-section');
+    if (recommendationsSection) {
+        recommendationsSection.style.display = 'block';
+    }
+
+    // Clear search input if it's visible
+    const searchInput = document.querySelector('.search-input');
+    if (searchInput && searchInput.classList.contains('visible')) {
+        searchInput.value = '';
+        searchInput.classList.remove('visible');
+        
+        const sortButton = document.querySelector('.sort-button');
+        if (sortButton) {
+            sortButton.classList.remove('visible', 'active');
+        }
+    }
+
+    // Restore original title (will be updated by loadContent)
+    const titleElement = document.getElementById('content-title');
+    if (titleElement) {
+        titleElement.innerHTML = 'Loading your content...';
+    }
+
+    // Reload the main content
+    loadContent();
+}
+
+// Make returnToMainFeed available globally for onclick handler
+window.returnToMainFeed = returnToMainFeed;
+
 // Set up watch tracking for content cards
 function setupWatchTracking() {
     // Get all content cards (but not like buttons)
     const contentCards = document.querySelectorAll('.genre-file, .file');
+    
+    console.log(`Setting up watch tracking for ${contentCards.length} content cards`); // Debug log
     
     contentCards.forEach(card => {
         // Remove any existing click listeners to avoid duplicates
@@ -340,10 +471,13 @@ function setupWatchTracking() {
     
     freshContentCards.forEach(card => {
         card.addEventListener('click', async (e) => {
-            // Don't trigger if clicking on like button
-            if (e.target.classList.contains('like-icon')) {
+            // Don't trigger if clicking on like button or any child of like button
+            if (e.target.classList.contains('like-icon') || e.target.closest('.like-icon')) {
+                console.log('Click on like button detected, not triggering watch'); // Debug log
                 return;
             }
+            
+            console.log('Content card clicked for watch tracking'); // Debug log
             
             const contentName = card.getAttribute('data-content-name');
             const userId = getUserId();
@@ -395,13 +529,13 @@ function setupSearch() {
         if (searchInput.classList.contains('visible')) {
             searchInput.focus();
         } else {
-            // Clear search and restore genre view
+            // Clear search and restore main feed view
             searchInput.value = '';
             // Reset sort button state when closing search
             if (sortButton) {
                 sortButton.classList.remove('active');
             }
-            window.location.reload();
+            returnToMainFeed();
         }
     });
     
@@ -457,7 +591,16 @@ async function searchContent() {
                 searchResults = searchResults.sort((a, b) => a.name.localeCompare(b.name));
             }
             
-            updateContentDisplay(searchResults);
+            // Update title to show search results with back button
+            const titleElement = document.getElementById('content-title');
+            if (titleElement) {
+                titleElement.innerHTML = `
+                    <span class="back-button" onclick="returnToMainFeed()">← Back to Feed</span>
+                    <span class="genre-title-text">Search Results for "${query}" (${searchResults.length} items)</span>
+                `;
+            }
+            
+            updateContentDisplay(searchResults, 'search');
         } else {
             console.error('Search failed:', result.error);
         }
@@ -510,12 +653,18 @@ function createContentCard(item) {
 }
 
 // Update content display with search results (switches to grid view)
-function updateContentDisplay(content) {
+function updateContentDisplay(content, viewType = 'search') {
     const container = document.getElementById('files-container');
     
     if (content.length === 0) {
         container.innerHTML = '<div class="no-content"><h3>No results found</h3></div>';
         return;
+    }
+    
+    // Hide recommendations when showing search/genre results
+    const recommendationsSection = document.querySelector('.recommendations-section');
+    if (recommendationsSection && viewType !== 'main') {
+        recommendationsSection.style.display = 'none';
     }
     
     // Switch container to grid layout for search results
@@ -524,11 +673,16 @@ function updateContentDisplay(content) {
     // Generate HTML for all content cards
     container.innerHTML = content.map(item => createContentCard(item)).join('');
     
-    // Re-initialize like buttons for new content
-    setupLikeButtons();
+    console.log(`Updated content display with ${content.length} items, viewType: ${viewType}`); // Debug log
     
-    // Re-initialize watch tracking for new content
-    setupWatchTracking();
+    // Use setTimeout to ensure DOM is fully updated before setting up event listeners
+    setTimeout(() => {
+        // IMPORTANT: Set up watch tracking FIRST since it clones elements
+        setupWatchTracking();
+        
+        // Then set up like buttons AFTER watch tracking
+        setupLikeButtons();
+    }, 100);
 }
 
 // Show a notification message to the user

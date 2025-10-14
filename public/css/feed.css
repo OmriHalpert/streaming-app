@@ -301,6 +301,43 @@ a:hover {
     font-size: 24px;
 }
 
+/* Back button styling */
+.back-button {
+    color: #e50914;
+    cursor: pointer;
+    font-size: 18px;
+    margin-right: 15px;
+    padding: 8px 12px;
+    border: 1px solid #e50914;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    display: inline-block;
+    background: rgba(229, 9, 20, 0.1);
+}
+
+.back-button:hover {
+    background: #e50914;
+    color: white;
+    transform: translateX(-2px);
+}
+
+/* Genre title text when showing genre view */
+.genre-title-text {
+    color: white;
+    font-size: 24px;
+    vertical-align: middle;
+}
+
+/* Make genre titles clickable (except recommendations) */
+.genre-title:not([data-no-click]) {
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.genre-title:not([data-no-click]):hover {
+    color: #e50914;
+}
+
 /* Main container for files */
 .files-container {
     display: flex;
