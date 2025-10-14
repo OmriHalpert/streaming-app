@@ -15,11 +15,7 @@
   <body data-profile-id="<%= profileId %>" data-user-id="<%= userId %>">
     <div class="feed-header">
       <div class="netflix-logo">
-        <img
-          src="/resources/netflix_logo.png"
-          alt="Netflix Logo"
-          width="100"
-        />
+        <img src="/resources/netflix_logo.png" alt="Netflix Logo" width="100" />
       </div>
       <div class="nav-selection-container">
         <button class="hamburger-btn">☰</button>
@@ -34,14 +30,18 @@
       </div>
       <div class="settings-container">
         <div class="search-container">
-          <input type="text" class="search-input" placeholder="Search for a title...">
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search for a title..."
+          />
           <button class="sort-button">A-Z</button>
           <img
             src="/resources/search_icon.png"
             alt="Search Icon"
             width="25"
             class="search-icon"
-            style="cursor: pointer;"
+            style="cursor: pointer"
           />
         </div>
         <a href="/logout">
@@ -60,18 +60,29 @@
       </div>
     </div>
 
-    <div class="files-title">
-      <h2 id="content-title">Loading your content...</h2>
-    </div>
-    
-    <div class="recommendations-section genre-section">
-      <h2 class="genre-title">Recommended for You</h2>
-      <div class="recommendations-container" id="recommendations-container">
-        <!-- Empty container, recommendations renders using API -->
+    <div class="page-container">
+      <aside class="feed-aside">
+        <h3 style="color: white; padding: 0 24px; margin: 0 0 10px 0; font-size: 18px;">Browse by Genre</h3>
+        <div class="genre-list">
+          <!-- Empty list, genres render using API -->
+        </div>
+      </aside>
+      <div class="feed-container">
+        <div class="files-title">
+        <h2 id="content-title">Loading your content...</h2>
       </div>
-    </div>    <!-- Empty container, feed renders using API -->
-    <div class="genre-container" id="files-container">
-      <div class="loading">Loading content...</div>
+
+      <div class="recommendations-section genre-section">
+        <h2 class="genre-title">Recommended for You</h2>
+        <div class="recommendations-container" id="recommendations-container">
+          <!-- Empty container, recommendations renders using API -->
+        </div>
+      </div>
+      <!-- Empty container, feed renders using API -->
+      <div class="genre-container" id="files-container">
+        <div class="loading">Loading content...</div>
+      </div>
+      </div>
     </div>
   </body>
 </html>

@@ -98,6 +98,54 @@ body {
     border: 1px solid #1e7e34;
 }
 
+/* Aside styles */
+.feed-aside {
+    height: 100vh;
+    width: 220px;
+    background-color: #181818;
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 80px; /* below header */
+    z-index: 900;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+    border-right: 1px solid #333;
+}
+
+.genre-list {
+    width: 100%;
+    list-style: none;
+    margin: 0;
+    padding: 20px 0;
+}
+
+.genre-list li {
+    width: 100%;
+    padding: 14px 24px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.2s, color 0.2s;
+    white-space: normal;
+    word-wrap: break-word;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.genre-list li:hover,
+.genre-list li.active {
+    background-color: #282828;
+    color: #e50914;
+}
+
+/* feed body styles */
+.feed-container {
+    margin-left: 220px;
+    min-height: 100vh;
+}
+
 /* Header styles */
 .feed-header {
     height: 60px;
@@ -147,6 +195,16 @@ body {
 
 /* Shifts between full nav menu and hamburger menu */
 @media (max-width: 1130px) {
+    /* Hide aside on smaller screens */
+    .feed-aside {
+        display: none;
+    }
+    
+    /* Remove margin when aside is hidden */
+    .feed-container {
+        margin-left: 0;
+    }
+    
     /* Displays hamburger menu button */
     .hamburger-btn {
         display: block;
@@ -616,4 +674,9 @@ a:hover {
     object-fit: cover;
     border-radius: 50%;
     transition: opacity 0.3s ease;
+}
+
+.page-container {
+    display: flex;
+    flex-direction: row;
 }
