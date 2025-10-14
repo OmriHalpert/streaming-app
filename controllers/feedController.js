@@ -1,4 +1,4 @@
-const { getContentForFeed, toggleContentLike: toggleLike, searchContent: searchContentService, markAsWatched } = require('../services/contentService');
+const { getContentForFeed, toggleContentLike: toggleLike, searchContent: searchContentService, markAsWatched, getContentByGenre } = require('../services/contentService');
 const { getUserProfiles: getUserProfilesService } = require('../services/userService');
 const { getRecommendations: getRecommendationsService } = require('../services/recommendationService');
 
@@ -176,11 +176,47 @@ async function getRecommendations(req, res) {
     }
 }
 
+async function getGenreContent(req, res) {
+    try {
+        const { genreName } = req.params;
+        const { userId, profileId, page, limit } = req.query;
+
+        if (!genreName) {
+            return res.status(400).json({
+                success: false,
+                error: 'Genre name is required'
+            }); 
+        }
+
+        // Convert to integers if provided
+        const userIdInt = userId ? parseInt(userId) : null;
+        const profileIdInt = profileId ? parseInt(profileId) : null;
+        const pageInt = page ? parseInt(page) : 1;
+        const limitInt = limit ? parseInt(limit) : null;
+
+        const genreData = await getContentByGenre(genreName, userIdInt, profileIdInt, pageInt, limitInt);
+
+        res.json({
+            success: true,
+            data: genreData.content,
+            pagination: genreData.pagination
+        });
+    } catch (error) {
+        console.error('Error fetching content by genre', error);
+
+        res.status(500).json({
+            success: false,
+            error: 'Unable to fetch content right now'
+        });
+    }
+}
+
 module.exports = {
     renderFeedPage,
     getContent,
     toggleContentLike,
     searchContent,
     markContentAsWatched,
-    getRecommendations
+    getRecommendations,
+    getGenreContent
 };
