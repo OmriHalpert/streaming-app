@@ -129,6 +129,54 @@ async function toggleContentLike(userId, profileId, contentName) {
     }
 }
 
+async function fetchContentByGenre(genreName, userId = null, profileId = null, page = 1, limit = null) {
+    try {
+        let url = `/api/content/${encodeURIComponent(genreName)}`;
+        
+        const params = new URLSearchParams();
+        
+        // Add query parameters if provided
+        if (userId && profileId) {
+            params.append('userId', userId);
+            params.append('profileId', profileId);
+        }
+        
+        if (page) {
+            params.append('page', page);
+        }
+        
+        if (limit) {
+            params.append('limit', limit);
+        }
+        
+        if (params.toString()) {
+            url += `?${params.toString()}`;
+        }
+        
+        const response = await fetch(url);
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            return {
+                content: result.data,
+                pagination: result.pagination
+            };
+        } else {
+            console.error('Failed to fetch content by genre', result.error);
+            return {
+                content: [],
+                pagination: null
+            };
+        }
+    } catch (error) {
+        console.error('Error fetching content by genre:', error);
+        return {
+            content: [],
+            pagination: null
+        };
+    }
+}
+
 // Make functions available globally
 window.UserAPI = {
     fetchUserProfiles,
@@ -136,5 +184,6 @@ window.UserAPI = {
     fetchContent,
     markContentAsWatched,
     fetchRecommendations,
-    toggleContentLike
+    toggleContentLike,
+    fetchContentByGenre
 };
