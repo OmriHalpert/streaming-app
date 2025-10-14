@@ -1,20 +1,28 @@
-const { Router } = require('express');
-const { toggleContentLike, searchContent, getContent, markContentAsWatched, getRecommendations, getGenreContent } = require('../controllers/feedController');
+// Content router (/api/content)
+// Imports
+const { Router } = require("express");
+const {
+  toggleContentLike,
+  searchContent,
+  getContent,
+  markContentAsWatched,
+  getRecommendations,
+  getGenreContent,
+} = require("../controllers/feedController");
+const { requireAuth } = require("../middleware/auth"); // Import authentication middleware
 
-// Import authentication middleware
-const { requireAuth } = require('../middleware/auth');
-
+// Declarations
 const contentRouter = Router();
 
 // Protected routes - Apply to entire router
 contentRouter.use(requireAuth);
 
 // Content routes
-contentRouter.get('/', getContent);
-contentRouter.get('/recommendations/:userId/:profileId', getRecommendations);
-contentRouter.post('/like', toggleContentLike);
-contentRouter.post('/:contentName/watch', markContentAsWatched);
-contentRouter.get('/search', searchContent);
-contentRouter.get('/:genreName', getGenreContent);
+contentRouter.get("/", getContent);
+contentRouter.get("/recommendations/:userId/:profileId", getRecommendations);
+contentRouter.post("/like", toggleContentLike);
+contentRouter.post("/:contentName/watch", markContentAsWatched);
+contentRouter.get("/search", searchContent);
+contentRouter.get("/:genreName", getGenreContent);
 
 module.exports = { contentRouter };
