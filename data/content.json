@@ -330,14 +330,1218 @@
     ]
   },
   {
-    "name": "Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test ",
-    "year": 2013,
+    "name": "Avengers: Endgame",
+    "year": 2019,
     "genre": [
+      "Action",
+      "Adventure",
+      "Sci-Fi"
+    ],
+    "likes": 250,
+    "profileLikes": [
+      1,
+      2
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ],
+    "thumbnail": "/resources/thumbnails/avengers_endgame.jpg"
+  },
+  {
+    "name": "The Lord of the Rings",
+    "year": 2001,
+    "genre": [
+      "Adventure",
+      "Fantasy",
+      "Drama"
+    ],
+    "likes": 210,
+    "profileLikes": [
+      1
+    ],
+    "profileWatched": [
+      1,
+      2
+    ],
+    "thumbnail": "/resources/thumbnails/lord_of_the_rings.jpg"
+  },
+  {
+    "name": "Pulp Fiction",
+    "year": 1994,
+    "genre": [
+      "Crime",
+      "Drama"
+    ],
+    "likes": 195,
+    "profileLikes": [
+      2
+    ],
+    "profileWatched": [
+      2,
+      3
+    ],
+    "thumbnail": "/resources/thumbnails/pulp_fiction.jpg"
+  },
+  {
+    "name": "The Matrix",
+    "year": 1999,
+    "genre": [
+      "Action",
+      "Sci-Fi"
+    ],
+    "likes": 185,
+    "profileLikes": [
+      1,
+      3
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ],
+    "thumbnail": "/resources/thumbnails/the_matrix.jpg"
+  },
+  {
+    "name": "Forrest Gump",
+    "year": 1994,
+    "genre": [
+      "Drama",
+      "Romance"
+    ],
+    "likes": 175,
+    "profileLikes": [
+      1
+    ],
+    "profileWatched": [
+      1,
+      3
+    ],
+    "thumbnail": "/resources/thumbnails/forrest_gump.jpg"
+  },
+  {
+    "name": "The Godfather",
+    "year": 1972,
+    "genre": [
+      "Crime",
+      "Drama"
+    ],
+    "likes": 230,
+    "profileLikes": [
+      2,
+      3
+    ],
+    "profileWatched": [
+      2,
+      3
+    ],
+    "thumbnail": "/resources/thumbnails/the_godfather.jpg"
+  },
+  {
+    "name": "Spider-Man: No Way Home",
+    "year": 2021,
+    "genre": [
+      "Action",
+      "Adventure",
+      "Sci-Fi"
+    ],
+    "likes": 220,
+    "profileLikes": [
+      1,
+      2,
+      3
+    ],
+    "profileWatched": [
+      1,
+      2
+    ],
+    "thumbnail": "/resources/thumbnails/spiderman_no_way_home.jpg"
+  },
+  {
+    "name": "Joker",
+    "year": 2019,
+    "genre": [
+      "Crime",
       "Drama",
       "Thriller"
     ],
-    "likes": 140,
-    "profileLikes": [],
-    "profileWatched": []
+    "likes": 165,
+    "profileLikes": [
+      2
+    ],
+    "profileWatched": [
+      2,
+      3
+    ],
+    "thumbnail": "/resources/thumbnails/joker.jpg"
+  },
+  {
+    "name": "Top Gun: Maverick",
+    "year": 2022,
+    "genre": [
+      "Action",
+      "Drama"
+    ],
+    "likes": 190,
+    "profileLikes": [
+      1,
+      3
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ],
+    "thumbnail": "/resources/thumbnails/top_gun_maverick.jpg"
+  },
+  {
+    "name": "Dune",
+    "year": 2021,
+    "genre": [
+      "Adventure",
+      "Drama",
+      "Sci-Fi"
+    ],
+    "likes": 175,
+    "profileLikes": [
+      1
+    ],
+    "profileWatched": [
+      1,
+      2
+    ],
+    "thumbnail": "/resources/thumbnails/dune.jpg"
+  },
+  {
+    "name": "The Batman",
+    "year": 2022,
+    "genre": [
+      "Action",
+      "Crime",
+      "Drama"
+    ],
+    "likes": 180,
+    "profileLikes": [
+      2,
+      3
+    ],
+    "profileWatched": [
+      2,
+      3
+    ],
+    "thumbnail": "/resources/thumbnails/the_batman.jpg"
+  },
+  {
+    "name": "Wednesday",
+    "year": 2022,
+    "genre": [
+      "Comedy",
+      "Horror",
+      "Mystery"
+    ],
+    "likes": 185,
+    "profileLikes": [
+      1,
+      2
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ],
+    "thumbnail": "/resources/thumbnails/wednesday.jpg"
+  },
+  {
+    "name": "House of the Dragon",
+    "year": 2022,
+    "genre": [
+      "Adventure",
+      "Drama",
+      "Fantasy"
+    ],
+    "likes": 170,
+    "profileLikes": [
+      2
+    ],
+    "profileWatched": [
+      2,
+      3
+    ],
+    "thumbnail": "/resources/thumbnails/house_of_the_dragon.jpg"
+  },
+  {
+    "name": "The Bear",
+    "year": 2022,
+    "genre": [
+      "Comedy",
+      "Drama"
+    ],
+    "likes": 160,
+    "profileLikes": [
+      1,
+      3
+    ],
+    "profileWatched": [
+      1,
+      3
+    ],
+    "thumbnail": "/resources/thumbnails/the_bear.jpg"
+  },
+  {
+    "name": "Euphoria",
+    "year": 2019,
+    "genre": [
+      "Drama"
+    ],
+    "likes": 155,
+    "profileLikes": [
+      2
+    ],
+    "profileWatched": [
+      2,
+      3
+    ]
+  },
+  {
+    "name": "The Queen's Gambit",
+    "year": 2020,
+    "genre": [
+      "Drama"
+    ],
+    "likes": 180,
+    "profileLikes": [
+      1,
+      2,
+      3
+    ],
+    "profileWatched": [
+      1,
+      2
+    ],
+    "thumbnail": "/resources/thumbnails/queens_gambit.jpg"
+  },
+  {
+    "name": "Squid Game",
+    "year": 2021,
+    "genre": [
+      "Drama",
+      "Thriller",
+      "Horror"
+    ],
+    "likes": 200,
+    "profileLikes": [
+      2,
+      3
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ],
+    "thumbnail": "/resources/thumbnails/squid_game.jpg"
+  },
+  {
+    "name": "Money Heist",
+    "year": 2017,
+    "genre": [
+      "Action",
+      "Crime",
+      "Drama"
+    ],
+    "likes": 165,
+    "profileLikes": [
+      1
+    ],
+    "profileWatched": [
+      1,
+      3
+    ]
+  },
+  {
+    "name": "The Last of Us",
+    "year": 2023,
+    "genre": [
+      "Adventure",
+      "Drama",
+      "Horror"
+    ],
+    "likes": 190,
+    "profileLikes": [
+      1,
+      2
+    ],
+    "profileWatched": [
+      1,
+      2
+    ],
+    "thumbnail": "/resources/thumbnails/the_last_of_us.jpg"
+  },
+  {
+    "name": "Ozark",
+    "year": 2017,
+    "genre": [
+      "Crime",
+      "Drama",
+      "Thriller"
+    ],
+    "likes": 170,
+    "profileLikes": [
+      3
+    ],
+    "profileWatched": [
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Better Call Saul",
+    "year": 2015,
+    "genre": [
+      "Crime",
+      "Drama"
+    ],
+    "likes": 175,
+    "profileLikes": [
+      2
+    ],
+    "profileWatched": [
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Succession",
+    "year": 2018,
+    "genre": [
+      "Comedy",
+      "Drama"
+    ],
+    "likes": 165,
+    "profileLikes": [
+      1,
+      3
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Peaky Blinders",
+    "year": 2013,
+    "genre": [
+      "Crime",
+      "Drama"
+    ],
+    "likes": 180,
+    "profileLikes": [
+      2,
+      3
+    ],
+    "profileWatched": [
+      2,
+      3
+    ]
+  },
+  {
+    "name": "The Boys",
+    "year": 2019,
+    "genre": [
+      "Action",
+      "Comedy",
+      "Crime"
+    ],
+    "likes": 175,
+    "profileLikes": [
+      1,
+      2
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Bridgerton",
+    "year": 2020,
+    "genre": [
+      "Drama",
+      "Romance"
+    ],
+    "likes": 155,
+    "profileLikes": [
+      1
+    ],
+    "profileWatched": [
+      1,
+      2
+    ]
+  },
+  {
+    "name": "Arcane",
+    "year": 2021,
+    "genre": [
+      "Animation",
+      "Action",
+      "Adventure"
+    ],
+    "likes": 185,
+    "profileLikes": [
+      1,
+      2,
+      3
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ],
+    "thumbnail": "/resources/thumbnails/arcane.jpg"
+  },
+  {
+    "name": "Ted Lasso",
+    "year": 2020,
+    "genre": [
+      "Comedy",
+      "Drama",
+      "Sport"
+    ],
+    "likes": 170,
+    "profileLikes": [
+      1,
+      3
+    ],
+    "profileWatched": [
+      1,
+      3
+    ]
+  },
+  {
+    "name": "Encanto",
+    "year": 2021,
+    "genre": [
+      "Animation",
+      "Adventure",
+      "Comedy"
+    ],
+    "likes": 190,
+    "profileLikes": [
+      1,
+      2
+    ],
+    "profileWatched": [
+      1,
+      2
+    ],
+    "thumbnail": "/resources/thumbnails/encanto.jpg"
+  },
+  {
+    "name": "Spider-Man: Into the Spider-Verse",
+    "year": 2018,
+    "genre": [
+      "Animation",
+      "Action",
+      "Adventure"
+    ],
+    "likes": 200,
+    "profileLikes": [
+      1,
+      2,
+      3
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ],
+    "thumbnail": "/resources/thumbnails/spider_verse.jpg"
+  },
+  {
+    "name": "Everything Everywhere All at Once",
+    "year": 2022,
+    "genre": [
+      "Adventure",
+      "Comedy",
+      "Sci-Fi"
+    ],
+    "likes": 185,
+    "profileLikes": [
+      1,
+      2
+    ],
+    "profileWatched": [
+      1,
+      2
+    ],
+    "thumbnail": "/resources/thumbnails/everything_everywhere.jpg"
+  },
+  {
+    "name": "No Time to Die",
+    "year": 2021,
+    "genre": [
+      "Action",
+      "Adventure",
+      "Thriller"
+    ],
+    "likes": 160,
+    "profileLikes": [
+      3
+    ],
+    "profileWatched": [
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Black Panther",
+    "year": 2018,
+    "genre": [
+      "Action",
+      "Adventure",
+      "Sci-Fi"
+    ],
+    "likes": 195,
+    "profileLikes": [
+      1,
+      2
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ],
+    "thumbnail": "/resources/thumbnails/black_panther.jpg"
+  },
+  {
+    "name": "Parasite",
+    "year": 2019,
+    "genre": [
+      "Comedy",
+      "Drama",
+      "Thriller"
+    ],
+    "likes": 180,
+    "profileLikes": [
+      2,
+      3
+    ],
+    "profileWatched": [
+      2,
+      3
+    ],
+    "thumbnail": "/resources/thumbnails/parasite.jpg"
+  },
+  {
+    "name": "1917",
+    "year": 2019,
+    "genre": [
+      "Drama",
+      "War"
+    ],
+    "likes": 170,
+    "profileLikes": [
+      1
+    ],
+    "profileWatched": [
+      1,
+      2
+    ]
+  },
+  {
+    "name": "A Quiet Place",
+    "year": 2018,
+    "genre": [
+      "Drama",
+      "Horror",
+      "Sci-Fi"
+    ],
+    "likes": 165,
+    "profileLikes": [
+      2,
+      3
+    ],
+    "profileWatched": [
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Knives Out",
+    "year": 2019,
+    "genre": [
+      "Comedy",
+      "Crime",
+      "Mystery"
+    ],
+    "likes": 175,
+    "profileLikes": [
+      1,
+      2
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Mad Max: Fury Road",
+    "year": 2015,
+    "genre": [
+      "Action",
+      "Adventure",
+      "Sci-Fi"
+    ],
+    "likes": 180,
+    "profileLikes": [
+      2
+    ],
+    "profileWatched": [
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Blade Runner 2049",
+    "year": 2017,
+    "genre": [
+      "Action",
+      "Drama",
+      "Sci-Fi"
+    ],
+    "likes": 160,
+    "profileLikes": [
+      1
+    ],
+    "profileWatched": [
+      1,
+      2
+    ]
+  },
+  {
+    "name": "The Social Network",
+    "year": 2010,
+    "genre": [
+      "Biography",
+      "Drama"
+    ],
+    "likes": 170,
+    "profileLikes": [
+      3
+    ],
+    "profileWatched": [
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Whiplash",
+    "year": 2014,
+    "genre": [
+      "Drama",
+      "Music"
+    ],
+    "likes": 175,
+    "profileLikes": [
+      1,
+      2
+    ],
+    "profileWatched": [
+      1,
+      2
+    ]
+  },
+  {
+    "name": "La La Land",
+    "year": 2016,
+    "genre": [
+      "Comedy",
+      "Drama",
+      "Music"
+    ],
+    "likes": 165,
+    "profileLikes": [
+      1
+    ],
+    "profileWatched": [
+      1,
+      3
+    ]
+  },
+  {
+    "name": "The Grand Budapest Hotel",
+    "year": 2014,
+    "genre": [
+      "Adventure",
+      "Comedy",
+      "Crime"
+    ],
+    "likes": 155,
+    "profileLikes": [
+      2
+    ],
+    "profileWatched": [
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Her",
+    "year": 2013,
+    "genre": [
+      "Drama",
+      "Romance",
+      "Sci-Fi"
+    ],
+    "likes": 150,
+    "profileLikes": [
+      1,
+      3
+    ],
+    "profileWatched": [
+      1,
+      3
+    ]
+  },
+  {
+    "name": "Ex Machina",
+    "year": 2014,
+    "genre": [
+      "Drama",
+      "Sci-Fi",
+      "Thriller"
+    ],
+    "likes": 165,
+    "profileLikes": [
+      2
+    ],
+    "profileWatched": [
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Get Out",
+    "year": 2017,
+    "genre": [
+      "Horror",
+      "Mystery",
+      "Thriller"
+    ],
+    "likes": 170,
+    "profileLikes": [
+      2,
+      3
+    ],
+    "profileWatched": [
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Moonlight",
+    "year": 2016,
+    "genre": [
+      "Drama"
+    ],
+    "likes": 155,
+    "profileLikes": [
+      1
+    ],
+    "profileWatched": [
+      1,
+      2
+    ]
+  },
+  {
+    "name": "The Shape of Water",
+    "year": 2017,
+    "genre": [
+      "Adventure",
+      "Drama",
+      "Fantasy"
+    ],
+    "likes": 160,
+    "profileLikes": [
+      1,
+      2
+    ],
+    "profileWatched": [
+      1,
+      2
+    ]
+  },
+  {
+    "name": "Coco",
+    "year": 2017,
+    "genre": [
+      "Animation",
+      "Adventure",
+      "Comedy"
+    ],
+    "likes": 190,
+    "profileLikes": [
+      1,
+      3
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ],
+    "thumbnail": "/resources/thumbnails/coco.jpg"
+  },
+  {
+    "name": "Soul",
+    "year": 2020,
+    "genre": [
+      "Animation",
+      "Adventure",
+      "Comedy"
+    ],
+    "likes": 175,
+    "profileLikes": [
+      1,
+      2
+    ],
+    "profileWatched": [
+      1,
+      2
+    ],
+    "thumbnail": "/resources/thumbnails/soul.jpg"
+  },
+  {
+    "name": "WALL-E",
+    "year": 2008,
+    "genre": [
+      "Animation",
+      "Adventure",
+      "Family"
+    ],
+    "likes": 185,
+    "profileLikes": [
+      1,
+      2,
+      3
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Finding Nemo",
+    "year": 2003,
+    "genre": [
+      "Animation",
+      "Adventure",
+      "Comedy"
+    ],
+    "likes": 180,
+    "profileLikes": [
+      1,
+      2
+    ],
+    "profileWatched": [
+      1,
+      2
+    ]
+  },
+  {
+    "name": "The Incredibles",
+    "year": 2004,
+    "genre": [
+      "Animation",
+      "Action",
+      "Adventure"
+    ],
+    "likes": 175,
+    "profileLikes": [
+      1
+    ],
+    "profileWatched": [
+      1,
+      3
+    ]
+  },
+  {
+    "name": "Frozen",
+    "year": 2013,
+    "genre": [
+      "Animation",
+      "Adventure",
+      "Comedy"
+    ],
+    "likes": 170,
+    "profileLikes": [
+      1,
+      2
+    ],
+    "profileWatched": [
+      1,
+      2
+    ]
+  },
+  {
+    "name": "Moana",
+    "year": 2016,
+    "genre": [
+      "Animation",
+      "Adventure",
+      "Comedy"
+    ],
+    "likes": 165,
+    "profileLikes": [
+      1
+    ],
+    "profileWatched": [
+      1,
+      2
+    ]
+  },
+  {
+    "name": "Zootopia",
+    "year": 2016,
+    "genre": [
+      "Animation",
+      "Adventure",
+      "Comedy"
+    ],
+    "likes": 170,
+    "profileLikes": [
+      1,
+      2
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "The Lion King",
+    "year": 1994,
+    "genre": [
+      "Animation",
+      "Adventure",
+      "Drama"
+    ],
+    "likes": 200,
+    "profileLikes": [
+      1,
+      2,
+      3
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Shrek",
+    "year": 2001,
+    "genre": [
+      "Animation",
+      "Adventure",
+      "Comedy"
+    ],
+    "likes": 180,
+    "profileLikes": [
+      1,
+      3
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "The Fast and the Furious",
+    "year": 2001,
+    "genre": [
+      "Action",
+      "Crime",
+      "Thriller"
+    ],
+    "likes": 160,
+    "profileLikes": [
+      2
+    ],
+    "profileWatched": [
+      2,
+      3
+    ]
+  },
+  {
+    "name": "John Wick",
+    "year": 2014,
+    "genre": [
+      "Action",
+      "Crime",
+      "Thriller"
+    ],
+    "likes": 185,
+    "profileLikes": [
+      2,
+      3
+    ],
+    "profileWatched": [
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Mission: Impossible",
+    "year": 1996,
+    "genre": [
+      "Action",
+      "Adventure",
+      "Thriller"
+    ],
+    "likes": 170,
+    "profileLikes": [
+      3
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Casino Royale",
+    "year": 2006,
+    "genre": [
+      "Action",
+      "Adventure",
+      "Thriller"
+    ],
+    "likes": 175,
+    "profileLikes": [
+      1,
+      2
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Wonder Woman",
+    "year": 2017,
+    "genre": [
+      "Action",
+      "Adventure",
+      "Fantasy"
+    ],
+    "likes": 165,
+    "profileLikes": [
+      1,
+      2
+    ],
+    "profileWatched": [
+      1,
+      2
+    ]
+  },
+  {
+    "name": "Guardians of the Galaxy",
+    "year": 2014,
+    "genre": [
+      "Action",
+      "Adventure",
+      "Comedy"
+    ],
+    "likes": 180,
+    "profileLikes": [
+      1,
+      2,
+      3
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Doctor Strange",
+    "year": 2016,
+    "genre": [
+      "Action",
+      "Adventure",
+      "Fantasy"
+    ],
+    "likes": 170,
+    "profileLikes": [
+      1
+    ],
+    "profileWatched": [
+      1,
+      2
+    ]
+  },
+  {
+    "name": "Thor: Ragnarok",
+    "year": 2017,
+    "genre": [
+      "Action",
+      "Adventure",
+      "Comedy"
+    ],
+    "likes": 175,
+    "profileLikes": [
+      1,
+      3
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Iron Man",
+    "year": 2008,
+    "genre": [
+      "Action",
+      "Adventure",
+      "Sci-Fi"
+    ],
+    "likes": 185,
+    "profileLikes": [
+      1,
+      2
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Captain America: The Winter Soldier",
+    "year": 2014,
+    "genre": [
+      "Action",
+      "Adventure",
+      "Sci-Fi"
+    ],
+    "likes": 170,
+    "profileLikes": [
+      2
+    ],
+    "profileWatched": [
+      1,
+      2,
+      3
+    ]
   }
 ]

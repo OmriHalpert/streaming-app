@@ -121,6 +121,38 @@ body {
     list-style: none;
     margin: 0;
     padding: 20px 0;
+    height: calc(100vh - 100px); /* Allow space for header and padding */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+}
+
+/* Custom scrollbar styling for genre list */
+.genre-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.genre-list::-webkit-scrollbar-track {
+    background: #181818;
+}
+
+.genre-list::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+.genre-list::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+
+/* Hide scrollbar when not scrolling */
+.genre-list {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 0.3s ease;
+}
+
+.genre-list:hover {
+    scrollbar-color: #555 #181818;
 }
 
 .genre-list li {
@@ -580,7 +612,6 @@ a:hover {
 /* Genre View Styles */
 .genre-container {
     display: block;
-    padding: 20px;
     width: 100%;
     box-sizing: border-box;
 }
@@ -599,7 +630,7 @@ a:hover {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 15px;
-    padding-left: 10px;
+    padding-left: 20px;
 }
 
 /* Genre row styles */
@@ -608,7 +639,7 @@ a:hover {
     gap: 15px;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 10px;
+    padding: 10px 20px;
     scroll-behavior: smooth;
     contain: layout;
     width: 100%;
@@ -622,17 +653,37 @@ a:hover {
 }
 
 .genre-row::-webkit-scrollbar-track {
-    background-color: #2f2f2f;
+    background-color: transparent;
     border-radius: 4px;
 }
 
 .genre-row::-webkit-scrollbar-thumb {
-    background-color: #555;
+    background-color: transparent;
     border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.genre-row:hover::-webkit-scrollbar-thumb {
+    background-color: #555;
 }
 
 .genre-row::-webkit-scrollbar-thumb:hover {
     background-color: #777;
+}
+
+/* Hide horizontal scrollbar when not needed */
+.genre-row {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+}
+
+.genre-row:hover {
+    scrollbar-color: #555 transparent;
+}
+
+/* Recommendations container alignment fix */
+.recommendations-container {
+    padding-left: 0; /* Remove any inherited padding */
 }
 
 .genre-file {
