@@ -52,6 +52,46 @@ async function getContentByName(contentName) {
     return foundContent;
 }
 
+// Get content by genre
+async function getContentByGenre(genreName, userId = null, profileId = null) {
+    // Validate genre name
+    if (!genreName || genreName.trim() === '') {
+        throw new Error('Genre name is required');
+    }
+
+    // Fetch all content
+    const content = await contentModel.getContent();
+    console.log('Content = ', content);
+    const foundContent = content.filter(item => item.genre.includes(genreName));
+    console.log('Filtered Content = ', foundContent);
+
+    if (!foundContent || foundContent.length === 0) {
+        throw new Error('Content not found');
+    }
+
+    // If userId and profileId provided, add isLiked and isWatched status
+    if (userId && profileId) {
+        const interactions = await profileInteractionService.getProfileInteractions(userId, profileId);
+        
+        const transformedContent = foundContent.map(item => ({
+            ...item.toObject(), // Convert Mongoose document to plain object
+            isLiked: interactions.profileLikes.includes(item.name),
+            isWatched: interactions.profileWatched.includes(item.name)
+        }));
+        
+        return transformedContent;
+    }
+
+    // Return plain content without interaction status
+    const plainContent = foundContent.map(item => ({
+        ...item.toObject(),
+        isLiked: false,
+        isWatched: false
+    }));
+
+    return plainContent;
+}
+
 // Search content
 async function searchContent(query, userId = null, profileId = null) {
     // Validate search query
@@ -201,6 +241,7 @@ async function markAsWatched(contentName, userId, profileId) {
 module.exports = {
     getAllContent,
     getContentByName,
+    getContentByGenre,
     toggleContentLike,
     getContentForFeed,
     searchContent,
