@@ -441,6 +441,12 @@ function returnToMainFeed() {
         }
     }
 
+    // Remove active class from aside genre items
+    const genreList = document.querySelector('.genre-list');
+    if (genreList) {
+        genreList.querySelectorAll('li').forEach(item => item.classList.remove('active'));
+    }
+
     // Restore original title (will be updated by loadContent)
     const titleElement = document.getElementById('content-title');
     if (titleElement) {
@@ -725,6 +731,92 @@ function setupHamburgerMenu() {
     }
 }
 
+// Initialize aside for genres
+async function setupAside() {
+    console.log('Starting setupAside function'); // Debug log
+    
+    const genreList = document.querySelector('.genre-list');
+    console.log('Genre list element:', genreList); // Debug log
+
+    if (!genreList) {
+        console.error('Genre list element not found');
+        return;
+    }
+
+    try {
+        // Get user data from page attributes
+        const userId = getUserId();
+        const profileId = getProfileId();
+        
+        console.log('User data for aside:', { userId, profileId }); // Debug log
+        
+        if (!userId || !profileId) {
+            console.error('User ID or Profile ID not found for aside setup');
+            return;
+        }
+
+        // Fetch content via API
+        console.log('Fetching content for aside...'); // Debug log
+        const feedData = await UserAPI.fetchContent(userId, profileId);
+        
+        console.log('Feed data received:', feedData); // Debug log
+        
+        if (!feedData || !feedData.genreGroups) {
+            console.error('No genre data found');
+            return;
+        }
+
+        const genres = feedData.genreGroups;
+        console.log('Genres found:', Object.keys(genres)); // Debug log
+
+        // Clear existing content
+        genreList.innerHTML = '';
+
+        // Check if we got content
+        if (genres && Object.keys(genres).length > 0) {
+            // Iterate over genre keys (genre names)
+            Object.keys(genres).forEach(genreName => {
+                console.log('Adding genre to aside:', genreName); // Debug log
+                
+                // Create new li element
+                const newGenreItem = document.createElement('li');
+                newGenreItem.textContent = genreName;
+                newGenreItem.setAttribute('data-genre', genreName);
+                
+                // Add click handler for genre navigation
+                newGenreItem.addEventListener('click', async () => {
+                    try {
+                        // Remove active class from all items
+                        genreList.querySelectorAll('li').forEach(item => item.classList.remove('active'));
+                        // Add active class to clicked item
+                        newGenreItem.classList.add('active');
+                        
+                        // Fetch and display genre content
+                        const result = await UserAPI.fetchContentByGenre(genreName, userId, profileId);
+                        if (result && result.length > 0) {
+                            switchToGenreView(genreName, result);
+                        }
+                    } catch (error) {
+                        console.error('Error loading genre from aside:', error);
+                        showNotification('Failed to load genre content', 'error');
+                    }
+                });
+
+                // Append item to list
+                genreList.appendChild(newGenreItem);
+            });
+            
+            console.log(`Successfully loaded ${Object.keys(genres).length} genres in aside`);
+        } else {
+            console.log('No genres found, showing fallback message');
+            genreList.innerHTML = '<li style="color: #666;">No genres available</li>';
+        }
+    } catch (error) {
+        console.error('Error setting up aside:', error);
+        genreList.innerHTML = '<li style="color: #666;">Error loading genres</li>';
+    }
+}
+
 // Initialize logout functionality
 function setupLogout() {
     const logoutLinks = document.querySelectorAll('a[href="/logout"]');
@@ -744,11 +836,23 @@ function setupLogout() {
 
 // Main initialization
 document.addEventListener('DOMContentLoaded', async () => {
+    // Debug: Check if aside exists
+    const aside = document.querySelector('.feed-aside');
+    const genreList = document.querySelector('.genre-list');
+    console.log('Aside element found:', !!aside);
+    console.log('Genre list element found:', !!genreList);
+    if (aside) {
+        console.log('Aside computed styles:', window.getComputedStyle(aside).display);
+    }
+    
     // Load recommendations first
     await loadRecommendations();
     
     // Load content
     await loadContent();
+
+    // Load aside
+    await setupAside();
     
     // Set up like buttons for everything
     setupLikeButtons();
