@@ -52,6 +52,8 @@ async function loginUser(email, password) {
     // Use API service for login
     const result = await UserAPI.loginUser(email, password);
 
+    console.log('output: ', result);
+
     if (result.success) {
       // Success - store complete user session and redirect
       const userSession = {
