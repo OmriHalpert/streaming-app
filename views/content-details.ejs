@@ -14,7 +14,7 @@
     <% if (content.type === 'show' && content.seasons) { %>
     <script>
       // Pass seasons data to JavaScript
-      window.seasonsData = "<%= JSON.stringify(content.seasons) %>";
+        window.seasonsData = <%- JSON.stringify(content.seasons) %>;
     </script>
     <% } %>
   </head>
@@ -117,6 +117,30 @@
           </div>
         </div>
       </div>
+
+    <!-- Cast Section -->
+    <% if (content.cast && content.cast.length> 0) { %>
+        <div class="cast-container">
+            <h2 class="cast-title">Cast</h2>
+            <div class="cast-grid">
+                <% content.cast.forEach(function(actor) { %>
+                    <div class="cast-member">
+                        <% if (actor.wikiUrl && actor.wikiUrl !=='' ) { %>
+                            <a href="<%= actor.wikiUrl %>" target="_blank" class="cast-link">
+                                <div class="cast-name">
+                                    <%= actor.name %>
+                                </div>
+                            </a>
+                            <% } else { %>
+                                <div class="cast-name">
+                                    <%= actor.name %>
+                                </div>
+                                <% } %>
+                    </div>
+                    <% }); %>
+            </div>
+        </div>
+        <% } %>
 
       <!-- Episodes Section (only for TV shows) -->
       <% if (content.type === 'show' && content.seasons && content.seasons.length > 0) { %>

@@ -16,11 +16,17 @@ console.log("Content Type:", contentType);
 
 // Initialize page
 function init() {
+  console.log("=== Initializing Content Details Page ===");
+  console.log("Content Type:", contentType);
+  console.log("Window seasonsData exists:", typeof window.seasonsData);
+  console.log("Window seasonsData value:", window.seasonsData);
+  
   setupPlayButton();
   setupLikeButton();
   loadUserProfile();
   
   if (contentType === 'show') {
+    console.log("Setting up TV show components...");
     setupSeasonDropdown();
     loadEpisodes(currentSeason);
   }
@@ -207,16 +213,25 @@ function setupSeasonDropdown() {
 // Load episodes for selected season
 function loadEpisodes(season) {
   const episodesList = document.getElementById('episodes-list');
-  if (!episodesList) return;
+  if (!episodesList) {
+    console.log('Episodes list element not found');
+    return;
+  }
   
   // Episodes data should be passed from server
   const seasonsData = window.seasonsData || [];
+  console.log('Loading episodes for season:', season);
+  console.log('Seasons data:', seasonsData);
+  
   const seasonData = seasonsData.find(s => s.seasonNumber === season);
+  console.log('Found season data:', seasonData);
   
   if (!seasonData || !seasonData.episodes) {
-    episodesList.innerHTML = '<p>No episodes found</p>';
+    episodesList.innerHTML = '<p style="color: white; padding: 20px;">No episodes found for this season</p>';
     return;
   }
+  
+  console.log('Episodes count:', seasonData.episodes.length);
   
   episodesList.innerHTML = seasonData.episodes.map(episode => `
     <div class="episode-card" data-season="${season}" data-episode="${episode.episodeNumber}">

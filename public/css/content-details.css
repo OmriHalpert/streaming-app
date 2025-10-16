@@ -283,6 +283,54 @@ body {
   font-size: 20px;
 }
 
+/* Cast Container */
+.cast-container {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 30px;
+    border-radius: 8px;
+    margin-bottom: 40px;
+}
+
+.cast-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.cast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.cast-member {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.cast-member:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.cast-link {
+    text-decoration: none;
+    color: white;
+}
+
+.cast-link:hover .cast-name {
+    color: #e50914;
+}
+
+.cast-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: white;
+    transition: color 0.3s;
+}
 /* Episodes Container */
 .episodes-container {
   background-color: rgba(0, 0, 0, 0.5);
@@ -484,6 +532,8 @@ body {
 .recommended-content-grid .file-with-thumbnail {
   position: relative;
   overflow: hidden;
+  padding: 0;
+  flex-direction: column;
 }
 
 .recommended-content-grid .file-overlay {
