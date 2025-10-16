@@ -8,24 +8,28 @@ async function analyzeGenrePreferences(interactions, allContent) {
   const genreCounts = {};
 
   // Liked content gets more weight
-  interactions.profileLikes.forEach((contentName) => {
-    const content = allContent.find((c) => c.name === contentName);
-    if (content && content.genre) {
-      content.genre.forEach((genre) => {
-        genreCounts[genre] = (genreCounts[genre] || 0) + 2;
-      });
-    }
-  });
+  if (interactions.likes && Array.isArray(interactions.likes)) {
+    interactions.likes.forEach((contentId) => {
+      const content = allContent.find((c) => c.id === contentId);
+      if (content && content.genre) {
+        content.genre.forEach((genre) => {
+          genreCounts[genre] = (genreCounts[genre] || 0) + 2;
+        });
+      }
+    });
+  }
 
   // Watched content gets less weight
-  interactions.profileWatched.forEach((contentName) => {
-    const content = allContent.find((c) => c.name === contentName);
-    if (content && content.genre) {
-      content.genre.forEach((genre) => {
-        genreCounts[genre] = (genreCounts[genre] || 0) + 1;
-      });
-    }
-  });
+  if (interactions.progress && Array.isArray(interactions.progress)) {
+    interactions.progress.forEach((progressItem) => {
+      const content = allContent.find((c) => c.id === progressItem.contentId);
+      if (content && content.genre) {
+        content.genre.forEach((genre) => {
+          genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+        });
+      }
+    });
+  }
 
   // Get top 3 genres
   const sortedGenres = Object.entries(genreCounts)
@@ -43,7 +47,7 @@ function getContentFromTopGenres(content, genrePreferences, interactions) {
     return shuffled.map((item) => ({
       ...item.toObject(),
       isLiked: interactions
-        ? interactions.profileLikes.includes(item.name)
+        ? interactions.likes.includes(item.name)
         : false,
     }));
   }
@@ -59,7 +63,7 @@ function getContentFromTopGenres(content, genrePreferences, interactions) {
 
   return shuffled.map((item) => ({
     ...item.toObject(),
-    isLiked: interactions.profileLikes.includes(item.name),
+    isLiked: interactions.likes.includes(item.name),
   }));
 }
 
@@ -82,9 +86,10 @@ async function getRecommendations(userId, profileId, limit = 10) {
       allContent
     );
 
-    // Filter out watched content
+    // Filter out watched content (content in progress array)
+    const watchedContentIds = interactions.progress.map((p) => p.contentId);
     const unwatchedContent = allContent.filter(
-      (content) => !interactions.profileWatched.includes(content.name)
+      (content) => !watchedContentIds.includes(content.id)
     );
 
     // Fetch unwatched content from top genres

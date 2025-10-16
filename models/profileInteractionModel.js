@@ -1,5 +1,5 @@
 // Imports
-const ProfileInteraction = require("./ProfileInteraction");
+const { Progress, ProfileInteraction } = require("./ProfileInteraction.js");
 
 // Helper functions
 // Get or create profile interactions entry
@@ -13,8 +13,8 @@ async function getOrCreateProfileInteractions(userId, profileId) {
       interactions = new ProfileInteraction({
         userId,
         profileId,
-        profileLikes: [],
-        profileWatched: [],
+        likes: [],
+        progress: [],
       });
       await interactions.save();
     }
@@ -27,7 +27,7 @@ async function getOrCreateProfileInteractions(userId, profileId) {
 
 // Main functions
 // Add content to profile likes
-async function addToProfileLikes(userId, profileId, contentName) {
+async function addToProfileLikes(userId, profileId, contentId) {
   try {
     // Get or create the document
     const interactions = await getOrCreateProfileInteractions(
@@ -36,11 +36,11 @@ async function addToProfileLikes(userId, profileId, contentName) {
     );
 
     // Check if already liked
-    const alreadyLiked = interactions.profileLikes.includes(contentName);
+    const alreadyLiked = interactions.likes.includes(contentId);
 
     if (!alreadyLiked) {
       // Add to likes array
-      interactions.profileLikes.push(contentName);
+      interactions.likes.push(contentId);
       await interactions.save();
     }
 
@@ -55,7 +55,7 @@ async function addToProfileLikes(userId, profileId, contentName) {
 }
 
 // Remove content from profile likes
-async function removeFromProfileLikes(userId, profileId, contentName) {
+async function removeFromProfileLikes(userId, profileId, contentId) {
   try {
     const interactions = await ProfileInteraction.findOne({
       userId,
@@ -67,8 +67,8 @@ async function removeFromProfileLikes(userId, profileId, contentName) {
     }
 
     // Remove from likes array
-    interactions.profileLikes = interactions.profileLikes.filter(
-      (name) => name !== contentName
+    interactions.likes = interactions.likes.filter(
+      (id) => id !== contentId
     );
     await interactions.save();
 
@@ -82,7 +82,7 @@ async function removeFromProfileLikes(userId, profileId, contentName) {
 }
 
 // Add content to profile watched
-async function addToProfileWatched(userId, profileId, contentName) {
+async function addToProfileWatched(userId, profileId, contentId, contentType, contentSeason, contentEpisode) {
   try {
     // Get or create the document
     const interactions = await getOrCreateProfileInteractions(
@@ -90,12 +90,41 @@ async function addToProfileWatched(userId, profileId, contentName) {
       profileId
     );
 
-    // Check if already watched
-    const alreadyWatched = interactions.profileWatched.includes(contentName);
+    // Check if already watched (for movies) or already watched this episode (for shows)
+    let alreadyWatched;
+    if (contentType === 'movie') {
+      alreadyWatched = interactions.progress.some(item => 
+        item.contentId === contentId && item.type === 'movie'
+      );
+    } else {
+      alreadyWatched = interactions.progress.some(item => 
+        item.contentId === contentId && 
+        item.type === 'show' &&
+        item.season === contentSeason && 
+        item.episode === contentEpisode
+      );
+    }
 
     if (!alreadyWatched) {
-      // Add to watched array
-      interactions.profileWatched.push(contentName);
+      // Create new progress entry
+      const newProgress = {
+        contentId,
+        type: contentType, // Field is called 'type' in schema, not 'contentType'
+        lastPositionSec: 0,
+        isCompleted: false,
+        updatedAt: new Date()
+      };
+
+      // Add season and episode only for shows
+      if (contentType === 'show') {
+        newProgress.season = contentSeason;
+        newProgress.episode = contentEpisode;
+      }
+
+      // Add to profile interaction
+      interactions.progress.push(newProgress);
+
+      // Save 
       await interactions.save();
     }
 
@@ -122,8 +151,8 @@ async function getProfileInteractions(userId, profileId) {
       return {
         userId,
         profileId,
-        profileLikes: [],
-        profileWatched: [],
+        likes: [],
+        progress: [],
       };
     }
 
@@ -134,21 +163,21 @@ async function getProfileInteractions(userId, profileId) {
 }
 
 // Toggle like
-async function toggleProfileLike(userId, profileId, contentName) {
+async function toggleProfileLike(userId, profileId, contentId) {
   try {
     const interactions = await getOrCreateProfileInteractions(
       userId,
       profileId
     );
-    const isCurrentlyLiked = interactions.profileLikes.includes(contentName);
+    const isCurrentlyLiked = interactions.likes.includes(contentId);
 
     let result;
     if (isCurrentlyLiked) {
       // Use existing remove function
-      result = await removeFromProfileLikes(userId, profileId, contentName);
+      result = await removeFromProfileLikes(userId, profileId, contentId);
     } else {
       // Use existing add function
-      result = await addToProfileLikes(userId, profileId, contentName);
+      result = await addToProfileLikes(userId, profileId, contentId);
     }
 
     return {
