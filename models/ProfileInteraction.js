@@ -70,13 +70,13 @@ const profileInteractionSchema = new mongoose.Schema(
 profileInteractionSchema.index({ userId: 1, profileId: 1 }, { unique: true });
 
 // Prevents duplicate movie progress (profile, content)
-ProfileInteractionSchema.index(
+profileInteractionSchema.index(
   { profileId: 1, "progress.contentId": 1, "progress.type": 1 },
   { partialFilterExpression: { "progress.type": "movie" } }
 );
 
 // Prevent duplicate episode progress per (profile, content, season, episode)
-ProfileInteractionSchema.index(
+profileInteractionSchema.index(
   {
     profileId: 1,
     "progress.contentId": 1,
@@ -97,4 +97,12 @@ const ProfileInteraction = mongoose.model(
   profileInteractionSchema
 );
 
-module.exports = ProfileInteraction;
+const Progress = mongoose.model(
+  "Progress",
+  progressSchema
+)
+
+module.exports = {
+  ProfileInteraction,
+  Progress
+};

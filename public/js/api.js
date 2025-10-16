@@ -128,19 +128,28 @@ async function fetchContent(userId, profileId) {
 }
 
 // Mark content as watched via API
-async function markContentAsWatched(userId, profileId, contentName) {
+async function markContentAsWatched(userId, profileId, contentId, season = null, episode = null) {
   try {
+    // Build request body with all parameters
+    const requestBody = {
+      userId: parseInt(userId),
+      profileId: parseInt(profileId),
+    };
+
+    // Add season and episode if provided (for TV shows)
+    if (season !== null && episode !== null) {
+      requestBody.season = parseInt(season);
+      requestBody.episode = parseInt(episode);
+    }
+
     const response = await fetch(
-      `/api/content/${encodeURIComponent(contentName)}/watch`,
+      `/api/content/watch/${encodeURIComponent(contentId)}`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          userId: parseInt(userId),
-          profileId: parseInt(profileId),
-        }),
+        body: JSON.stringify(requestBody),
       }
     );
 
@@ -179,7 +188,7 @@ async function fetchRecommendations(userId, profileId, limit = 10) {
 }
 
 // Toggle content like via API
-async function toggleContentLike(userId, profileId, contentName) {
+async function toggleContentLike(userId, profileId, contentId) {
   try {
     const response = await fetch("/api/content/like", {
       method: "POST",
@@ -187,7 +196,7 @@ async function toggleContentLike(userId, profileId, contentName) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        contentName: contentName,
+        contentId: parseInt(contentId),
         userId: parseInt(userId),
         profileId: parseInt(profileId),
       }),

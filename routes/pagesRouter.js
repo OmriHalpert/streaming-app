@@ -11,6 +11,7 @@ const {
   logout,
 } = require("../controllers/authController.js");
 const { renderFeedPage } = require("../controllers/feedController.js");
+const { renderContentDetailsPage } = require("../controllers/contentDetailsController.js");
 const {
   requirePageOwnership,
   redirectIfAuthenticated,
@@ -28,6 +29,7 @@ pagesRouter.get(
   renderManageProfilesPage
 );
 pagesRouter.get("/feed", requirePageOwnership, renderFeedPage);
+pagesRouter.get("/content/:contentId", requirePageOwnership, renderContentDetailsPage);
 
 // Public routes - Redirect if already authenticated
 pagesRouter.get("/login", redirectIfAuthenticated, renderLoginPage);

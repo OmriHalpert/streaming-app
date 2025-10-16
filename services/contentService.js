@@ -22,8 +22,8 @@ async function getAllContent(userId = null, profileId = null) {
 
     const transformedContent = content.map((item) => ({
       ...item.toObject(), // Convert Mongoose document to plain object
-      isLiked: interactions.profileLikes.includes(item.name),
-      isWatched: interactions.profileWatched.includes(item.name),
+      isLiked: interactions.likes.includes(item.id),
+      isWatched: interactions.progress.some((p) => p.contentId === item.id),
     }));
 
     return transformedContent;
@@ -104,8 +104,8 @@ async function getContentByGenre(
 
     const transformedContent = paginatedContent.map((item) => ({
       ...item.toObject(), // Convert Mongoose document to plain object
-      isLiked: interactions.profileLikes.includes(item.name),
-      isWatched: interactions.profileWatched.includes(item.name),
+      isLiked: interactions.likes.includes(item.id),
+      isWatched: interactions.progress.some((p) => p.contentId === item.id),
     }));
 
     return {
@@ -162,8 +162,8 @@ async function searchContent(query, userId = null, profileId = null) {
 
     return searchResults.map((item) => ({
       ...item.toObject(), // Convert Mongoose document to plain object
-      isLiked: interactions.profileLikes.includes(item.name),
-      isWatched: interactions.profileWatched.includes(item.name),
+      isLiked: interactions.likes.includes(item.id),
+      isWatched: interactions.progress.some((p) => p.contentId === item.id),
     }));
   }
 
@@ -176,10 +176,10 @@ async function searchContent(query, userId = null, profileId = null) {
 }
 
 // Toggle like
-async function toggleContentLike(contentName, userId, profileId) {
+async function toggleContentLike(contentId, userId, profileId) {
   // Validate inputs
-  if (!contentName || contentName.trim() === "") {
-    throw new Error("Content name is required");
+  if (!contentId || isNaN(contentId) || contentId <= 0) {
+    throw new Error("Valid content ID is required");
   }
 
   if (!userId || isNaN(userId) || userId <= 0) {
@@ -193,11 +193,11 @@ async function toggleContentLike(contentName, userId, profileId) {
   const result = await profileInteractionService.toggleContentLike(
     parseInt(userId),
     parseInt(profileId),
-    contentName.trim()
+    parseInt(contentId)
   );
 
   return {
-    contentName: contentName.trim(),
+    contentId: parseInt(contentId),
     isLiked: result.isLiked,
     message: result.message,
   };
@@ -257,11 +257,11 @@ async function getContentForFeed(userId, profileId) {
 }
 
 // Mark content as watched
-async function markAsWatched(contentName, userId, profileId) {
+async function markAsWatched(contentId, userId, profileId, contentType, contentSeason, contentEpisode) {
   try {
     // Validate inputs
-    if (!contentName || contentName.trim() === "") {
-      throw new Error("Content name is required");
+    if (!contentId || isNaN(contentId) || contentId <= 0) {
+      throw new Error("Content ID is required");
     }
 
     if (!userId || isNaN(userId) || userId <= 0) {
@@ -272,10 +272,17 @@ async function markAsWatched(contentName, userId, profileId) {
       throw new Error("Valid profile ID is required");
     }
 
+    if (!contentType) {
+      throw new Error("Content type is required");
+    }
+
     const result = await profileInteractionService.markContentAsWatched(
       parseInt(userId),
       parseInt(profileId),
-      contentName.trim()
+      parseInt(contentId),
+      contentType,
+      contentSeason,
+      contentEpisode
     );
 
     return result;
