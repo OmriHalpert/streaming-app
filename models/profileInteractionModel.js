@@ -1,5 +1,5 @@
 // Imports
-const ProfileInteraction = require("./profileInteraction");
+const ProfileInteraction = require("./ProfileInteraction");
 
 // Helper functions
 // Get or create profile interactions entry
