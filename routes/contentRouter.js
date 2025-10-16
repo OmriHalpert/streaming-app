@@ -5,7 +5,7 @@ const {
   toggleContentLike,
   searchContent,
   getContent,
-  markContentAsWatched,
+  watchContent,
   getRecommendations,
   getGenreContent,
 } = require("../controllers/feedController");
@@ -21,7 +21,7 @@ contentRouter.use(requireAuth);
 contentRouter.get("/", getContent);
 contentRouter.get("/recommendations/:userId/:profileId", getRecommendations);
 contentRouter.post("/like", toggleContentLike);
-contentRouter.post("/:contentName/watch", markContentAsWatched);
+contentRouter.post("/watch/:contentId", watchContent);
 contentRouter.get("/search", searchContent);
 contentRouter.get("/:genreName", getGenreContent);
 

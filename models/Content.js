@@ -4,6 +4,10 @@ const mongoose = require("mongoose");
 // Content schema
 const contentSchema = new mongoose.Schema(
   {
+    id: {
+      type: Number,
+      required: true,
+    },
     name: {
       type: String,
       required: true,
@@ -16,6 +20,20 @@ const contentSchema = new mongoose.Schema(
       min: 1900,
       max: new Date().getFullYear() + 5,
     },
+    type: {
+      type: String,
+      enum: ["movie", "show"],
+      required: true
+    },
+    rating: {
+      type: Number,
+      min: 0,
+      max: 10
+    },
+    summary: {
+      type: String,
+      default: ""
+    },
     genre: {
       type: [String],
       required: true,
@@ -26,22 +44,65 @@ const contentSchema = new mongoose.Schema(
         message: "At least one genre is required",
       },
     },
+    cast: [{
+      name: {
+        type: String,
+        required: true,
+        trim: true
+      },
+      wikiUrl: {
+        type: String,
+        trim: true
+      }
+    }],
     likes: {
       type: Number,
       default: 0,
       min: 0,
     },
-    profileLikes: {
-      type: [Number],
-      default: [],
-    },
-    profileWatched: {
-      type: [Number],
-      default: [],
-    },
     thumbnail: {
       type: String,
       required: false, // Made optional since not all content has thumbnails
+    },
+    durationSec: {
+      type: Number,
+      min: 0,
+      required: function() { // Only if movie
+        return this.type === "movie";
+      }
+    },
+    seasons: {
+      type: [
+        {
+          seasonNumber: {
+            type: Number,
+            required: true,
+            min: 1
+          },
+          episodes: [
+            {
+              episodeNumber: {
+                type: Number,
+                required: true,
+                min: 1
+              },
+              title: {
+                type: String,
+                require: true,
+                trim: true
+              },
+              durationSec: {
+                type: Number,
+                required: true,
+                min: 0
+              }
+            }
+          ]
+        }
+      ],
+      required: function() { // Only if show
+        return this.type === "show";
+      },
     },
   },
   {
@@ -51,8 +112,9 @@ const contentSchema = new mongoose.Schema(
 );
 
 // Create indexes for better performance
+contentSchema.index({ id: 1 }, { unique: true });
 contentSchema.index({ genre: 1 });
-contentSchema.index({ year: 1 });
+contentSchema.index({ name: 1, year: 1 }, {unique: true});
 contentSchema.index({ likes: -1 }); // Descending for popular content first
 
 // Create and export the model

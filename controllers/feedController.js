@@ -9,6 +9,7 @@ const {
 const {
   getRecommendations: getRecommendationsService,
 } = require("../services/recommendationService");
+const Content = require("../models/Content");
 
 // Main functions
 // Renders feed page with content
@@ -70,17 +71,17 @@ async function getContent(req, res) {
 // Toggle content like
 async function toggleContentLike(req, res) {
   try {
-    const { contentName, userId, profileId } = req.body;
+    const { contentId, userId, profileId } = req.body;
 
-    if (!contentName || !userId || !profileId) {
+    if (!contentId || !userId || !profileId) {
       return res.status(400).json({
         success: false,
-        error: "Content name, user ID, and profile ID are required",
+        error: "Content ID, user ID, and profile ID are required",
       });
     }
 
     // Toggle like via content services
-    const result = await toggleLike(contentName, userId, profileId);
+    const result = await toggleLike(contentId, userId, profileId);
 
     res.json({
       success: true,
@@ -123,23 +124,39 @@ async function searchContent(req, res) {
 }
 
 // Mark content as watched
-async function markContentAsWatched(req, res) {
+async function watchContent(req, res) {
   try {
-    const { contentName } = req.params;
-    const { userId, profileId } = req.body;
+    const { contentId } = req.params;
+    const { userId, profileId, season, episode } = req.body;
 
-    if (!contentName || !userId || !profileId) {
+    // Optional season and episode (if its a show)
+    const seasonNum = season ? parseInt(season) : null;
+    const episodeNum = episode ? parseInt(episode) : null;
+
+    if (!contentId || !userId || !profileId) {
       return res.status(400).json({
         success: false,
-        error: "Content name, user ID, and profile ID are required",
+        error: "Content ID, user ID, and profile ID are required",
+      });
+    }
+
+    // Fetch content to get its type
+    const content = await Content.findOne({ id: parseInt(contentId) });
+    if (!content) {
+      return res.status(404).json({
+        success: false,
+        error: "Content not found",
       });
     }
 
     // Marks content as watched via content services
     const result = await markAsWatched(
-      contentName,
+      parseInt(contentId),
       parseInt(userId),
-      parseInt(profileId)
+      parseInt(profileId),
+      content.type,
+      seasonNum,
+      episodeNum
     );
 
     res.json({
@@ -239,7 +256,7 @@ module.exports = {
   getContent,
   toggleContentLike,
   searchContent,
-  markContentAsWatched,
+  watchContent,
   getRecommendations,
   getGenreContent,
 };

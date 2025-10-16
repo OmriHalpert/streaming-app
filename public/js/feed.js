@@ -37,7 +37,7 @@ function updateAllContentCards(contentName, isLiked) {
 function deduplicateContent(contentArray) {
   const seen = new Set();
   return contentArray.filter((item) => {
-    const id = item._id || item.id;
+    const id = item.id; // Use numeric id for deduplication
     if (seen.has(id)) {
       return false;
     }
@@ -49,7 +49,7 @@ function deduplicateContent(contentArray) {
 // Create HTML for a single content card
 function createContentCard(item) {
   const hasThumb = item.thumbnail;
-  const contentId = item._id || item.id;
+  const contentId = item.id; // Use numeric id, not MongoDB _id
 
   if (hasThumb) {
     return `
@@ -441,13 +441,21 @@ function setupLikeButtons() {
       e.preventDefault();
       e.stopPropagation();
 
-      // Collect content data
+      // Get content data from parent card element
+      const parentCard = icon.closest(".file, .genre-file");
+      
+      if (!parentCard) {
+        console.error("Could not find parent content card");
+        return;
+      }
+
+      const contentId = parentCard.getAttribute("data-content-id");
       const contentName = icon.getAttribute("data-content-name");
       const userId = getUserId();
       const profileId = getProfileId();
 
-      if (!contentName || !userId || !profileId) {
-        console.error("Missing content name, user ID, or profile ID");
+      if (!contentId || !userId || !profileId) {
+        console.error("Missing content ID, user ID, or profile ID");
         return;
       }
 
@@ -459,7 +467,7 @@ function setupLikeButtons() {
         const result = await UserAPI.toggleContentLike(
           userId,
           profileId,
-          contentName
+          contentId
         );
 
         if (result && result.success) {
@@ -851,20 +859,24 @@ function returnToMainFeed() {
 window.returnToMainFeed = returnToMainFeed;
 window.toggleWatchedFilter = toggleWatchedFilter;
 
-// Global flag to prevent duplicate watch tracking setup
-let watchTrackingSetup = false;
+// Global flag to prevent duplicate content card click setup
+let contentCardClickSetup = false;
 
-// Set up watch tracking for content cards using event delegation
-function setupWatchTracking() {
+// Set up content card click navigation to content details page
+function setupContentCardNavigation() {
   // Only set up the delegated listener once
-  if (watchTrackingSetup) return;
-  watchTrackingSetup = true;
+  if (contentCardClickSetup) return;
+  contentCardClickSetup = true;
 
   // Use event delegation on the document body for better performance
-  document.body.addEventListener("click", async (e) => {
+  document.body.addEventListener("click", (e) => {
     // Check if the clicked element is a content card
-    const card = e.target.closest(".genre-file, .file");
-    if (!card) return;
+    const element = e.target.closest(".genre-file, .file");
+    
+    // If not a card, ignore click
+    if (!element) {
+      return;
+    }
 
     // Don't trigger if clicking on like button or any child of like button
     if (
@@ -874,38 +886,21 @@ function setupWatchTracking() {
       return;
     }
 
-    const contentName = card.getAttribute("data-content-name");
+    // Get content and user data
+    const contentId = element.getAttribute("data-content-id");
     const userId = getUserId();
     const profileId = getProfileId();
 
-    if (!contentName || !userId || !profileId) {
+    // Validate required data
+    if (!contentId || !userId || !profileId) {
       console.error(
-        "Missing content name, user ID, or profile ID for watch tracking"
+        "Missing content ID, user ID, or profile ID for navigation"
       );
       return;
     }
 
-    try {
-      // Mark content as watched via API
-      const result = await UserAPI.markContentAsWatched(
-        userId,
-        profileId,
-        contentName
-      );
-
-      if (result && result.success) {
-        // Show notification if it's the first time watching
-        if (!result.alreadyWatched) {
-          showNotification(`📺 Added "${contentName}" to your watch history!`);
-        }
-
-        // Future: Navigate to content details page
-      } else {
-        console.error("Failed to mark content as watched");
-      }
-    } catch (error) {
-      console.error("Error tracking watch:", error);
-    }
+    // Navigate to content details page
+    window.location.href = `/content/${contentId}?userId=${userId}&profileId=${profileId}`;
   });
 }
 
@@ -1123,8 +1118,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Load aside
   await setupAside();
 
-  // Set up watch tracking (using event delegation)
-  setupWatchTracking();
+  // Set up content card navigation to details page
+  setupContentCardNavigation();
 
   // Set up like buttons
   setupLikeButtons();
