@@ -59,9 +59,6 @@ async function getContentByName(contentName) {
 
 // Get content by ID
 async function getContentById(contentId) {
-
-  console.log("Content ID : ", contentId);
-
   // Validate content ID
   if (!contentId || isNaN(contentId) || contentId <=0) {
     throw new Error("Valid content ID is required")
