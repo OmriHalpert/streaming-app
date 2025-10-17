@@ -1,6 +1,7 @@
 // Imports
 const Content = require("../models/Content");
 const profileInteractionService = require("../services/profileInteractionService");
+const { getContentById } = require("../services/contentService");
 
 // Main functions
 // Render content details page
@@ -24,7 +25,7 @@ async function renderContentDetailsPage(req, res) {
     }
 
     // Fetch content by ID from database
-    const content = await Content.findOne({ id: parseInt(contentId) });
+    const content = await getContentById(parseInt(contentId));
 
     if (!content) {
       return res.status(404).render("error", {

@@ -57,6 +57,27 @@ async function getContentByName(contentName) {
   return foundContent;
 }
 
+// Get content by ID
+async function getContentById(contentId) {
+
+  console.log("Content ID : ", contentId);
+
+  // Validate content ID
+  if (!contentId || isNaN(contentId) || contentId <=0) {
+    throw new Error("Valid content ID is required")
+  }
+
+  // Fetch all content
+  const content = await contentModel.getContent();
+  const foundContent = content.find((item) => item.id === contentId);
+
+  if (!foundContent) {
+    throw new Error("Content not found");
+  }
+
+  return foundContent;
+}
+
 // Get content by genre with pagination support
 async function getContentByGenre(
   genreName,
@@ -294,6 +315,7 @@ async function markAsWatched(contentId, userId, profileId, contentType, contentS
 module.exports = {
   getAllContent,
   getContentByName,
+  getContentById,
   getContentByGenre,
   toggleContentLike,
   getContentForFeed,
