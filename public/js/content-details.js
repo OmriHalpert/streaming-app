@@ -6,10 +6,13 @@ const contentType = document.body.dataset.contentType;
 
 // State management
 let currentSeason = 1;
+let currentEpisode = 1;
 let isLiked = false;
+let isWatchd = false;
 
 // Initialize page
 function init() {
+  // Setup buttons
   setupPlayButton();
   setupLikeButton();
   loadUserProfile();
@@ -21,6 +24,7 @@ function init() {
   
   loadRecommendedContent();
   checkIfLiked();
+  checkIfWatched();
 }
 
 // Setup play button click handler
@@ -33,7 +37,7 @@ function setupPlayButton() {
       await handleMoviePlay();
     } else {
       // For shows, play first episode of current season
-      await handleEpisodePlay(currentSeason, 1);
+      await handleEpisodePlay(currentSeason, currentEpisode);
     }
   });
 }
@@ -69,8 +73,6 @@ async function handleMoviePlay() {
 
 // Handle episode playback
 async function handleEpisodePlay(season, episode) {
-  console.log(`Playing S${season}E${episode}`);
-  
   try {
     const result = await UserAPI.markContentAsWatched(userId, profileId, contentId, season, episode);
     
@@ -131,15 +133,29 @@ function updateLikeButtonUI(liked) {
   }
 }
 
+// Update play button appearance if watched
+function updateWatchButtonUI() {
+  const playButton = document.getElementById('play-button');
+  playButton.textContent = '▶ Play Again';
+}
+
 // Check if content is already liked
 async function checkIfLiked() {
-  // This would typically come from the server-rendered data
-  // For now, we'll assume it's in a data attribute or we fetch it
   const likeStatus = document.body.dataset.isLiked;
   if (likeStatus === 'true') {
     isLiked = true;
     updateLikeButtonUI(true);
   }
+}
+
+// Check if content is already watched
+async function checkIfWatched() {
+    const watchStatus = document.body.dataset.isWatched;
+
+    if (watchStatus === 'true') {
+        isWatchd = true;
+        updateWatchButtonUI();
+    }
 }
 
 // Load user profile avatar
@@ -208,18 +224,12 @@ function loadEpisodes(season) {
   
   // Episodes data should be passed from server
   const seasonsData = window.seasonsData || [];
-  console.log('Loading episodes for season:', season);
-  console.log('Seasons data:', seasonsData);
-  
   const seasonData = seasonsData.find(s => s.seasonNumber === season);
-  console.log('Found season data:', seasonData);
   
   if (!seasonData || !seasonData.episodes) {
     episodesList.innerHTML = '<p style="color: white; padding: 20px;">No episodes found for this season</p>';
     return;
   }
-  
-  console.log('Episodes count:', seasonData.episodes.length);
   
   episodesList.innerHTML = seasonData.episodes.map(episode => `
     <div class="episode-card" data-season="${season}" data-episode="${episode.episodeNumber}">
@@ -257,23 +267,19 @@ async function loadRecommendedContent() {
   try {
     // Get genre from page
     const genre = document.body.dataset.genre;
-    console.log('Loading recommendations for genre:', genre);
     
     if (!genre) {
       console.log('No genre found');
       return;
     }
     
+    // Fetch recommendations via API
     const result = await UserAPI.fetchContentByGenre(genre, userId, profileId, 1, 6);
-    console.log('Fetch result:', result);
-    
-    // Handle both array response and object response
-    const contentArray = Array.isArray(result) ? result : (result.content || []);
+    const contentArray = result.content;
     
     if (contentArray && contentArray.length > 0) {
       // Filter out current content
       const filtered = contentArray.filter(item => item.id !== parseInt(contentId));
-      console.log('Filtered recommendations:', filtered.length);
       
       if (filtered.length === 0) {
         recommendedGrid.innerHTML = '<p style="color: white; padding: 20px;">No recommendations available</p>';
@@ -366,5 +372,5 @@ if (document.readyState === 'loading') {
 }
 
 // Make handleEpisodePlay globally available for inline onclick handlers
-window.handleEpisodePlay = handleEpisodePlay;
+// window.handleEpisodePlay = handleEpisodePlay;
 
