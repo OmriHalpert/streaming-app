@@ -10,14 +10,18 @@ let currentEpisode = 1;
 let isLiked = false;
 let isWatchd = false;
 let isCompleted = false;
+let userProgress = []; // Store user's progress for this content
 
 // Initialize page
-function init() {
+async function init() {
   // Setup buttons
   setupPlayButton();
   setupLikeButton();
   loadUserProfile();
   setupStartOverButton()
+  
+  // Load interactions (progress) for marking episodes as watched
+  await loadInteractions();
   
   if (contentType === 'show') {
     setupSeasonDropdown();
@@ -34,12 +38,28 @@ function setupPlayButton() {
   const playButton = document.getElementById('play-button');
   if (!playButton) return;
   
-  playButton.addEventListener('click', () => {
+  playButton.addEventListener('click', async () => {
+    // If content is completed, clear progress before playing again
+    if (isCompleted) {
+      await clearProgress();
+    }
+    
     if (contentType === 'movie') {
       handleMoviePlay();
     } else {
-      // For shows, play first episode of first season
-      handleEpisodePlay(1, 1);
+      // For shows, find the latest episode from progress (using updatedAt)
+      if (userProgress.length > 0) {
+        // Sort by updatedAt descending to get most recent
+        const latestProgress = userProgress.sort((a, b) => 
+          new Date(b.updatedAt) - new Date(a.updatedAt)
+        )[0];
+        
+        // Continue from latest episode
+        handleEpisodePlay(latestProgress.season, latestProgress.episode);
+      } else {
+        // No progress, start from first episode
+        handleEpisodePlay(1, 1);
+      }
     }
   });
 }
@@ -49,7 +69,10 @@ function setupStartOverButton() {
     const startOverButton = document.getElementById('start-over-button');
     if (!startOverButton) return;
 
-    startOverButton.addEventListener('click', () => {
+    startOverButton.addEventListener('click', async () => {
+        // Clear progress from database before starting over
+        await clearProgress();
+        
         if (contentType === 'movie') {
             // Start movie from beginning
             handleMoviePlay();
@@ -141,6 +164,23 @@ async function checkIfWatched() {
     }
 }
 
+// Load user's progress for this content
+async function loadInteractions() {
+  try {
+    const result = await window.UserAPI.getProfileInteractions(
+      parseInt(userId),
+      parseInt(profileId)
+    );
+    
+    if (result.success && result.data) {
+      // Filter progress for this specific content
+      userProgress = result.data.progress.filter(p => p.contentId === parseInt(contentId));
+    }
+  } catch (error) {
+    console.error('Error loading interactions:', error);
+  }
+}
+
 // Load user profile avatar
 async function loadUserProfile() {
   const avatarContainer = document.getElementById("profile-avatar-container");
@@ -214,18 +254,30 @@ function loadEpisodes(season) {
     return;
   }
   
-  episodesList.innerHTML = seasonData.episodes.map(episode => `
-    <div class="episode-card" data-season="${season}" data-episode="${episode.episodeNumber}">
-      <div class="episode-number">Episode ${episode.episodeNumber}</div>
-      <div class="episode-info">
-        <h3 class="episode-title">${episode.title}</h3>
-        <p class="episode-duration">${formatDuration(episode.durationSec)}</p>
+  episodesList.innerHTML = seasonData.episodes.map(episode => {
+    // Check if this episode has been watched (has progress entry)
+    const hasProgress = userProgress.some(p => 
+      p.type === 'show' && 
+      p.season === season && 
+      p.episode === episode.episodeNumber
+    );
+    
+    // Apply green color if watched
+    const titleColor = hasProgress ? 'color: #46d369;' : '';
+    
+    return `
+      <div class="episode-card" data-season="${season}" data-episode="${episode.episodeNumber}">
+        <div class="episode-number">Episode ${episode.episodeNumber}</div>
+        <div class="episode-info">
+          <h3 class="episode-title" style="${titleColor}">${episode.title}</h3>
+          <p class="episode-duration">${formatDuration(episode.durationSec)}</p>
+        </div>
+        <button class="episode-play-btn" onclick="handleEpisodePlay(${season}, ${episode.episodeNumber})">
+          ▶ Play
+        </button>
       </div>
-      <button class="episode-play-btn" onclick="handleEpisodePlay(${season}, ${episode.episodeNumber})">
-        ▶ Play
-      </button>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 // Update episode UI after watching
@@ -326,6 +378,20 @@ function formatDuration(seconds) {
     return `${hours}h ${minutes}m`;
   }
   return `${minutes}m`;
+}
+
+// Helper function to clear ALL progress from database (all episodes for shows)
+async function clearProgress() {
+  try {
+    await window.UserAPI.clearProgress(
+      parseInt(userId),
+      parseInt(profileId),
+      parseInt(contentId),
+      contentType
+    );
+  } catch (error) {
+    console.error('Error clearing progress:', error);
+  }
 }
 
 // Show notification toast

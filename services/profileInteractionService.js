@@ -2,6 +2,76 @@
 const profileInteractionModel = require("../models/profileInteractionModel");
 
 // Main functions
+// Save watch progress
+async function saveProgress(userId, profileId, contentId, contentType, lastPositionSec, isCompleted, season, episode) {
+  try {
+    if (!userId || !profileId || !contentId || !contentType || lastPositionSec === undefined) {
+      throw new Error("Missing required fields");
+    }
+
+    if (contentType === 'show' && (!season || !episode)) {
+      throw new Error("Season and episode required for shows");
+    }
+
+    const result = await profileInteractionModel.updateProgress(
+      parseInt(userId),
+      parseInt(profileId),
+      parseInt(contentId),
+      contentType,
+      parseInt(lastPositionSec),
+      Boolean(isCompleted),
+      season ? parseInt(season) : null,
+      episode ? parseInt(episode) : null
+    );
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Get watch progress
+async function getProgress(userId, profileId, contentId, contentType, season, episode) {
+  try {
+    if (!userId || !profileId || !contentId || !contentType) {
+      throw new Error("Missing required fields");
+    }
+
+    const progress = await profileInteractionModel.getProgress(
+      parseInt(userId),
+      parseInt(profileId),
+      parseInt(contentId),
+      contentType,
+      season ? parseInt(season) : null,
+      episode ? parseInt(episode) : null
+    );
+
+    return progress;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Clear watch progress (removes ALL episodes for shows)
+async function clearProgress(userId, profileId, contentId, contentType) {
+  try {
+    if (!userId || !profileId || !contentId || !contentType) {
+      throw new Error("Missing required fields");
+    }
+
+    const result = await profileInteractionModel.clearProgress(
+      parseInt(userId),
+      parseInt(profileId),
+      parseInt(contentId),
+      contentType
+    );
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+}
+
 // Toggle like for a content item
 async function toggleContentLike(userId, profileId, contentId) {
   try {
@@ -89,8 +159,11 @@ async function deleteProfileInteractions(userId, profileId) {
 }
 
 module.exports = {
+  saveProgress,
+  getProgress,
+  clearProgress,
   toggleContentLike,
   markContentAsWatched,
   getProfileInteractions,
-  deleteProfileInteractions,
+  deleteProfileInteractions
 };

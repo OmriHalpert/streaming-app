@@ -12,6 +12,10 @@
       window.nextEpisode = <%- JSON.stringify(nextEpisode) %>;
     </script>
     <% } %>
+    <script>
+      // Pass start position to JavaScript
+      window.startPosition = <%= startPosition %>;
+    </script>
     <script src="/js/api.js" defer></script>
     <script src="/js/player.js" defer></script>
   </head>

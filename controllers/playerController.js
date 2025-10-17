@@ -1,5 +1,6 @@
 // Imports
 const { getContentById } = require("../services/contentService");
+const { getProgress } = require("../services/profileInteractionService");
 
 // Main functions
 async function playContent(req, res) {
@@ -64,8 +65,26 @@ async function playContent(req, res) {
             }
         }
 
-        // Mock video URL (replace with actual video URL when ready)
-        const videoUrl = "/resources/sample-video.mp4";
+        // Fetch video URL (uses local path, in prod will use CDN URL)
+        let videoUrl;
+        if (isShow) {
+          // Get episode video URL or fallback to default
+          const episodeData = content.seasons[season - 1].episodes[episode - 1];
+          videoUrl = episodeData.videoUrl || "/resources/mp4/game_of_thrones_trailer.mp4";
+        } else {
+          // Get movie video URL or fallback to default
+          videoUrl = content.videoUrl || "/resources/mp4/the_dark_knight_trailer.mp4";
+        }
+
+        // Get saved progress
+        const savedProgress = await getProgress(
+          userId,
+          profileId,
+          parseInt(contentId),
+          content.type,
+          season,
+          episode
+        );
 
         // Render player page
         res.render("player", {
@@ -76,7 +95,8 @@ async function playContent(req, res) {
             episode,
             nextEpisode,
             hasNextEpisode: nextEpisode !== null,
-            videoUrl
+            videoUrl,
+            startPosition: savedProgress?.lastPositionSec || 0
         });
 
     } catch (error) {

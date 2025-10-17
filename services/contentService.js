@@ -326,7 +326,6 @@ async function checkIfCompleted(contentId, userId, profileId) {
     }
 
     // Fetch content
-    console.log("contentID in checkIfCompleted: ", contentId);
     const content = await getContentById(contentId);
     const contentType = content.type;
 

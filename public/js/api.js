@@ -432,6 +432,119 @@ async function getSingleContentById(contentId) {
   }
 }
 
+// Save watch progress
+async function saveProgress(userId, profileId, contentId, contentType, lastPositionSec, isCompleted, season, episode) {
+  try {
+    const data = {
+      userId,
+      profileId,
+      contentId,
+      contentType,
+      lastPositionSec,
+      isCompleted
+    };
+
+    if (contentType === 'show') {
+      data.season = season;
+      data.episode = episode;
+    }
+
+    const response = await fetch('/api/progress/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      return {
+        success: true,
+        message: result.message
+      };
+    } else {
+      return {
+        success: false,
+        error: result.message
+      };
+    }
+  } catch (error) {
+    console.error('Failed to save progress:', error);
+    return {
+      success: false,
+      error: 'Network error. Please try again.'
+    };
+  }
+}
+
+// Clear watch progress (removes ALL episodes for shows)
+async function clearProgress(userId, profileId, contentId, contentType) {
+  try {
+    const data = {
+      userId,
+      profileId,
+      contentId,
+      contentType
+    };
+
+    const response = await fetch('/api/progress/clear', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      return {
+        success: true,
+        message: result.message
+      };
+    } else {
+      return {
+        success: false,
+        error: result.message
+      };
+    }
+  } catch (error) {
+    console.error('Failed to clear progress:', error);
+    return {
+      success: false,
+      error: 'Network error. Please try again.'
+    };
+  }
+}
+
+// Get profile interactions (likes and progress)
+async function getProfileInteractions(userId, profileId) {
+  try {
+    const response = await fetch(`/api/progress/interactions?userId=${userId}&profileId=${profileId}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      return {
+        success: true,
+        data: result.data
+      };
+    } else {
+      return {
+        success: false,
+        error: result.message
+      };
+    }
+  } catch (error) {
+    console.error('Failed to get interactions:', error);
+    return {
+      success: false,
+      error: 'Network error. Please try again.'
+    };
+  }
+}
+
 // Make functions available globally
 window.UserAPI = {
   registerUser,
@@ -448,4 +561,7 @@ window.UserAPI = {
   deleteProfile,
   searchContent,
   getSingleContentById,
+  saveProgress,
+  clearProgress,
+  getProfileInteractions,
 };

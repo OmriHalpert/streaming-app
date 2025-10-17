@@ -26,8 +26,7 @@ const episode = document.body.dataset.episode;
 let controlsTimeout;
 let isPlaying = false;
 let isSeeking = false;
-
-console.log('Player loaded for content:', contentId, 'Type:', contentType);
+let progressSaveInterval;
 
 // Initialize player when page loads
 document.addEventListener('DOMContentLoaded', init);
@@ -35,8 +34,19 @@ document.addEventListener('DOMContentLoaded', init);
 function init() {
   setupEventListeners();
   setupKeyboardShortcuts();
+  setupProgressTracking();
   if (contentType === 'show') {
     setupEpisodesUI();
+  }
+  
+  // Resume from saved position
+  if (window.startPosition && window.startPosition > 0) {
+    video.currentTime = window.startPosition;
+  }
+  
+  // If video metadata already loaded, update duration display immediately
+  if (video.readyState >= 1) {
+    updateDuration();
   }
 }
 
@@ -53,6 +63,8 @@ function setupEventListeners() {
   video.addEventListener('pause', onVideoPause);
   video.addEventListener('timeupdate', updateProgress);
   video.addEventListener('loadedmetadata', updateDuration);
+  video.addEventListener('durationchange', updateDuration);
+  video.addEventListener('error', onVideoError);
 
   // Back button
   backButton.addEventListener('click', goBack);
@@ -78,6 +90,10 @@ function setupEventListeners() {
 // Toggle play/pause
 function togglePlayPause() {
   if (video.paused) {
+    // If video is completed (at the end), restart from beginning
+    if (video.currentTime >= video.duration - 1) {
+      video.currentTime = 0;
+    }
     video.play();
   } else {
     video.pause();
@@ -94,6 +110,18 @@ function onVideoPlay() {
 function onVideoPause() {
   isPlaying = false;
   updatePlayPauseIcons(false);
+}
+
+// Handle video errors
+function onVideoError() {
+  const errorMessages = {
+    1: 'Video loading aborted',
+    2: 'Network error while loading video',
+    3: 'Video decoding failed (corrupt or unsupported format)',
+    4: 'Video source not found or unsupported format'
+  };
+  const errorMsg = errorMessages[video.error?.code] || 'Unknown video error';
+  console.error('Video error:', errorMsg);
 }
 
 // Update play/pause button icons
@@ -117,11 +145,19 @@ function updatePlayPauseIcons(playing) {
 // Rewind 10 seconds
 function rewind() {
   video.currentTime = Math.max(0, video.currentTime - 10);
+
+  // Save progress after rewind
+  const isCompleted = calculateIsCompleted();
+  saveProgress(isCompleted);
 }
 
 // Forward 10 seconds
 function forward() {
   video.currentTime = Math.min(video.duration, video.currentTime + 10);
+
+  // Save progress after forward
+  const isCompleted = calculateIsCompleted();
+  saveProgress(isCompleted);
 }
 
 // Seek to position on progress bar
@@ -130,6 +166,10 @@ function seek(e) {
   const rect = progressBar.getBoundingClientRect();
   const pos = (e.clientX - rect.left) / rect.width;
   video.currentTime = pos * video.duration;
+  
+  // Save progress after seeking
+  const isCompleted = calculateIsCompleted();
+  saveProgress(isCompleted);
 }
 
 // Update progress bar as video plays
@@ -142,7 +182,13 @@ function updateProgress() {
 
 // Update duration display when metadata loads
 function updateDuration() {
-  durationDisplay.textContent = formatTime(video.duration);
+  if (!durationDisplay) return;
+  
+  if (video.duration && !isNaN(video.duration) && isFinite(video.duration)) {
+    durationDisplay.textContent = formatTime(video.duration);
+  } else {
+    durationDisplay.textContent = '--:--';
+  }
 }
 
 // Format seconds to MM:SS or HH:MM:SS
@@ -199,6 +245,9 @@ function setupNextEpisodeButton() {
 
 function goToNextEpisode() {
   if (!window.nextEpisode) return;
+  
+  // Save progress before navigating to next episode
+  saveProgressBeforeNavigation();
   
   const [nextSeason, nextEpisode] = window.nextEpisode;
   const url = `/player/${contentId}?userId=${userId}&profileId=${profileId}&season=${nextSeason}&episode=${nextEpisode}`;
@@ -275,6 +324,9 @@ function loadEpisodes(seasonNumber) {
 
 // Global function to play episode (called from HTML onclick)
 function playEpisode(seasonNum, episodeNum) {
+  // Save progress before navigating to different episode
+  saveProgressBeforeNavigation();
+  
   const url = `/player/${contentId}?userId=${userId}&profileId=${profileId}&season=${seasonNum}&episode=${episodeNum}`;
   window.location.href = url;
 }
@@ -352,9 +404,78 @@ function setupKeyboardShortcuts() {
 // ===== Navigation =====
 
 function goBack() {
+  // Save progress before navigating back
+  saveProgressBeforeNavigation();
+  
   // Go back to content details page
   window.location.href = `/content/${contentId}?userId=${userId}&profileId=${profileId}`;
 }
 
 // Make playEpisode global so it can be called from HTML onclick
 window.playEpisode = playEpisode;
+
+// ===== Progress Tracking =====
+
+function setupProgressTracking() {
+  // Start saving progress when video plays
+  video.addEventListener('play', startProgressSaving);
+  
+  // Stop when video pauses
+  video.addEventListener('pause', () => {
+    stopProgressSaving();
+    saveProgress(false);
+  });
+  
+  // Mark as completed when video ends
+  video.addEventListener('ended', () => {
+    stopProgressSaving();
+    saveProgress(true);
+  });
+}
+
+function startProgressSaving() {
+  // Save progress every 10 seconds
+  progressSaveInterval = setInterval(() => {
+    // Mark as completed if reached 90% of video
+    const isCompleted = calculateIsCompleted();
+    saveProgress(isCompleted);
+  }, 10000);
+}
+
+function stopProgressSaving() {
+  if (progressSaveInterval) {
+    clearInterval(progressSaveInterval);
+  }
+}
+
+// Helper function to calculate if video is completed (90% watched)
+function calculateIsCompleted() {
+  let isCompleted = false;
+  if (video.duration && !isNaN(video.duration) && isFinite(video.duration)) {
+    const percentWatched = (video.currentTime / video.duration) * 100;
+    isCompleted = percentWatched >= 90;
+  }
+  return isCompleted;
+}
+
+// Helper function to save progress before navigation
+function saveProgressBeforeNavigation() {
+  if (video.currentTime > 0) {
+    const isCompleted = calculateIsCompleted();
+    saveProgress(isCompleted);
+  }
+}
+
+async function saveProgress(isCompleted) {
+  await window.UserAPI.saveProgress(
+    parseInt(userId),
+    parseInt(profileId),
+    parseInt(contentId),
+    contentType,
+    Math.floor(video.currentTime),
+    isCompleted,
+    contentType === 'show' ? parseInt(season) : null,
+    contentType === 'show' ? parseInt(episode) : null
+  );
+}
+
