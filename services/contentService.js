@@ -2,6 +2,7 @@
 const contentModel = require("../models/contentModel");
 const profileInteractionService = require("./profileInteractionService");
 
+
 // Main functions
 // Get all content with optional profile-specific like/watched status
 async function getAllContent(userId = null, profileId = null) {
@@ -66,7 +67,7 @@ async function getContentById(contentId) {
 
   // Fetch all content
   const content = await contentModel.getContent();
-  const foundContent = content.find((item) => item.id === contentId);
+  const foundContent = content.find((item) => item.id === parseInt(contentId));
 
   if (!foundContent) {
     throw new Error("Content not found");
@@ -309,6 +310,71 @@ async function markAsWatched(contentId, userId, profileId, contentType, contentS
   }
 }
 
+async function checkIfCompleted(contentId, userId, profileId) {
+  try {
+    // Validate inputs
+    if (!contentId || isNaN(contentId) || contentId <= 0) {
+      throw new Error("Content ID is required");
+    }
+
+    if (!userId || isNaN(userId) || userId <= 0) {
+      throw new Error("Valid user ID is required");
+    }
+
+    if (!profileId || isNaN(profileId) || profileId <= 0) {
+      throw new Error("Valid profile ID is required");
+    }
+
+    // Fetch content
+    console.log("contentID in checkIfCompleted: ", contentId);
+    const content = await getContentById(contentId);
+    const contentType = content.type;
+
+    // Fetch profile interaction and progress
+    const interactions = await profileInteractionService.getProfileInteractions(
+      parseInt(userId),
+      parseInt(profileId)
+    );
+
+    if (contentType === "movie") {
+      // Find interaction and return true if completed
+      const progressItem = interactions.progress.find(
+        (p) => p.contentId === content.id
+      );
+
+      // If no progress item exists, movie hasn't been watched
+      if (!progressItem) {
+        return false;
+      }
+
+      return progressItem.isCompleted;
+    } else if (contentType === "show") {
+      // Check if latest episode has been watched (then completed)
+      const lastSeasonNumber = content.seasons.length;
+      const lastSeason = content.seasons[lastSeasonNumber - 1]; // Array is 0-indexed
+      const lastEpisodeNumber = lastSeason.episodes.length;
+      
+      const lastEpisode = interactions.progress.find((item) => 
+        item.contentId === contentId && 
+        item.season === lastSeasonNumber &&
+        item.episode === lastEpisodeNumber);
+
+      // Didn't watch last episode
+      if (!lastEpisode) {
+        return false;
+      }
+
+      // Check if last episode is marked as completed
+      return lastEpisode.isCompleted;
+    }
+
+    return false;
+    
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   getAllContent,
   getContentByName,
@@ -318,4 +384,5 @@ module.exports = {
   getContentForFeed,
   searchContent,
   markAsWatched,
+  checkIfCompleted,
 };
