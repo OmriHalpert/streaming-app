@@ -1,0 +1,388 @@
+/* Player Page Styles */
+
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #000;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  color: #fff;
+}
+
+/* Video Container - Full screen */
+.video-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
+  overflow: hidden;
+}
+
+/* Video Element - Centered and responsive */
+.video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Controls Overlay - Covers the video */
+.controls-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.7) 0%,
+    transparent 20%,
+    transparent 80%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  cursor: default;
+}
+
+/* Hide controls when inactive */
+.controls-overlay.hidden {
+  opacity: 0;
+  cursor: none;
+}
+
+/* Top Bar - Back button and title */
+.top-bar {
+  display: flex;
+  align-items: center;
+  padding: 20px 30px;
+  gap: 20px;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 10px 15px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.video-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.episode-info {
+  font-size: 18px;
+  font-weight: normal;
+  margin-left: 10px;
+  color: #ccc;
+}
+
+/* Center Play/Pause Button */
+.center-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+.play-pause-btn {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 3px solid #fff;
+  color: #fff;
+  font-size: 32px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play-pause-btn:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.play-pause-btn:active {
+  transform: scale(0.95);
+}
+
+/* Bottom Controls Bar */
+.bottom-controls {
+  padding: 0 30px 20px 30px;
+}
+
+/* Progress Container */
+.progress-container {
+  margin-bottom: 15px;
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+  margin-bottom: 8px;
+  transition: height 0.2s;
+}
+
+.progress-bar:hover {
+  height: 8px;
+}
+
+.progress-filled {
+  height: 100%;
+  background: #e50914;
+  border-radius: 3px;
+  width: 0%;
+  transition: width 0.1s linear;
+  position: relative;
+}
+
+.progress-filled::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  background: #e50914;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.progress-bar:hover .progress-filled::after {
+  opacity: 1;
+}
+
+/* Time Display */
+.time-display {
+  font-size: 14px;
+  color: #ccc;
+  display: flex;
+  gap: 5px;
+}
+
+/* Controls Row - Buttons */
+.controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.left-controls,
+.right-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Control Buttons */
+.control-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.control-btn:active {
+  transform: scale(0.95);
+}
+
+.next-episode-btn {
+  background: #e50914;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.next-episode-btn:hover {
+  background: #f6121d;
+}
+
+/* Episodes Sidebar */
+.episodes-sidebar {
+  position: absolute;
+  top: 0;
+  right: -400px;
+  width: 400px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  padding: 20px;
+  overflow-y: auto;
+  transition: right 0.3s ease;
+  z-index: 100;
+}
+
+.episodes-sidebar.open {
+  right: 0;
+}
+
+.episodes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.episodes-header h3 {
+  font-size: 24px;
+}
+
+.close-sidebar-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.close-sidebar-btn:hover {
+  color: #e50914;
+}
+
+.season-selector {
+  margin-bottom: 20px;
+}
+
+.season-selector label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.season-dropdown {
+  width: 100%;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.season-dropdown option {
+  background: #000;
+}
+
+/* Episodes List */
+.episodes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.episode-item {
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.episode-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.episode-item.current {
+  border-left-color: #e50914;
+  background: rgba(229, 9, 20, 0.2);
+}
+
+.episode-number {
+  font-size: 12px;
+  color: #ccc;
+  margin-bottom: 5px;
+}
+
+.episode-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.episode-duration {
+  font-size: 12px;
+  color: #999;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 6px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #e50914;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Sidebar backdrop */
+.sidebar-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+  display: none;
+}
+
+.sidebar-backdrop.visible {
+  display: block;
+}

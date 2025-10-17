@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/player.css" />
+    <title><%= content.name %> - Netflix Player</title>
+    <% if (content.type === 'show' && content.seasons) { %>
+    <script>
+      // Pass seasons data and next episode to JavaScript
+      window.seasonsData = <%- JSON.stringify(content.seasons) %>;
+      window.nextEpisode = <%- JSON.stringify(nextEpisode) %>;
+    </script>
+    <% } %>
+    <script>
+      // Pass start position to JavaScript
+      window.startPosition = <%= startPosition %>;
+    </script>
+    <script src="/js/api.js" defer></script>
+    <script src="/js/player.js" defer></script>
+  </head>
+  <body 
+    data-user-id="<%= userId %>" 
+    data-profile-id="<%= profileId %>" 
+    data-content-id="<%= content.id %>"
+    data-content-type="<%= content.type %>"
+    <% if (content.type === 'show') { %>
+      data-season="<%= season %>"
+      data-episode="<%= episode %>"
+    <% } %>
+  >
+    <!-- Video Container -->
+    <div class="video-container">
+      <!-- HTML5 Video Element -->
+      <video id="video-player" class="video-element">
+        <source src="<%= videoUrl %>" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+
+      <!-- Video Controls Overlay -->
+      <div class="controls-overlay" id="controls-overlay">
+        <!-- Top Bar (Back button and title) -->
+        <div class="top-bar">
+          <button class="back-button" id="back-button">← Back</button>
+          <div class="video-title">
+            <%= content.name %>
+            <% if (content.type === 'show') { %>
+              <span class="episode-info">S<%= season %> E<%= episode %></span>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Center Play/Pause Button -->
+        <div class="center-controls">
+          <button class="play-pause-btn" id="center-play-pause">
+            <span class="play-icon">▶</span>
+            <span class="pause-icon" style="display: none;">⏸</span>
+          </button>
+        </div>
+
+        <!-- Bottom Controls Bar -->
+        <div class="bottom-controls">
+          <!-- Progress Bar -->
+          <div class="progress-container">
+            <div class="progress-bar" id="progress-bar">
+              <div class="progress-filled" id="progress-filled"></div>
+            </div>
+            <div class="time-display">
+              <span id="current-time">0:00</span> / <span id="duration">0:00</span>
+            </div>
+          </div>
+
+          <!-- Control Buttons Row -->
+          <div class="controls-row">
+            <div class="left-controls">
+              <button class="control-btn" id="play-pause-btn">
+                <span class="play-icon">▶</span>
+                <span class="pause-icon" style="display: none;">⏸</span>
+              </button>
+              <button class="control-btn" id="rewind-btn" title="Rewind 10s">⏪</button>
+              <button class="control-btn" id="forward-btn" title="Forward 10s">⏩</button>
+            </div>
+
+            <div class="right-controls">
+              <% if (content.type === 'show' && hasNextEpisode) { %>
+                <button class="control-btn next-episode-btn" id="next-episode-btn">
+                  Next Episode →
+                </button>
+              <% } %>
+              <% if (content.type === 'show') { %>
+                <button class="control-btn" id="episodes-btn" title="Episodes">
+                  📋 Episodes
+                </button>
+              <% } %>
+              <button class="control-btn" id="fullscreen-btn" title="Fullscreen">⛶</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Episodes Sidebar (for TV shows) -->
+      <% if (content.type === 'show') { %>
+        <div class="episodes-sidebar" id="episodes-sidebar">
+          <div class="episodes-header">
+            <h3>Episodes</h3>
+            <button class="close-sidebar-btn" id="close-sidebar">✕</button>
+          </div>
+          <div class="season-selector">
+            <label for="season-dropdown">Season:</label>
+            <select id="season-dropdown" class="season-dropdown">
+              <% content.seasons.forEach((s) => { %>
+                <option value="<%= s.seasonNumber %>" <%= s.seasonNumber === season ? 'selected' : '' %>>
+                  Season <%= s.seasonNumber %>
+                </option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="episodes-list" id="episodes-list">
+            <!-- Episodes will be loaded dynamically by JavaScript -->
+          </div>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loading-spinner" style="display: none;">
+      <div class="spinner"></div>
+    </div>
+  </body>
+</html>

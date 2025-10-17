@@ -10,14 +10,18 @@ let currentEpisode = 1;
 let isLiked = false;
 let isWatchd = false;
 let isCompleted = false;
+let userProgress = []; // Store user's progress for this content
 
 // Initialize page
-function init() {
+async function init() {
   // Setup buttons
   setupPlayButton();
   setupLikeButton();
   loadUserProfile();
   setupStartOverButton()
+  
+  // Load interactions (progress) for marking episodes as watched
+  await loadInteractions();
   
   if (contentType === 'show') {
     setupSeasonDropdown();
@@ -35,11 +39,27 @@ function setupPlayButton() {
   if (!playButton) return;
   
   playButton.addEventListener('click', async () => {
+    // If content is completed, clear progress before playing again
+    if (isCompleted) {
+      await clearProgress();
+    }
+    
     if (contentType === 'movie') {
-      await handleMoviePlay();
+      handleMoviePlay();
     } else {
-      // For shows, play first episode of current season
-      await handleEpisodePlay(currentSeason, currentEpisode);
+      // For shows, find the latest episode from progress (using updatedAt)
+      if (userProgress.length > 0) {
+        // Sort by updatedAt descending to get most recent
+        const latestProgress = userProgress.sort((a, b) => 
+          new Date(b.updatedAt) - new Date(a.updatedAt)
+        )[0];
+        
+        // Continue from latest episode
+        handleEpisodePlay(latestProgress.season, latestProgress.episode);
+      } else {
+        // No progress, start from first episode
+        handleEpisodePlay(1, 1);
+      }
     }
   });
 }
@@ -50,62 +70,29 @@ function setupStartOverButton() {
     if (!startOverButton) return;
 
     startOverButton.addEventListener('click', async () => {
+        // Clear progress from database before starting over
+        await clearProgress();
+        
         if (contentType === 'movie') {
-            // Add logic to start watching and reset the progress
+            // Start movie from beginning
+            handleMoviePlay();
         } else {
-            // Start watching from the beginning
-            await handleEpisodePlay(1,1);
+            // Start watching from the first episode
+            handleEpisodePlay(1, 1);
         }
     });
 }
 
-// Handle movie playback
-async function handleMoviePlay() {
-  const playButton = document.getElementById('play-button');
-  playButton.disabled = true;
-  playButton.textContent = '▶ Playing...';
-  
-  try {
-    const result = await UserAPI.markContentAsWatched(userId, profileId, contentId);
-    
-    if (result) {
-      console.log('Movie marked as watched:', result);
-      showNotification('✓ Added to watch history');
-      
-      // In a real app, you would start video playback here
-      setTimeout(() => {
-        playButton.textContent = '▶ Play Again';
-        playButton.disabled = false;
-      }, 1000);
-    } else {
-      throw new Error('Failed to mark as watched');
-    }
-  } catch (error) {
-    console.error('Error playing movie:', error);
-    showNotification('✗ Error playing content', 'error');
-    playButton.textContent = '▶ Play';
-    playButton.disabled = false;
-  }
+// Handle movie playback - Navigate to player page
+function handleMoviePlay() {
+  const url = `/player/${contentId}?userId=${userId}&profileId=${profileId}`;
+  window.location.href = url;
 }
 
-// Handle episode playback
-async function handleEpisodePlay(season, episode) {
-  try {
-    const result = await UserAPI.markContentAsWatched(userId, profileId, contentId, season, episode);
-    
-    if (result) {
-      console.log('Episode marked as watched:', result);
-      showNotification(`✓ Watching S${season}E${episode}`);
-      
-      // Update episode UI to show as watched
-      updateEpisodeWatchedStatus(season, episode);
-    } else {
-      throw new Error('Failed to mark episode as watched');
-    }
-  } catch (error) {
-    console.error('Error playing episode:', error);
-    showNotification('✗ Error playing episode', 'error');
-  }
+// Handle episode playback - Navigate to player page
+function handleEpisodePlay(season, episode) {
+  const url = `/player/${contentId}?userId=${userId}&profileId=${profileId}&season=${season}&episode=${episode}`;
+  window.location.href = url;
 }
 
 // Setup like button toggle
@@ -175,6 +162,23 @@ async function checkIfWatched() {
         isCompleted = true;
         updateWatchButtonUI();
     }
+}
+
+// Load user's progress for this content
+async function loadInteractions() {
+  try {
+    const result = await window.UserAPI.getProfileInteractions(
+      parseInt(userId),
+      parseInt(profileId)
+    );
+    
+    if (result.success && result.data) {
+      // Filter progress for this specific content
+      userProgress = result.data.progress.filter(p => p.contentId === parseInt(contentId));
+    }
+  } catch (error) {
+    console.error('Error loading interactions:', error);
+  }
 }
 
 // Load user profile avatar
@@ -250,18 +254,30 @@ function loadEpisodes(season) {
     return;
   }
   
-  episodesList.innerHTML = seasonData.episodes.map(episode => `
-    <div class="episode-card" data-season="${season}" data-episode="${episode.episodeNumber}">
-      <div class="episode-number">Episode ${episode.episodeNumber}</div>
-      <div class="episode-info">
-        <h3 class="episode-title">${episode.title}</h3>
-        <p class="episode-duration">${formatDuration(episode.durationSec)}</p>
+  episodesList.innerHTML = seasonData.episodes.map(episode => {
+    // Check if this episode has been watched (has progress entry)
+    const hasProgress = userProgress.some(p => 
+      p.type === 'show' && 
+      p.season === season && 
+      p.episode === episode.episodeNumber
+    );
+    
+    // Apply green color if watched
+    const titleColor = hasProgress ? 'color: #46d369;' : '';
+    
+    return `
+      <div class="episode-card" data-season="${season}" data-episode="${episode.episodeNumber}">
+        <div class="episode-number">Episode ${episode.episodeNumber}</div>
+        <div class="episode-info">
+          <h3 class="episode-title" style="${titleColor}">${episode.title}</h3>
+          <p class="episode-duration">${formatDuration(episode.durationSec)}</p>
+        </div>
+        <button class="episode-play-btn" onclick="handleEpisodePlay(${season}, ${episode.episodeNumber})">
+          ▶ Play
+        </button>
       </div>
-      <button class="episode-play-btn" onclick="handleEpisodePlay(${season}, ${episode.episodeNumber})">
-        ▶ Play
-      </button>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 // Update episode UI after watching
@@ -364,6 +380,20 @@ function formatDuration(seconds) {
   return `${minutes}m`;
 }
 
+// Helper function to clear ALL progress from database (all episodes for shows)
+async function clearProgress() {
+  try {
+    await window.UserAPI.clearProgress(
+      parseInt(userId),
+      parseInt(profileId),
+      parseInt(contentId),
+      contentType
+    );
+  } catch (error) {
+    console.error('Error clearing progress:', error);
+  }
+}
+
 // Show notification toast
 function showNotification(message, type = 'success') {
   // Create notification element
@@ -391,5 +421,4 @@ if (document.readyState === 'loading') {
 }
 
 // Make handleEpisodePlay globally available for inline onclick handlers
-// window.handleEpisodePlay = handleEpisodePlay;
-
+window.handleEpisodePlay = handleEpisodePlay;

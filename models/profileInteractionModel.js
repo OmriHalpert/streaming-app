@@ -81,23 +81,20 @@ async function removeFromProfileLikes(userId, profileId, contentId) {
   }
 }
 
-// Add content to profile watched
-async function addToProfileWatched(userId, profileId, contentId, contentType, contentSeason, contentEpisode) {
+// Update or create progress entry
+async function updateProgress(userId, profileId, contentId, contentType, lastPositionSec, isCompleted, contentSeason, contentEpisode) {
   try {
     // Get or create the document
-    const interactions = await getOrCreateProfileInteractions(
-      userId,
-      profileId
-    );
+    const interactions = await getOrCreateProfileInteractions(userId, profileId);
 
-    // Check if already watched (for movies) or already watched this episode (for shows)
-    let alreadyWatched;
+    // Find existing progress entry
+    let progressEntry;
     if (contentType === 'movie') {
-      alreadyWatched = interactions.progress.some(item => 
+      progressEntry = interactions.progress.find(item => 
         item.contentId === contentId && item.type === 'movie'
       );
     } else {
-      alreadyWatched = interactions.progress.some(item => 
+      progressEntry = interactions.progress.find(item => 
         item.contentId === contentId && 
         item.type === 'show' &&
         item.season === contentSeason && 
@@ -105,33 +102,93 @@ async function addToProfileWatched(userId, profileId, contentId, contentType, co
       );
     }
 
-    if (!alreadyWatched) {
-      // Create new progress entry
+    if (progressEntry) {
+      // Update existing entry
+      progressEntry.lastPositionSec = lastPositionSec;
+      progressEntry.isCompleted = isCompleted;
+      progressEntry.updatedAt = new Date();
+    } else {
+      // Create new entry
       const newProgress = {
         contentId,
-        type: contentType, // Field is called 'type' in schema, not 'contentType'
-        lastPositionSec: 0,
-        isCompleted: false,
+        type: contentType,
+        lastPositionSec,
+        isCompleted,
         updatedAt: new Date()
       };
 
-      // Add season and episode only for shows
       if (contentType === 'show') {
         newProgress.season = contentSeason;
         newProgress.episode = contentEpisode;
       }
 
-      // Add to profile interaction
       interactions.progress.push(newProgress);
-
-      // Save 
-      await interactions.save();
     }
+
+    await interactions.save();
 
     return {
       success: true,
-      alreadyWatched,
-      message: alreadyWatched ? "Already watched" : "Added to watched",
+      message: 'Progress updated'
+    };
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Get progress for specific content
+async function getProgress(userId, profileId, contentId, contentType, contentSeason, contentEpisode) {
+  try {
+    const interactions = await ProfileInteraction.findOne({ userId, profileId });
+
+    if (!interactions) {
+      return null;
+    }
+
+    let progressEntry;
+    if (contentType === 'movie') {
+      progressEntry = interactions.progress.find(item => 
+        item.contentId === contentId && item.type === 'movie'
+      );
+    } else {
+      progressEntry = interactions.progress.find(item => 
+        item.contentId === contentId && 
+        item.type === 'show' &&
+        item.season === contentSeason && 
+        item.episode === contentEpisode
+      );
+    }
+
+    return progressEntry || null;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Clear progress for specific content (removes ALL episodes for shows)
+async function clearProgress(userId, profileId, contentId, contentType) {
+  try {
+    const interactions = await ProfileInteraction.findOne({ userId, profileId });
+
+    if (!interactions) {
+      return {
+        success: true,
+        message: 'No progress to clear'
+      };
+    }
+
+    // Remove all progress entries with matching contentId and type
+    // For shows, this removes ALL episodes
+    // For movies, this removes the single movie entry
+    interactions.progress = interactions.progress.filter(item => 
+      !(item.contentId === contentId && item.type === contentType)
+    );
+
+    await interactions.save();
+
+    return {
+      success: true,
+      message: 'Progress cleared'
     };
   } catch (error) {
     throw error;
@@ -208,7 +265,9 @@ module.exports = {
   getOrCreateProfileInteractions,
   addToProfileLikes,
   removeFromProfileLikes,
-  addToProfileWatched,
+  updateProgress,
+  getProgress,
+  clearProgress,
   getProfileInteractions,
   toggleProfileLike,
   deleteProfileInteractions,
