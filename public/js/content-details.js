@@ -8,25 +8,13 @@ const contentType = document.body.dataset.contentType;
 let currentSeason = 1;
 let isLiked = false;
 
-console.log("Content Details Page Loaded");
-console.log("User ID:", userId);
-console.log("Profile ID:", profileId);
-console.log("Content ID:", contentId);
-console.log("Content Type:", contentType);
-
 // Initialize page
 function init() {
-  console.log("=== Initializing Content Details Page ===");
-  console.log("Content Type:", contentType);
-  console.log("Window seasonsData exists:", typeof window.seasonsData);
-  console.log("Window seasonsData value:", window.seasonsData);
-  
   setupPlayButton();
   setupLikeButton();
   loadUserProfile();
   
   if (contentType === 'show') {
-    console.log("Setting up TV show components...");
     setupSeasonDropdown();
     loadEpisodes(currentSeason);
   }
