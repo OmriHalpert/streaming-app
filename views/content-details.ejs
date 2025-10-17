@@ -18,7 +18,7 @@
     </script>
     <% } %>
   </head>
-  <body data-profile-id="<%= profileId %>" data-user-id="<%= userId %>" data-content-id="<%= content.id %>" data-content-type="<%= content.type %>" data-genre="<%= content.genre && content.genre.length > 0 ? content.genre[0] : '' %>" data-is-liked="<%= isLiked ? 'true' : 'false' %>" data-is-watched="<%= isWatched ? 'true' : 'false' %>">
+  <body data-profile-id="<%= profileId %>" data-user-id="<%= userId %>" data-content-id="<%= content.id %>" data-content-type="<%= content.type %>" data-genre="<%= content.genre && content.genre.length > 0 ? content.genre[0] : '' %>" data-is-liked="<%= isLiked ? 'true' : 'false' %>" data-is-watched="<%= isWatched ? 'true' : 'false' %>" data-is-completed="<%= isContentCompleted ? 'true' : 'false' %>">
     <!-- Header (same as feed page) -->
     <div class="feed-header">
       <div class="netflix-logo">

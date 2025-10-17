@@ -9,6 +9,7 @@ let currentSeason = 1;
 let currentEpisode = 1;
 let isLiked = false;
 let isWatchd = false;
+let isCompleted = false;
 
 // Initialize page
 function init() {
@@ -151,9 +152,11 @@ async function checkIfLiked() {
 // Check if content is already watched
 async function checkIfWatched() {
     const watchStatus = document.body.dataset.isWatched;
+    const completedStatus = document.body.dataset.isCompleted;
 
-    if (watchStatus === 'true') {
+    if (watchStatus === 'true' && completedStatus === 'true') {
         isWatchd = true;
+        isCompleted = true;
         updateWatchButtonUI();
     }
 }

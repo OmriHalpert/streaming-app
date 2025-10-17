@@ -1,7 +1,7 @@
 // Imports
 const Content = require("../models/Content");
 const profileInteractionService = require("../services/profileInteractionService");
-const { getContentById } = require("../services/contentService");
+const { getContentById, checkIfCompleted } = require("../services/contentService");
 
 // Main functions
 // Render content details page
@@ -49,6 +49,9 @@ async function renderContentDetailsPage(req, res) {
     const isWatched = !!progressItem;
     const watchProgress = progressItem || null;
 
+    // Check if user has completed the content
+    const isContentCompleted = await checkIfCompleted(parseInt(contentId), parseInt(userId), parseInt(profileId));
+
     // Convert mongoose document to plain object for easier use in template
     const contentData = content.toObject();
 
@@ -60,6 +63,7 @@ async function renderContentDetailsPage(req, res) {
       isLiked,
       isWatched,
       watchProgress,
+      isContentCompleted,
     });
   } catch (error) {
     console.error("Error rendering content details page:", error);
