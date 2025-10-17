@@ -17,6 +17,7 @@ function init() {
   setupPlayButton();
   setupLikeButton();
   loadUserProfile();
+  setupStartOverButton()
   
   if (contentType === 'show') {
     setupSeasonDropdown();
@@ -41,6 +42,21 @@ function setupPlayButton() {
       await handleEpisodePlay(currentSeason, currentEpisode);
     }
   });
+}
+
+// Setup start over button click handler
+function setupStartOverButton() {
+    const startOverButton = document.getElementById('start-over-button');
+    if (!startOverButton) return;
+
+    startOverButton.addEventListener('click', async () => {
+        if (contentType === 'movie') {
+            // Add logic to start watching and reset the progress
+        } else {
+            // Start watching from the beginning
+            await handleEpisodePlay(1,1);
+        }
+    });
 }
 
 // Handle movie playback
