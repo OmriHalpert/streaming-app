@@ -34,12 +34,12 @@ function setupPlayButton() {
   const playButton = document.getElementById('play-button');
   if (!playButton) return;
   
-  playButton.addEventListener('click', async () => {
+  playButton.addEventListener('click', () => {
     if (contentType === 'movie') {
-      await handleMoviePlay();
+      handleMoviePlay();
     } else {
-      // For shows, play first episode of current season
-      await handleEpisodePlay(currentSeason, currentEpisode);
+      // For shows, play first episode of first season
+      handleEpisodePlay(1, 1);
     }
   });
 }
@@ -49,63 +49,27 @@ function setupStartOverButton() {
     const startOverButton = document.getElementById('start-over-button');
     if (!startOverButton) return;
 
-    startOverButton.addEventListener('click', async () => {
+    startOverButton.addEventListener('click', () => {
         if (contentType === 'movie') {
-            // Add logic to start watching and reset the progress
+            // Start movie from beginning
+            handleMoviePlay();
         } else {
-            // Start watching from the beginning
-            await handleEpisodePlay(1,1);
+            // Start watching from the first episode
+            handleEpisodePlay(1, 1);
         }
     });
 }
 
-// Handle movie playback
-async function handleMoviePlay() {
-  const playButton = document.getElementById('play-button');
-  playButton.disabled = true;
-  playButton.textContent = '▶ Playing...';
-  
-  try {
-    const result = await UserAPI.markContentAsWatched(userId, profileId, contentId);
-    
-    if (result) {
-      console.log('Movie marked as watched:', result);
-      showNotification('✓ Added to watch history');
-      
-      // In a real app, you would start video playback here
-      setTimeout(() => {
-        playButton.textContent = '▶ Play Again';
-        playButton.disabled = false;
-      }, 1000);
-    } else {
-      throw new Error('Failed to mark as watched');
-    }
-  } catch (error) {
-    console.error('Error playing movie:', error);
-    showNotification('✗ Error playing content', 'error');
-    playButton.textContent = '▶ Play';
-    playButton.disabled = false;
-  }
+// Handle movie playback - Navigate to player page
+function handleMoviePlay() {
+  const url = `/player/${contentId}?userId=${userId}&profileId=${profileId}`;
+  window.location.href = url;
 }
 
-// Handle episode playback
-async function handleEpisodePlay(season, episode) {
-  try {
-    const result = await UserAPI.markContentAsWatched(userId, profileId, contentId, season, episode);
-    
-    if (result) {
-      console.log('Episode marked as watched:', result);
-      showNotification(`✓ Watching S${season}E${episode}`);
-      
-      // Update episode UI to show as watched
-      updateEpisodeWatchedStatus(season, episode);
-    } else {
-      throw new Error('Failed to mark episode as watched');
-    }
-  } catch (error) {
-    console.error('Error playing episode:', error);
-    showNotification('✗ Error playing episode', 'error');
-  }
+// Handle episode playback - Navigate to player page
+function handleEpisodePlay(season, episode) {
+  const url = `/player/${contentId}?userId=${userId}&profileId=${profileId}&season=${season}&episode=${episode}`;
+  window.location.href = url;
 }
 
 // Setup like button toggle
@@ -391,5 +355,4 @@ if (document.readyState === 'loading') {
 }
 
 // Make handleEpisodePlay globally available for inline onclick handlers
-// window.handleEpisodePlay = handleEpisodePlay;
-
+window.handleEpisodePlay = handleEpisodePlay;

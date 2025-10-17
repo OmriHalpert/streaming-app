@@ -407,6 +407,31 @@ async function searchContent(query, userId, profileId) {
   }
 }
 
+async function getSingleContentById(contentId) {
+  try {
+    const response = await fetch(`/api/content/${encodeURIComponent(contentId)}`);
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      return {
+        success: true,
+        data: result.data
+      };
+    } else {
+      return {
+        success: false,
+        error: result.error
+      };
+    }
+  } catch (error) {
+    console.error('Search error:', error);
+    return {
+      success: false,
+      error: 'Network error. Please try again.'
+    };
+  }
+}
+
 // Make functions available globally
 window.UserAPI = {
   registerUser,
@@ -422,4 +447,5 @@ window.UserAPI = {
   updateProfile,
   deleteProfile,
   searchContent,
+  getSingleContentById,
 };

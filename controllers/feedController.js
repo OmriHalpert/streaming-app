@@ -5,6 +5,7 @@ const {
   searchContent: searchContentService,
   markAsWatched,
   getContentByGenre,
+  getContentById,
 } = require("../services/contentService");
 const {
   getRecommendations: getRecommendationsService,
@@ -251,6 +252,35 @@ async function getGenreContent(req, res) {
   }
 }
 
+// Get specific content by ID
+async function getSingleContentById(req, res) {
+  try {
+    const contentId = req.query.contentId;
+
+    // Validate content ID
+    if (!contentId || isNaN(contentId) || contentId <= 0) {
+        return res.status(400).json({
+        success: false,
+        error: "Valid content ID is required",
+      });
+    }
+
+    const content = await getContentById(parseInt(contentId));
+
+    res.json({
+      success: true,
+      data: content
+    });
+  } catch (error) {
+    console.error("Error fetching content by ID", error);
+
+    res.status(500).json({
+      success: false,
+      error: "Unable to fetch content right now",
+    });
+  }
+}
+
 module.exports = {
   renderFeedPage,
   getContent,
@@ -259,4 +289,5 @@ module.exports = {
   watchContent,
   getRecommendations,
   getGenreContent,
+  getSingleContentById,
 };
