@@ -9,6 +9,7 @@ const {
   getRecommendations,
   getGenreContent,
   addContent,
+  getOMDBRating,
 } = require("../controllers/feedController");
 const { upload } = require('../config/upload');
 const { requireAuth, requireAdminAuth } = require("../middleware/auth"); // Import authentication middleware
@@ -25,20 +26,18 @@ contentRouter.get("/recommendations/:userId/:profileId", getRecommendations);
 contentRouter.post("/like", toggleContentLike);
 contentRouter.post("/watch/:contentId", watchContent);
 contentRouter.get("/search", searchContent);
+contentRouter.get("/rating", getOMDBRating); // OMDB rating endpoint
 contentRouter.get("/:genreName", getGenreContent);
 
 // Add content endpoint (admin only)
 // Handle multiple file uploads:
 // - thumbnail (single image)
 // - movieVideo (single video for movies)
+// - season{X}_episode{Y} (dynamic episode videos for TV shows)
 contentRouter.post(
   '/add',
   requireAdminAuth,
-  upload.fields([
-    { name: 'thumbnail', maxCount: 1 },
-    { name: 'movieVideo', maxCount: 1 },
-    // Dynamic episode fields will be handled by multer.any() or custom logic
-  ]),
+  upload.any(), // Accept any field names (needed for dynamic episode fields)
   addContent
 );
 

@@ -11,7 +11,7 @@ function logRequest(req, res, next) {
     url: req.url,
     ip: req.ip,
     userAgent: req.get("User-Agent"),
-    userId: req.session?.user?.id || null,
+    userId: req.session?.user?.id ?? null,
     action: "request",
   });
 
@@ -24,7 +24,7 @@ function logRequest(req, res, next) {
       statusCode: res.statusCode,
       duration: `${duration}ms`,
       ip: req.ip,
-      userId: req.session?.user?.id || null,
+      userId: req.session?.user?.id ?? null,
       action: "response",
     });
   });
@@ -44,7 +44,7 @@ function logAuthEvents(req, res, next) {
         // Success
         if (req.path.includes("/login")) {
           loggerService.logAuth("info", "User login successful", {
-            userId: data.user?.id || "unknown",
+            userId: data.user?.id ?? "unknown",
             email: data.user?.email || req.body?.email,
             ip: req.ip,
             userAgent: req.get("User-Agent"),
@@ -52,7 +52,7 @@ function logAuthEvents(req, res, next) {
           });
         } else if (req.path.includes("/register")) {
           loggerService.logAuth("info", "User registration successful", {
-            userId: data.user?.id || "unknown",
+            userId: data.user?.id ?? "unknown",
             email: data.user?.email || req.body?.email,
             ip: req.ip,
             userAgent: req.get("User-Agent"),
@@ -94,7 +94,7 @@ function logErrors(err, req, res, next) {
     method: req.method,
     url: req.url,
     ip: req.ip,
-    userId: req.session?.user?.id || null,
+    userId: req.session?.user?.id ?? null,
     userAgent: req.get("User-Agent"),
   });
 

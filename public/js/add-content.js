@@ -146,6 +146,16 @@ document.getElementById('submitBtn').addEventListener('click', async function() 
       name: name,
       wikiUrl: generateWikiUrl(name)
     }));
+
+    // Fetch Imdb rating
+    const resultImdb = await UserAPI.getContentRating(contentName);
+
+    if (!resultImdb.success) {
+        showMessage(resultImdb.error || 'Failed to fetch rating', 'error');
+        return; // Stop if rating fetch fails
+    }
+
+    const rating = resultImdb.rating; // Access rating directly, not from .data
     
     // Prepare content data
     const contentData = {
@@ -155,7 +165,8 @@ document.getElementById('submitBtn').addEventListener('click', async function() 
       genre: genres,
       cast: cast,
       director: director,
-      summary: summary
+      summary: summary,
+      rating: rating
     };
     
     // Handle movie or show specific data
@@ -262,6 +273,7 @@ document.getElementById('submitBtn').addEventListener('click', async function() 
     formData.append('cast', JSON.stringify(contentData.cast));
     formData.append('director', contentData.director);
     formData.append('summary', contentData.summary);
+    formData.append('rating', contentData.rating);
 
     // Add thumbnail if exists
     const thumbnailFile = document.getElementById('thumbnail').files[0];
@@ -303,11 +315,11 @@ document.getElementById('submitBtn').addEventListener('click', async function() 
         window.location.reload();
     }, 2000);
     } else {
-    showMessage(result.error || 'Failed to add content', 'error');
+        showMessage(result.error || 'Failed to add content', 'error');
     }
     
   } catch (error) {
-    console.error('Error adding content:', error);
+        console.error('Error adding content:', error);
     if (error.message !== 'Missing episodes' && error.message !== 'Missing episode title' && error.message !== 'Missing episode video') {
       showMessage('Error adding content. Please check the console.', 'error');
     }

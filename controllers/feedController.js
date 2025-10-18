@@ -53,7 +53,8 @@ async function addContent(req, res) {
       genres,
       cast,
       director,
-      summary
+      summary,
+      rating
     } = req.body;
 
     // Parse genres (comma-separated string to array)
@@ -70,26 +71,39 @@ async function addContent(req, res) {
       genre: genreArray,
       cast: castArray,
       director,
-      summary
+      summary,
+      rating
     };
 
+    // Convert files array to object for easier access
+    // When using upload.any(), files is an array, not an object
+    const filesObj = {};
+    if (req.files && Array.isArray(req.files)) {
+      req.files.forEach(file => {
+        if (!filesObj[file.fieldname]) {
+          filesObj[file.fieldname] = [];
+        }
+        filesObj[file.fieldname].push(file);
+      });
+    }
+
     // Handle thumbnail
-    if (req.files && req.files.thumbnail) {
-      const thumbnailFile = req.files.thumbnail[0];
+    if (filesObj.thumbnail) {
+      const thumbnailFile = filesObj.thumbnail[0];
       contentData.thumbnail = `/resources/thumbnails/${thumbnailFile.filename}`;
     }
 
     // Handle movie or show
     if (type === 'movie') {
       // Movie: single video
-      if (!req.files || !req.files.movieVideo) {
+      if (!filesObj.movieVideo) {
         return res.status(400).json({
           success: false,
           error: 'Movie video is required'
         });
       }
 
-      const videoFile = req.files.movieVideo[0];
+      const videoFile = filesObj.movieVideo[0];
       const videoPath = path.join(__dirname, '../public/resources/mp4', videoFile.filename);
 
       // Extract duration from video
@@ -109,7 +123,7 @@ async function addContent(req, res) {
         for (const episode of season.episodes) {
           // Find corresponding video file
           const videoFieldName = `season${season.seasonNumber}_episode${episode.episodeNumber}`;
-          const videoFile = req.files[videoFieldName] ? req.files[videoFieldName][0] : null;
+          const videoFile = filesObj[videoFieldName] ? filesObj[videoFieldName][0] : null;
 
           if (!videoFile) {
             return res.status(400).json({
@@ -398,6 +412,51 @@ async function getSingleContentById(req, res) {
   }
 }
 
+// Get OMDB rating for content
+async function getOMDBRating(req, res) {
+  try {
+    const { title } = req.query;
+
+    if (!title) {
+      return res.status(400).json({
+        success: false,
+        error: 'Title is required'
+      });
+    }
+
+    const OMDB_API_KEY = process.env.OMDB_API_KEY;
+    
+    if (!OMDB_API_KEY) {
+      return res.status(500).json({
+        success: false,
+        error: 'OMDB API key not configured'
+      });
+    }
+
+    const url = `http://www.omdbapi.com/?apikey=${OMDB_API_KEY}&t=${encodeURIComponent(title)}`;
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (result.Response === 'True' && result.imdbRating) {
+      return res.json({
+        success: true,
+        rating: result.imdbRating
+      });
+    } else {
+      return res.json({
+        success: false,
+        error: result.Error || 'Rating not found'
+      });
+    }
+  } catch (error) {
+    console.error('Error fetching OMDB rating:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to fetch rating'
+    });
+  }
+}
+
 module.exports = {
   renderFeedPage,
   getContent,
@@ -408,4 +467,5 @@ module.exports = {
   getGenreContent,
   getSingleContentById,
   addContent,
+  getOMDBRating,
 };

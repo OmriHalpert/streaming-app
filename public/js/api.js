@@ -546,6 +546,7 @@ async function getProfileInteractions(userId, profileId) {
 }
 
 // Add new content (admin only)
+
 async function addContent(formData) {
   try {
     const response = await fetch('/api/content/add', {
@@ -576,6 +577,32 @@ async function addContent(formData) {
   }
 }
 
+async function getContentRating(contentName) {
+  try {
+    const url = `/api/content/rating?title=${encodeURIComponent(contentName)}`;
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      return {
+        success: true,
+        rating: result.rating,
+      };
+    } else {
+      return {
+        success: false,
+        error: result.error || "Failed to fetch rating"
+      };
+    }
+  } catch (error) {
+    console.error('Failed to fetch rating:', error);
+    return {
+      success: false,
+      error: 'Network error. Please try again.'
+    };
+  }
+}
+
 // Make functions available globally
 window.UserAPI = {
   registerUser,
@@ -596,4 +623,5 @@ window.UserAPI = {
   clearProgress,
   getProfileInteractions,
   addContent,
+  getContentRating,
 };

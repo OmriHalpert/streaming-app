@@ -389,7 +389,7 @@ async function addNewContent(contentData) {
   try {
     // Validate required fields
     if (!contentData.name || !contentData.year || !contentData.type || 
-        !contentData.genre || !contentData.director) {
+        !contentData.genre || !contentData.director || !contentData.rating) {
       throw new Error('Missing required fields');
     }
 
@@ -407,7 +407,7 @@ async function addNewContent(contentData) {
       director: contentData.director,
       summary: contentData.summary || '',
       thumbnail: contentData.thumbnail || null,
-      rating: 5.0, // Default rating, will be fetched from imdb
+      rating: contentData.rating,
       likes: 0
     };
 
