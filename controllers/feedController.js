@@ -6,11 +6,14 @@ const {
   markAsWatched,
   getContentByGenre,
   getContentById,
+  addNewContent,
 } = require("../services/contentService");
 const {
   getRecommendations: getRecommendationsService,
 } = require("../services/recommendationService");
 const Content = require("../models/Content");
+const { getVideoDuration } = require('../utils/videoProcessor');
+const path = require('path');
 
 // Main functions
 // Renders feed page with content
@@ -35,6 +38,120 @@ async function renderFeedPage(req, res) {
     console.error("Error rendering feed page:", error);
     res.status(500).render("error", {
       message: "Unable to load feed. Please try again.",
+    });
+  }
+}
+
+// Add new content
+async function addContent(req, res) {
+  try {
+    // Extract form data
+    const {
+      name,
+      year,
+      type,
+      genres,
+      cast,
+      director,
+      summary
+    } = req.body;
+
+    // Parse genres (comma-separated string to array)
+    const genreArray = genres.split(',').map(g => g.trim());
+
+    // Parse cast (JSON string to array)
+    const castArray = JSON.parse(cast);
+
+    // Prepare content data
+    const contentData = {
+      name,
+      year: parseInt(year),
+      type,
+      genre: genreArray,
+      cast: castArray,
+      director,
+      summary
+    };
+
+    // Handle thumbnail
+    if (req.files && req.files.thumbnail) {
+      const thumbnailFile = req.files.thumbnail[0];
+      contentData.thumbnail = `/resources/thumbnails/${thumbnailFile.filename}`;
+    }
+
+    // Handle movie or show
+    if (type === 'movie') {
+      // Movie: single video
+      if (!req.files || !req.files.movieVideo) {
+        return res.status(400).json({
+          success: false,
+          error: 'Movie video is required'
+        });
+      }
+
+      const videoFile = req.files.movieVideo[0];
+      const videoPath = path.join(__dirname, '../public/resources/mp4', videoFile.filename);
+
+      // Extract duration from video
+      const duration = await getVideoDuration(videoPath);
+
+      contentData.durationSec = duration;
+      contentData.videoUrl = `/resources/mp4/${videoFile.filename}`;
+
+    } else {
+      // TV Show: parse seasons
+      const seasonsData = JSON.parse(req.body.seasonsData);
+      const seasons = [];
+
+      for (const season of seasonsData) {
+        const episodes = [];
+
+        for (const episode of season.episodes) {
+          // Find corresponding video file
+          const videoFieldName = `season${season.seasonNumber}_episode${episode.episodeNumber}`;
+          const videoFile = req.files[videoFieldName] ? req.files[videoFieldName][0] : null;
+
+          if (!videoFile) {
+            return res.status(400).json({
+              success: false,
+              error: `Video missing for Season ${season.seasonNumber} Episode ${episode.episodeNumber}`
+            });
+          }
+
+          const videoPath = path.join(__dirname, '../public/resources/mp4', videoFile.filename);
+          const duration = await getVideoDuration(videoPath);
+
+          episodes.push({
+            episodeNumber: episode.episodeNumber,
+            title: episode.title,
+            durationSec: duration,
+            videoUrl: `/resources/mp4/${videoFile.filename}`
+          });
+        }
+
+        seasons.push({
+          seasonNumber: season.seasonNumber,
+          episodes
+        });
+      }
+
+      contentData.seasons = seasons;
+    }
+
+    // Save content
+    const newContent = await addNewContent(contentData);
+
+    return res.status(201).json({
+      success: true,
+      message: 'Content added successfully',
+      data: newContent
+    });
+
+  } catch (error) {
+    console.error('Error adding content:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to add content'
     });
   }
 }
@@ -290,4 +407,5 @@ module.exports = {
   getRecommendations,
   getGenreContent,
   getSingleContentById,
+  addContent,
 };

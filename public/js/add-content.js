@@ -103,9 +103,9 @@ function addEpisode(seasonNumber) {
   episodesContainer.appendChild(episodeItem);
 }
 
-// Back button
+// Back button - logout and redirect to login
 document.getElementById('backButton').addEventListener('click', function() {
-  window.location.href = '/login';
+  window.location.href = '/logout';
 });
 
 // Submit form
@@ -251,12 +251,60 @@ document.getElementById('submitBtn').addEventListener('click', async function() 
     // Log the content data for now
     console.log('Content data to be submitted:', contentData);
     
-    // TODO: Send to backend API
-    // const response = await fetch('/api/content/add', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(contentData)
-    // });
+    // Prepare FormData for file upload
+    const formData = new FormData();
+
+    // Add basic fields
+    formData.append('name', contentData.name);
+    formData.append('year', contentData.year);
+    formData.append('type', contentData.type);
+    formData.append('genres', contentData.genre.join(','));
+    formData.append('cast', JSON.stringify(contentData.cast));
+    formData.append('director', contentData.director);
+    formData.append('summary', contentData.summary);
+
+    // Add thumbnail if exists
+    const thumbnailFile = document.getElementById('thumbnail').files[0];
+    if (thumbnailFile) {
+    formData.append('thumbnail', thumbnailFile);
+    }
+
+    if (contentType === 'movie') {
+    // Add movie video
+    const movieVideo = document.getElementById('movieVideo').files[0];
+    formData.append('movieVideo', movieVideo);
+    } else {
+    // Add seasons data and episode videos
+    formData.append('seasonsData', JSON.stringify(contentData.seasons));
+
+    // Add each episode video
+    const seasonCards = document.querySelectorAll('.season-card');
+    seasonCards.forEach((seasonCard, seasonIndex) => {
+        const seasonNumber = seasonIndex + 1;
+        const episodeItems = seasonCard.querySelectorAll('.episode-item');
+
+        episodeItems.forEach((episodeItem, episodeIndex) => {
+        const episodeNumber = episodeIndex + 1;
+        const video = episodeItem.querySelector('.episode-video').files[0];
+        const fieldName = `season${seasonNumber}_episode${episodeNumber}`;
+        formData.append(fieldName, video);
+        });
+    });
+    }
+
+    // Send to backend
+    showMessage('Uploading content...', 'success');
+    const result = await UserAPI.addContent(formData);
+
+    if (result.success) {
+    showMessage('Content added successfully!', 'success');
+    // Reset form or redirect
+    setTimeout(() => {
+        window.location.reload();
+    }, 2000);
+    } else {
+    showMessage(result.error || 'Failed to add content', 'error');
+    }
     
   } catch (error) {
     console.error('Error adding content:', error);

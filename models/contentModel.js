@@ -29,7 +29,19 @@ async function searchContent(query) {
   }
 }
 
+// Add new content
+async function addContent(contentData) {
+  try {
+    const newContent = new Content(contentData);
+    await newContent.save();
+    return newContent;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   getContent,
   searchContent,
+  addContent
 };

@@ -2,6 +2,16 @@
 const contentModel = require("../models/contentModel");
 const profileInteractionService = require("./profileInteractionService");
 
+// Helper functions
+// Get next available content ID
+async function getNextContentId() {
+  const lastContent = await contentModel.getContent();
+  if (!lastContent || lastContent.length === 0) {
+    return 1;
+  }
+  const maxId = Math.max(...lastContent.map(c => c.id));
+  return maxId + 1;
+}
 
 // Main functions
 // Get all content with optional profile-specific like/watched status
@@ -374,6 +384,50 @@ async function checkIfCompleted(contentId, userId, profileId) {
   }
 }
 
+// Add new content
+async function addNewContent(contentData) {
+  try {
+    // Validate required fields
+    if (!contentData.name || !contentData.year || !contentData.type || 
+        !contentData.genre || !contentData.director) {
+      throw new Error('Missing required fields');
+    }
+
+    // Get next ID
+    const nextId = await getNextContentId();
+
+    // Prepare content object
+    const newContent = {
+      id: nextId,
+      name: contentData.name,
+      year: contentData.year,
+      type: contentData.type,
+      genre: contentData.genre,
+      cast: contentData.cast || [],
+      director: contentData.director,
+      summary: contentData.summary || '',
+      thumbnail: contentData.thumbnail || null,
+      rating: 5.0, // Default rating, will be fetched from imdb
+      likes: 0
+    };
+
+    // Add type-specific fields
+    if (contentData.type === 'movie') {
+      newContent.durationSec = contentData.durationSec;
+      newContent.videoUrl = contentData.videoUrl;
+    } else {
+      newContent.seasons = contentData.seasons;
+    }
+
+    // Save to database
+    const savedContent = await contentModel.addContent(newContent);
+
+    return savedContent;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   getAllContent,
   getContentByName,
@@ -384,4 +438,5 @@ module.exports = {
   searchContent,
   markAsWatched,
   checkIfCompleted,
+  addNewContent,
 };

@@ -545,6 +545,37 @@ async function getProfileInteractions(userId, profileId) {
   }
 }
 
+// Add new content (admin only)
+async function addContent(formData) {
+  try {
+    const response = await fetch('/api/content/add', {
+      method: 'POST',
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      return {
+        success: true,
+        message: result.message,
+        data: result.data
+      };
+    } else {
+      return {
+        success: false,
+        error: result.error || 'Failed to add content'
+      };
+    }
+  } catch (error) {
+    console.error('Failed to add content:', error);
+    return {
+      success: false,
+      error: 'Network error. Please try again.'
+    };
+  }
+}
+
 // Make functions available globally
 window.UserAPI = {
   registerUser,
@@ -564,4 +595,5 @@ window.UserAPI = {
   saveProgress,
   clearProgress,
   getProfileInteractions,
+  addContent,
 };

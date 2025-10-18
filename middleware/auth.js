@@ -96,6 +96,11 @@ function requireProfileOwnership(req, res, next) {
 // Redirect logged-in users away from login/signup pages
 function redirectIfAuthenticated(req, res, next) {
   if (req.session && req.session.user) {
+    // Admin users (userId = 0) should go to admin page
+    if (parseInt(req.session.user.id) === 0) {
+      return res.redirect('/admin');
+    }
+    // Regular users go to profiles
     return res.redirect(`/profiles?userId=${req.session.user.id}`);
   } else {
     return next();

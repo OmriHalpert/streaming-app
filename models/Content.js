@@ -25,6 +25,12 @@ const contentSchema = new mongoose.Schema(
       enum: ["movie", "show"],
       required: true
     },
+    videoUrl: {
+      type: String,
+      required: function() {
+        return this.type === "movie";
+      }
+    },
     rating: {
       type: Number,
       min: 0,
@@ -99,6 +105,10 @@ const contentSchema = new mongoose.Schema(
                 type: Number,
                 required: true,
                 min: 0
+              },
+              videoUrl: {
+                type: String,
+                required: true
               }
             }
           ]
