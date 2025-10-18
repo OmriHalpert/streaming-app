@@ -34,6 +34,10 @@ const contentSchema = new mongoose.Schema(
       type: String,
       default: ""
     },
+    director: {
+      type: String,
+      required: true
+    },
     genre: {
       type: [String],
       required: true,
@@ -62,7 +66,7 @@ const contentSchema = new mongoose.Schema(
     },
     thumbnail: {
       type: String,
-      required: false, // Made optional since not all content has thumbnails
+      required: false,
     },
     durationSec: {
       type: Number,

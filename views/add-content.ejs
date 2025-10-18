@@ -9,7 +9,11 @@
   <body>
     <div class="container">
       <div class="header">
-        <img src="/resources/netflix_logo.png" alt="Netflix Logo" class="logo" />
+        <img
+          src="/resources/netflix_logo.png"
+          alt="Netflix Logo"
+          class="logo"
+        />
         <button class="back-button" id="backButton">← Back</button>
       </div>
 
@@ -19,25 +23,67 @@
         <!-- Basic Information -->
         <div class="form-section">
           <h2>Basic Information</h2>
-          
+
           <div class="form-group">
             <label for="contentName">Content Name</label>
-            <input type="text" id="contentName" placeholder="Enter content name" required />
+            <input
+              type="text"
+              id="contentName"
+              placeholder="Enter content name"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label for="releaseYear">Year of Release</label>
-            <input type="number" id="releaseYear" placeholder="2024" min="1900" max="2100" required />
+            <input
+              type="number"
+              id="releaseYear"
+              placeholder="2024"
+              min="1900"
+              max="2100"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label for="genres">Genres (comma-separated)</label>
-            <input type="text" id="genres" placeholder="Action, Drama, Thriller" required />
+            <input
+              type="text"
+              id="genres"
+              placeholder="Action, Drama, Thriller"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="director">Director</label>
+            <input
+              type="text"
+              id="director"
+              placeholder="Enter director name"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="cast">Cast (comma-separated)</label>
+            <input
+              type="text"
+              id="cast"
+              placeholder="Actor 1, Actor 2, Actor 3"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label for="summary">Summary</label>
-            <textarea id="summary" rows="4" placeholder="Enter content summary" required></textarea>
+            <textarea
+              id="summary"
+              rows="4"
+              placeholder="Enter content summary"
+              required
+            ></textarea>
           </div>
 
           <div class="form-group">
@@ -50,7 +96,7 @@
         <!-- Content Type Selection -->
         <div class="form-section">
           <h2>Content Type</h2>
-          
+
           <div class="form-group">
             <label for="contentType">Type</label>
             <select id="contentType">
@@ -66,23 +112,24 @@
           
           <div class="form-group">
             <label for="movieVideo">Upload Video (MP4)</label>
-            <input type="file" id="movieVideo" accept="video/mp4" />
-            <small>Upload the movie video file</small>
+            <input type="file" id="movieVideo" accept="video/mp4" required />
           </div>
-        </div>
-
-        <!-- TV Show Section (shown when type is 'show') -->
-        <div class="form-section" id="showSection" style="display: none;">
+        </div>        <!-- TV Show Section (shown when type is 'show') -->
+        <div class="form-section" id="showSection" style="display: none">
           <h2>TV Show Seasons & Episodes</h2>
-          
-          <button type="button" class="add-season-btn" id="addSeasonBtn">+ Add Season</button>
-          
+
+          <button type="button" class="add-season-btn" id="addSeasonBtn">
+            + Add Season
+          </button>
+
           <div id="seasonsContainer"></div>
         </div>
 
         <!-- Submit Button -->
         <div class="form-actions">
-          <button type="button" class="submit-btn" id="submitBtn">Add Content</button>
+          <button type="button" class="submit-btn" id="submitBtn">
+            Add Content
+          </button>
         </div>
 
         <div id="messageBox" class="message"></div>
