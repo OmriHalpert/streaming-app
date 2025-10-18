@@ -18,10 +18,11 @@ function handleAuthError(error, res, context = "authentication") {
     "Email must be no more than 254 characters",
     "Username must be at least 3 characters",
     "Username must be no more than 30 characters",
-    "Password must be at least 6 characters",
+    "Password must be at least 5 characters",
     "Password must be no more than 128 characters",
     "Email already exists",
-    "Email does not exist",
+    "Username already exists",
+    "User does not exist",
     "Incorrect Password",
   ];
 
@@ -80,10 +81,10 @@ async function register(req, res) {
 // Login controller
 async function login(req, res) {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
     // Login user via services
-    const user = await loginUser(email, password);
+    const user = await loginUser(username, password);
 
     // Create session and store user data in it
     req.session.user = {
@@ -108,12 +109,12 @@ async function logout(req, res) {
   try {
     // Get user info before destroying session
     const userId = req.session?.user?.id || "unknown";
-    const userEmail = req.session?.user?.email || "unknown";
+    const userName = req.session?.user?.username || "unknown";
 
     // Log the logout attempt
     logAuth("info", "User logout initiated", {
       userId: userId,
-      email: userEmail,
+      username: userName,
       ip: req.ip,
       userAgent: req.get("User-Agent"),
       action: "logout_initiated",
@@ -127,7 +128,7 @@ async function logout(req, res) {
         // Log logout failure
         logAuth("error", "User logout failed - session destruction error", {
           userId: userId,
-          email: userEmail,
+          username: userName,
           ip: req.ip,
           error: err.message,
           action: "logout_failure",
@@ -136,7 +137,7 @@ async function logout(req, res) {
         // Log successful logout
         logAuth("info", "User logout successful", {
           userId: userId,
-          email: userEmail,
+          userName: userName,
           ip: req.ip,
           action: "logout_success",
         });

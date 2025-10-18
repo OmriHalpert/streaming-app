@@ -13,9 +13,12 @@ const {
 const { renderFeedPage } = require("../controllers/feedController.js");
 const { renderContentDetailsPage } = require("../controllers/contentDetailsController.js");
 const { playContent } = require("../controllers/playerController.js");
+const { renderAddContentPage } = require('../controllers/addContentController.js');
 const {
   requirePageOwnership,
   redirectIfAuthenticated,
+  requireAuthAndOwnership,
+  requireAdminAuth,
 } = require("../middleware/auth"); // Import authentication middleware
 
 // Declarations
@@ -32,6 +35,9 @@ pagesRouter.get(
 pagesRouter.get("/feed", requirePageOwnership, renderFeedPage);
 pagesRouter.get("/content/:contentId", requirePageOwnership, renderContentDetailsPage);
 pagesRouter.get("/player/:contentId", requirePageOwnership, playContent);
+
+// Admin-only route - Requires admin authentication (userId = 0)
+pagesRouter.get("/admin", requireAdminAuth, renderAddContentPage)
 
 // Public routes - Redirect if already authenticated
 pagesRouter.get("/login", redirectIfAuthenticated, renderLoginPage);

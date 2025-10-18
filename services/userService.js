@@ -79,10 +79,10 @@ async function register(email, username, password) {
     );
   }
 
-  if (trimmedPassword.length < 6 || trimmedPassword.length > 128) {
+  if (trimmedPassword.length < 5 || trimmedPassword.length > 128) {
     throw new Error(
-      trimmedPassword.length < 6
-        ? "Password must be at least 6 characters"
+      trimmedPassword.length < 5
+        ? "Password must be at least 5 characters"
         : "Password must be no more than 128 characters"
     );
   }
@@ -95,40 +95,34 @@ async function register(email, username, password) {
 }
 
 // Login user
-async function login(email, password) {
+async function login(username, password) {
   // Input validation
-  if (!email || !password) {
+  if (!username || !password) {
     throw new Error("All fields are required");
   }
 
   // Trim inputs
-  const trimmedEmail = email.trim();
+  const trimmedUsername = username.trim();
   const trimmedPassword = password.trim();
 
-  // Email format validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(trimmedEmail)) {
-    throw new Error("Invalid email format");
-  }
-
   // Length validations
-  if (trimmedEmail.length < 5 || trimmedEmail.length > 254) {
+  if (trimmedUsername.length < 3 || trimmedUsername.length > 30) {
     throw new Error(
-      trimmedEmail.length < 5
-        ? "Email must be at least 5 characters"
-        : "Email must be no more than 254 characters"
+      trimmedUsername.length < 3
+        ? "Username must be at least 3 characters"
+        : "Username must be no more than 30 characters"
     );
   }
 
-  if (trimmedPassword.length < 6 || trimmedPassword.length > 128) {
+  if (trimmedPassword.length < 5 || trimmedPassword.length > 128) {
     throw new Error(
-      trimmedPassword.length < 6
-        ? "Password must be at least 6 characters"
+      trimmedPassword.length < 5
+        ? "Password must be at least 5 characters"
         : "Password must be no more than 128 characters"
     );
   }
 
-  return await usersModel.login(trimmedEmail, trimmedPassword);
+  return await usersModel.login(trimmedUsername, trimmedPassword);
 }
 
 // Add a new profile

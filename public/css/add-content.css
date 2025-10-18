@@ -1,0 +1,383 @@
+/* Add Content Page Styles */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background-color: #141414;
+  color: #ffffff;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  margin-bottom: 30px;
+}
+
+.logo {
+  height: 40px;
+}
+
+.back-button {
+  background-color: transparent;
+  color: #ffffff;
+  border: 1px solid #ffffff;
+  padding: 8px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: #ffffff;
+  color: #141414;
+}
+
+/* Page Title */
+.page-title {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+/* Form Container */
+.form-container {
+  background-color: #1f1f1f;
+  border-radius: 8px;
+  padding: 30px;
+}
+
+.form-section {
+  margin-bottom: 30px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #333;
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 20px;
+}
+
+.form-section h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+  color: #e50914;
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #b3b3b3;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  background-color: #333;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #e50914;
+}
+
+.form-group input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  background-color: #333;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.form-group input[type="file"]::file-selector-button {
+  background-color: #e50914;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.form-group input[type="file"]::file-selector-button:hover {
+  background-color: #f40612;
+}
+
+.form-group small {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #808080;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Add Season Button */
+.add-season-btn {
+  background-color: #333;
+  color: #ffffff;
+  border: 1px dashed #666;
+  padding: 12px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.add-season-btn:hover {
+  background-color: #444;
+  border-color: #888;
+}
+
+/* Seasons Container */
+#seasonsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Season Card */
+.season-card {
+  background-color: #2a2a2a;
+  border-radius: 6px;
+  padding: 20px;
+  border: 1px solid #444;
+}
+
+.season-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.season-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.remove-season-btn {
+  background-color: transparent;
+  color: #e50914;
+  border: 1px solid #e50914;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.remove-season-btn:hover {
+  background-color: #e50914;
+  color: #ffffff;
+}
+
+.add-episode-btn {
+  background-color: #444;
+  color: #ffffff;
+  border: 1px solid #666;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}
+
+.add-episode-btn:hover {
+  background-color: #555;
+}
+
+/* Episodes Container */
+.episodes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Episode Item */
+.episode-item {
+  background-color: #333;
+  border-radius: 4px;
+  padding: 15px;
+  border: 1px solid #555;
+}
+
+.episode-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.episode-number {
+  font-size: 14px;
+  font-weight: 500;
+  color: #b3b3b3;
+}
+
+.remove-episode-btn {
+  background-color: transparent;
+  color: #999;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  transition: color 0.3s ease;
+}
+
+.remove-episode-btn:hover {
+  color: #e50914;
+}
+
+.episode-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.episode-fields input[type="text"],
+.episode-fields input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  background-color: #2a2a2a;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.episode-fields input[type="text"]:focus {
+  outline: none;
+  border-color: #e50914;
+}
+
+.episode-fields input[type="file"]::file-selector-button {
+  background-color: #555;
+  color: #ffffff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-right: 8px;
+  font-size: 12px;
+}
+
+.episode-fields input[type="file"]::file-selector-button:hover {
+  background-color: #666;
+}
+
+/* Form Actions */
+.form-actions {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.submit-btn {
+  background-color: #e50914;
+  color: #ffffff;
+  border: none;
+  padding: 15px 50px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #f40612;
+}
+
+.submit-btn:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+}
+
+/* Message Box */
+.message {
+  margin-top: 20px;
+  padding: 12px;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 14px;
+  display: none;
+}
+
+.message.success {
+  background-color: rgba(70, 211, 105, 0.2);
+  border: 1px solid #46d369;
+  color: #46d369;
+  display: block;
+}
+
+.message.error {
+  background-color: rgba(229, 9, 20, 0.2);
+  border: 1px solid #e50914;
+  color: #e50914;
+  display: block;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  .form-container {
+    padding: 20px;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .form-section h2 {
+    font-size: 18px;
+  }
+}

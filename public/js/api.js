@@ -36,7 +36,7 @@ async function registerUser(email, username, password) {
 }
 
 // Login user via API
-async function loginUser(email, password) {
+async function loginUser(username, password) {
   try {
     const response = await fetch("/api/auth/login", {
       method: "POST",
@@ -44,7 +44,7 @@ async function loginUser(email, password) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email: email,
+        username: username,
         password: password,
       }),
     });

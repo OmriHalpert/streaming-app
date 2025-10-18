@@ -10,6 +10,10 @@ async function findUserByEmail(email) {
   return await User.findOne({ email: email.toLowerCase() });
 }
 
+async function findUserByUsername(username) {
+  return await User.findOne({ username: username.toLowerCase() });
+}
+
 // Find user by ID
 async function findUserById(userId) {
   return await User.findOne({ id: parseInt(userId) });
@@ -24,6 +28,12 @@ async function getNextUserId() {
 // Check if email exists
 async function emailExists(email) {
   const user = await findUserByEmail(email);
+  return !!user;
+}
+
+// Check if username exists
+async function usernameExists(username) {
+  const user = await findUserByUsername(username);
   return !!user;
 }
 
@@ -53,6 +63,11 @@ async function register(email, username, password) {
     // Check if email already exists
     if (await emailExists(email)) {
       throw new Error("Email already exists");
+    }
+
+    // Check if username already exists
+    if (await usernameExists(username)) {
+      throw new Error("Username already exists");
     }
 
     // Generate new user ID
@@ -95,12 +110,12 @@ async function register(email, username, password) {
 }
 
 // Validate user login
-async function login(email, password) {
+async function login(username, password) {
   try {
     // Find user by email
-    const foundUser = await findUserByEmail(email);
+    const foundUser = await findUserByUsername(username);
     if (!foundUser) {
-      throw new Error("Email does not exist");
+      throw new Error("User does not exist");
     }
 
     // Validates password using bcrypt

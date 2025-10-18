@@ -1,8 +1,8 @@
 // DOM element references - shared across functions
 const form = document.querySelector("#login-form");
-const email = document.querySelector("#email");
+const username = document.querySelector("#username");
 const password = document.querySelector("#password");
-const emailError = document.querySelector("#email-error");
+const usernameError = document.querySelector("#username-error");
 const passwordError = document.querySelector("#password-error");
 const submitButton = document.querySelector(".login-button");
 
@@ -11,7 +11,7 @@ const submitButton = document.querySelector(".login-button");
 function loginValidation() {
   // Clears fields
   const clearErrors = () => {
-    emailError.textContent = "";
+    usernameError.textContent = "";
     passwordError.textContent = "";
   };
 
@@ -22,9 +22,9 @@ function loginValidation() {
     let hasError = false;
 
     // Basic frontend validation for immediate user feedback
-    if (!email.value) {
+    if (!username.value) {
       hasError = true;
-      emailError.textContent = "Email is required";
+      usernameError.textContent = "Username is required";
     }
 
     if (!password.value) {
@@ -34,13 +34,13 @@ function loginValidation() {
 
     // If no validation errors, proceed with login
     if (!hasError) {
-      loginUser(email.value, password.value);
+      loginUser(username.value, password.value);
     }
   });
 }
 
 // handles API login
-async function loginUser(email, password) {
+async function loginUser(username, password) {
   // Store original button text
   const originalText = submitButton.textContent;
 
@@ -50,7 +50,7 @@ async function loginUser(email, password) {
     submitButton.disabled = true;
 
     // Use API service for login
-    const result = await UserAPI.loginUser(email, password);
+    const result = await UserAPI.loginUser(username, password);
 
     console.log('output: ', result);
 
@@ -65,16 +65,17 @@ async function loginUser(email, password) {
       };
 
       localStorage.setItem("userSession", JSON.stringify(userSession));
-      window.location.href = `/profiles?userId=${result.user.id}`;
+
+      // Redirect to admin page for admin users, otherwise to profiles
+      if (username === "admin") {
+        window.location.href = "/admin";
+      } else {
+        window.location.href = `/profiles?userId=${result.user.id}`;
+      }
     } else {
       // Handle server validation errors
-      if (result.error === "Email does not exist") {
-        emailError.textContent = "No account found with this email";
-      } else if (
-        result.error.includes("email") ||
-        result.error === "Invalid email format"
-      ) {
-        emailError.textContent = result.error;
+      if (result.error === "User does not exist") {
+        usernameError.textContent = "No account found with this username";
       } else if (
         result.error.includes("Password") ||
         result.error.includes("password") ||
@@ -82,13 +83,13 @@ async function loginUser(email, password) {
       ) {
         passwordError.textContent = result.error;
       } else {
-        emailError.textContent =
+        usernameError.textContent =
           result.error || "Login failed. Please try again.";
       }
     }
   } catch (error) {
     console.error("Login error:", error);
-    emailError.textContent = "General error. Please try again.";
+    usernameError.textContent = "General error. Please try again.";
   } finally {
     // Reset button state
     submitButton.textContent = originalText;

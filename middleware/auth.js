@@ -102,6 +102,26 @@ function redirectIfAuthenticated(req, res, next) {
   }
 }
 
+// Check if user is admin (userId = 0)
+function requireAdminAuth(req, res, next) {
+  if (!isAuthenticated(req)) {
+    return res.redirect("/login");
+  }
+
+  const loggedInUserId = req.session.user.id;
+
+  // Check if user is admin (userId = 0)
+  if (parseInt(loggedInUserId) !== 0) {
+    return res.status(403).render("error", {
+      error: "Access Denied",
+      message: "You are not allowed to access here",
+      statusCode: 403
+    });
+  }
+
+  next();
+}
+
 // Make user data available in EJS templates
 function addUserToLocals(req, res, next) {
   res.locals.user = req.session ? req.session.user : null;
@@ -115,5 +135,6 @@ module.exports = {
   requirePageOwnership,
   requireProfileOwnership,
   redirectIfAuthenticated,
+  requireAdminAuth,
   addUserToLocals,
 };
