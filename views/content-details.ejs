@@ -27,7 +27,7 @@
     data-is-watched="<%= isWatched ? 'true' : 'false' %>" 
     data-is-completed="<%= isContentCompleted ? 'true' : 'false' %>">
 
-    <!-- Header (same as feed page) -->
+    <!-- Header -->
     <div class="feed-header">
       <div class="netflix-logo">
         <img src="/resources/netflix_logo.png" alt="Netflix Logo" width="100" />
@@ -108,6 +108,16 @@
             <span class="genre-tag"><%= genre %></span>
             <% }); %>
           </div>
+
+          <!-- Director -->
+          <% if (content.director) { %>
+            <p class="content-director"><strong>Director:</strong> <%= content.director %></p>
+          <% } %>
+
+          <!-- Duration -->
+          <% if (content.duration) { %>
+            <p class="content-duration"><%= content.duration %></p>
+          <% } %>
 
           <!-- Description -->
           <% if (content.summary) { %>

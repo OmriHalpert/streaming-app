@@ -174,18 +174,18 @@ function updateGenreTitle(genreName, totalCount) {
 function updateContentDisplay(content, viewType = "search") {
   const container = document.getElementById("files-container");
 
-  if (content.length === 0) {
-    container.innerHTML =
-      '<div class="no-content"><h3>No results found</h3></div>';
-    return;
-  }
-
   // Hide recommendations when showing search/genre results
   const recommendationsSection = document.querySelector(
     ".recommendations-section"
   );
   if (recommendationsSection && viewType !== "main") {
     recommendationsSection.style.display = "none";
+  }
+
+  if (content.length === 0) {
+    container.innerHTML =
+      '<div class="no-content"><h3>No results found</h3></div>';
+    return;
   }
 
   // Switch container to grid layout for search results

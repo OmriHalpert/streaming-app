@@ -42,7 +42,7 @@ const contentSchema = new mongoose.Schema(
     },
     director: {
       type: String,
-      required: true
+      required: false  // Made optional to support old content without director
     },
     genre: {
       type: [String],

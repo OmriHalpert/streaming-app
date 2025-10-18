@@ -1,5 +1,4 @@
 // Imports
-const Content = require("../models/Content");
 const profileInteractionService = require("../services/profileInteractionService");
 const { getContentById, checkIfCompleted } = require("../services/contentService");
 
@@ -54,6 +53,19 @@ async function renderContentDetailsPage(req, res) {
 
     // Convert mongoose document to plain object for easier use in template
     const contentData = content.toObject();
+
+    // Format duration for movies (convert seconds to human-readable format)
+    if (contentData.type === 'movie' && contentData.durationSec) {
+      const minutes = Math.floor(contentData.durationSec / 60);
+      const hours = Math.floor(minutes / 60);
+      const remainingMinutes = minutes % 60;
+      
+      if (hours > 0) {
+        contentData.duration = `${hours}h ${remainingMinutes}m`;
+      } else {
+        contentData.duration = `${minutes}m`;
+      }
+    }
 
     // Render content details page with all data
     res.render("content-details", {

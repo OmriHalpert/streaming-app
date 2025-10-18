@@ -389,7 +389,7 @@ async function addNewContent(contentData) {
   try {
     // Validate required fields
     if (!contentData.name || !contentData.year || !contentData.type || 
-        !contentData.genre || !contentData.director || !contentData.rating) {
+        !contentData.genre || !contentData.rating) {
       throw new Error('Missing required fields');
     }
 
