@@ -3,9 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Manage Profiles - Netflix Clone</title>
+    <title>Manage Profiles</title>
     <link rel="stylesheet" href="/css/profiles.css" />
     <link rel="stylesheet" href="/css/manage-profiles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body data-user-id="<%= user.id %>">
     <div class="manage-profiles-container">
@@ -69,6 +70,33 @@
             </li>
             <% }); %>
           </ul>
+        </div>
+      </div>
+
+      <!-- Statistics Section -->
+      <div class="statistics-section">
+        <h2>Profile Statistics</h2>
+        
+        <div class="charts-container">
+          <div class="chart-wrapper">
+            <h3>Today's Views per Profile</h3>
+            <div class="chart-loading" id="dailyViewsLoading">
+              <div class="loading-spinner"></div>
+              <p>Loading statistics...</p>
+            </div>
+            <canvas id="dailyViewsChart" style="display: none;"></canvas>
+            <div id="dailyViewsError" class="chart-error" style="display: none;"></div>
+          </div>
+
+          <div class="chart-wrapper">
+            <h3>Content Popularity by Genre</h3>
+            <div class="chart-loading" id="genrePopularityLoading">
+              <div class="loading-spinner"></div>
+              <p>Loading statistics...</p>
+            </div>
+            <canvas id="genrePopularityChart" style="display: none;"></canvas>
+            <div id="genrePopularityError" class="chart-error" style="display: none;"></div>
+          </div>
         </div>
       </div>
     </div>
