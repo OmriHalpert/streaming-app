@@ -244,6 +244,9 @@ async function loadContent() {
       throw new Error("Failed to load content");
     }
 
+    // Render popular content section (using same fetched data)
+    renderPopularContent(feedData);
+
     // Update title with count
     titleElement.innerHTML = `Your Movies and TV shows (${
       feedData.totalCount || 0
@@ -382,6 +385,56 @@ async function loadRecommendations() {
                 <p>Unable to load recommendations right now.</p>
             </div>
         `;
+  }
+}
+
+// Load popular content (uses already-fetched feedData)
+function renderPopularContent(feedData) {
+  const container = document.getElementById("popular-container");
+
+  try {
+    // Clear loading message
+    container.innerHTML = "";
+
+    if (feedData && feedData.popularContent && feedData.popularContent.length > 0) {
+      // Use same structure as genre sections
+      const popularRow = document.createElement("div");
+      popularRow.className = "genre-row";
+
+      // Create card for each popular content item
+      feedData.popularContent.forEach((item) => {
+        // Use the helper function to create consistent content cards
+        const contentHTML = createContentCard(item);
+
+        // Create a temporary container to parse the HTML
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = contentHTML;
+        const contentDiv = tempDiv.firstElementChild;
+
+        // Update class name for genre view (use genre-file instead of file)
+        contentDiv.className = contentDiv.className.replace(
+          "file",
+          "genre-file"
+        );
+
+        popularRow.appendChild(contentDiv);
+      });
+
+      container.appendChild(popularRow);
+    } else {
+      // Hide the entire popular section if no data
+      const popularSection = document.querySelector(".popular-section");
+      if (popularSection) {
+        popularSection.style.display = "none";
+      }
+    }
+  } catch (error) {
+    console.error("Error rendering popular content:", error);
+    // Hide section on error
+    const popularSection = document.querySelector(".popular-section");
+    if (popularSection) {
+      popularSection.style.display = "none";
+    }
   }
 }
 
@@ -1112,7 +1165,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Load recommendations
   await loadRecommendations();
 
-  // Load content
+  // Load content (also renders popular content)
   await loadContent();
 
   // Load aside

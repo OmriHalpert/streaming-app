@@ -1,5 +1,6 @@
 // Imports
 const profileInteractionModel = require("../models/profileInteractionModel");
+const { ProfileInteraction } = require("../models/ProfileInteraction");
 
 // Main functions
 // Save watch progress
@@ -158,6 +159,45 @@ async function deleteProfileInteractions(userId, profileId) {
   }
 }
 
+// Get most popular content based on view count
+async function getMostPopularContent(limit = 10) {
+  try {
+    // Aggregate to count views per content
+    const popularContent = await ProfileInteraction.aggregate([
+      // Unwind the progress array to get individual progress records
+      { $unwind: "$progress" },
+      
+      // Group by contentId and count occurrences
+      {
+        $group: {
+          _id: "$progress.contentId",
+          viewCount: { $sum: 1 }
+        }
+      },
+      
+      // Sort by viewCount descending (most viewed first)
+      { $sort: { viewCount: -1 } },
+      
+      // Limit to top N
+      { $limit: parseInt(limit) },
+      
+      // Reshape the output
+      {
+        $project: {
+          _id: 0,
+          contentId: "$_id",
+          viewCount: 1
+        }
+      }
+    ]);
+
+    return popularContent;
+  } catch (error) {
+    console.error("Error getting popular content:", error);
+    throw error;
+  }
+}
+
 module.exports = {
   saveProgress,
   getProgress,
@@ -165,5 +205,6 @@ module.exports = {
   toggleContentLike,
   markContentAsWatched,
   getProfileInteractions,
-  deleteProfileInteractions
+  deleteProfileInteractions,
+  getMostPopularContent
 };
