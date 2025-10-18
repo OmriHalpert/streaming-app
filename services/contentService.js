@@ -247,6 +247,24 @@ async function getContentForFeed(userId, profileId) {
     // Get all content with profile-specific like/watched status
     const content = await getAllContent(parseInt(userId), parseInt(profileId));
 
+    // Get most popular content (based on view count across all profiles)
+    const popularLimit = parseInt(process.env.FEED_ITEMS_PER_GENRE) || 10;
+    const popularContentData = await profileInteractionService.getMostPopularContent(popularLimit);
+    
+    // Map popular content IDs to full content objects with like/watched status
+    const popularContent = popularContentData
+      .map(item => {
+        const fullContent = content.find(c => c.id === item.contentId);
+        if (fullContent) {
+          return {
+            ...fullContent,
+            viewCount: item.viewCount
+          };
+        }
+        return null;
+      })
+      .filter(item => item !== null); // Remove any null entries
+
     // Sort content by creation date (newest first)
     const sortedContent = content.sort((a, b) => {
       const dateA = new Date(a.createdAt || 0);
@@ -274,6 +292,7 @@ async function getContentForFeed(userId, profileId) {
     return {
       content: content,
       genreGroups: genreGroups,
+      popularContent: popularContent,
       totalCount: content.length,
       userId: parseInt(userId),
       profileId: parseInt(profileId),
@@ -284,6 +303,7 @@ async function getContentForFeed(userId, profileId) {
       return {
         content: [],
         genreGroups: {},
+        popularContent: [],
         totalCount: 0,
         userId: parseInt(userId),
         profileId: parseInt(profileId),
