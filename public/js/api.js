@@ -546,7 +546,6 @@ async function getProfileInteractions(userId, profileId) {
 }
 
 // Add new content (admin only)
-
 async function addContent(formData) {
   try {
     const response = await fetch('/api/content/add', {
@@ -577,6 +576,7 @@ async function addContent(formData) {
   }
 }
 
+// Fetches content rating using OMDB REST API
 async function getContentRating(contentName) {
   try {
     const url = `/api/content/rating?title=${encodeURIComponent(contentName)}`;
@@ -603,6 +603,68 @@ async function getContentRating(contentName) {
   }
 }
 
+// Fetches daily view stats via API
+async function getDailyViewsStats(userId) {
+  try {
+    const response = await fetch(`/api/stats/daily-views?userId=${encodeURIComponent(userId)}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      return {
+        success: true,
+        message: result.message,
+        data: result.data
+      };
+    } else {
+      return {
+        success: false,
+        error: result.error || 'Failed to fetch daily views'
+      };
+    }
+  } catch (error) {
+    console.error('Failed to fetch daily views:', error);
+    return {
+      success: false,
+      error: 'Network error. Please try again.'
+    };
+  } 
+}
+
+// Fetches genre popularity stats via API
+async function getGenrePopularityStats(userId) {
+  try {
+    const response = await fetch(`/api/stats/genre-popularity?userId=${encodeURIComponent(userId)}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      return {
+        success: true,
+        message: result.message,
+        data: result.data
+      };
+    } else {
+      return {
+        success: false,
+        error: result.error || 'Failed to fetch genre popularity stats'
+      };
+    }
+  } catch (error) {
+    console.error('Failed to fetch genre popularity stats:', error);
+    return {
+      success: false,
+      error: 'Network error. Please try again.'
+    };
+  } 
+}
+
 // Make functions available globally
 window.UserAPI = {
   registerUser,
@@ -624,4 +686,6 @@ window.UserAPI = {
   getProfileInteractions,
   addContent,
   getContentRating,
+  getDailyViewsStats,
+  getGenrePopularityStats,
 };

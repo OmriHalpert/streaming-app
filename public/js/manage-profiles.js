@@ -130,6 +130,9 @@ async function addNewProfile() {
       // Update profile count
       updateProfileCount();
 
+      // Refresh statistics charts
+      loadStatistics();
+
       // Clear success message after 3 seconds
       setTimeout(() => {
         clearMessage();
@@ -182,6 +185,10 @@ async function editProfile(profileId, profileName) {
       setTimeout(() => {
         clearMessage();
       }, 3000);
+
+      // Refresh statistics charts
+      loadStatistics();
+
     } else {
       alert(result.error || "Failed to update profile");
     }
@@ -212,6 +219,10 @@ async function directDeleteProfile(profileId) {
 
       // Update add button state
       updateAddProfileButton();
+
+      // Refresh statistics charts
+      loadStatistics();
+
     } else {
       showMessage(result.error || "Failed to delete profile", "error");
     }
@@ -268,8 +279,276 @@ function goBack() {
   window.location.href = `/profiles?userId=${userId}`;
 }
 
+// Statistics functions
+// Chart instances to track for cleanup
+let dailyViewsChartInstance = null;
+let genrePopularityChartInstance = null;
+
+// Initialize daily views chart
+async function initDailyViewsChart() {
+  const canvas = document.getElementById('dailyViewsChart');
+  const loading = document.getElementById('dailyViewsLoading');
+  const errorDiv = document.getElementById('dailyViewsError');
+  
+  try {
+    // Destroy existing chart if it exists
+    if (dailyViewsChartInstance) {
+      dailyViewsChartInstance.destroy();
+      dailyViewsChartInstance = null;
+    }
+
+    // Reset display states
+    loading.style.display = 'flex';
+    canvas.style.display = 'none';
+    errorDiv.style.display = 'none';
+
+    // Fetch data from API
+    const result = await UserAPI.getDailyViewsStats(userId);
+    
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to load statistics');
+    }
+    
+    const chartData = result.data;
+    
+    // Hide loading, show canvas
+    loading.style.display = 'none';
+    canvas.style.display = 'block';
+    
+    // Check if there's any data
+    const hasData = chartData.data && chartData.data.some(val => val > 0);
+    
+    if (!hasData) {
+      // Show empty state message
+      canvas.style.display = 'none';
+      errorDiv.style.display = 'block';
+      errorDiv.className = 'chart-empty';
+      errorDiv.textContent = 'No views today yet. Start watching to see statistics!';
+      return;
+    }
+    
+    
+    // Create the chart
+    dailyViewsChartInstance = new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: chartData.labels,
+        datasets: [{
+          label: "Today's Views",
+          data: chartData.data,
+          backgroundColor: 'rgba(229, 9, 20, 0.7)',
+          borderColor: 'rgba(229, 9, 20, 0.7)',
+          borderWidth: 2,
+          borderRadius: 8,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#e50914',
+            borderWidth: 1,
+            padding: 12,
+            displayColors: false,
+            callbacks: {
+              label: function(context) {
+                return `Views: ${context.parsed.y}`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              color: 'rgba(255, 255, 255, 0.7)',
+              stepSize: 1,
+              precision: 0
+            },
+            grid: {
+              color: 'rgba(255, 255, 255, 0.1)',
+              drawBorder: false
+            },
+            title: {
+              display: true,
+              text: 'Number of Views',
+              color: 'rgba(255, 255, 255, 0.8)',
+              font: {
+                size: 14
+              }
+            }
+          },
+          x: {
+            ticks: {
+              color: 'rgba(255, 255, 255, 0.7)'
+            },
+            grid: {
+              display: false,
+              drawBorder: false
+            },
+            title: {
+              display: true,
+              text: 'Profiles',
+              color: 'rgba(255, 255, 255, 0.8)',
+              font: {
+                size: 14
+              }
+            }
+          }
+        }
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error initializing daily views chart:', error);
+    loading.style.display = 'none';
+    errorDiv.style.display = 'block';
+    errorDiv.textContent = `Failed to load statistics: ${error.message}`;
+  }
+}
+
+// Initialize genre popularity pie chart
+async function initGenrePopularityChart() {
+  const canvas = document.getElementById('genrePopularityChart');
+  const loading = document.getElementById('genrePopularityLoading');
+  const errorDiv = document.getElementById('genrePopularityError');
+  
+  try {
+    // Destroy existing chart if it exists
+    if (genrePopularityChartInstance) {
+      genrePopularityChartInstance.destroy();
+      genrePopularityChartInstance = null;
+    }
+
+    // Reset display states
+    loading.style.display = 'flex';
+    canvas.style.display = 'none';
+    errorDiv.style.display = 'none';
+
+    // Fetch data from API
+    const result = await UserAPI.getGenrePopularityStats(userId);
+    
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to load genre statistics');
+    }
+    
+    const chartData = result.data;
+    
+    // Hide loading, show canvas
+    loading.style.display = 'none';
+    canvas.style.display = 'block';
+    
+    // Check if there's any data
+    const hasData = chartData.data && chartData.data.length > 0;
+    
+    if (!hasData) {
+      // Show empty state message
+      canvas.style.display = 'none';
+      errorDiv.style.display = 'block';
+      errorDiv.className = 'chart-empty';
+      errorDiv.textContent = 'No watch history yet. Start watching to see genre popularity!';
+      return;
+    }
+    
+    // Generate colors for each genre
+    const colors = generatePieColors(chartData.labels.length);
+    
+    // Create the pie chart
+    genrePopularityChartInstance = new Chart(canvas, {
+      type: 'pie',
+      data: {
+        labels: chartData.labels,
+        datasets: [{
+          data: chartData.data,
+          backgroundColor: colors,
+          borderColor: '#1a1a1a',
+          borderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: {
+              color: 'rgba(255, 255, 255, 0.8)',
+              padding: 15,
+              font: {
+                size: 12
+              }
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#e50914',
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.parsed || 0;
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((value / total) * 100).toFixed(1);
+                return `${label}: ${value} (${percentage}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error initializing genre popularity chart:', error);
+    loading.style.display = 'none';
+    errorDiv.style.display = 'block';
+    errorDiv.textContent = `Failed to load genre statistics: ${error.message}`;
+  }
+}
+
+// Generate colors for pie chart
+function generatePieColors(count) {
+  const colors = [
+    'rgba(229, 9, 20, 0.8)',    // Netflix red
+    'rgba(14, 165, 233, 0.8)',  // Blue
+    'rgba(34, 197, 94, 0.8)',   // Green
+    'rgba(251, 146, 60, 0.8)',  // Orange
+    'rgba(168, 85, 247, 0.8)',  // Purple
+    'rgba(236, 72, 153, 0.8)',  // Pink
+    'rgba(250, 204, 21, 0.8)',  // Yellow
+    'rgba(20, 184, 166, 0.8)',  // Teal
+    'rgba(239, 68, 68, 0.8)',   // Red
+    'rgba(59, 130, 246, 0.8)',  // Light Blue
+  ];
+  
+  const result = [];
+  for (let i = 0; i < count; i++) {
+    result.push(colors[i % colors.length]);
+  }
+  return result;
+}
+
+// Load all statistics
+function loadStatistics() {
+  initDailyViewsChart();
+  initGenrePopularityChart();
+}
+
 // Initialize page when DOM is loaded
 document.addEventListener("DOMContentLoaded", function () {
   // Setup event listeners
   setupEventListeners();
+  
+  // Load statistics
+  loadStatistics();
 });

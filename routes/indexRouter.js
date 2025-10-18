@@ -6,6 +6,7 @@ const { usersRouter } = require("./usersRouter.js");
 const { contentRouter } = require("./contentRouter.js");
 const { profilesRouter } = require("./profilesRouter.js");
 const { progressRouter } = require("./progressRouter.js");
+const { statsRouter } = require('./statsRouter.js');
 
 // Declarations
 const indexRouter = Router();
@@ -24,5 +25,8 @@ indexRouter.use("/profiles", profilesRouter);
 
 // Route to handle progress tracking
 indexRouter.use("/progress", progressRouter);
+
+// Route to handle statistics operATIONS
+indexRouter.use("/stats", statsRouter);
 
 module.exports = { indexRouter };
