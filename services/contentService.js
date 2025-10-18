@@ -247,17 +247,25 @@ async function getContentForFeed(userId, profileId) {
     // Get all content with profile-specific like/watched status
     const content = await getAllContent(parseInt(userId), parseInt(profileId));
 
-    // Group content by genres
+    // Sort content by creation date (newest first)
+    const sortedContent = content.sort((a, b) => {
+      const dateA = new Date(a.createdAt || 0);
+      const dateB = new Date(b.createdAt || 0);
+      return dateB - dateA; // Descending order (newest first)
+    });
+
+    // Get limit from environment variable
+    const itemsPerGenre = parseInt(process.env.FEED_ITEMS_PER_GENRE) || 10;
+
+    // Group content by genres (limit to newest items per genre)
     const genreGroups = {};
-    content.forEach((item) => {
+    sortedContent.forEach((item) => {
       item.genre.forEach((genre) => {
         if (!genreGroups[genre]) {
           genreGroups[genre] = [];
         }
-        // Avoid duplicates
-        if (
-          !genreGroups[genre].find((existing) => existing.name === item.name)
-        ) {
+        // Only add if we haven't reached the limit for this genre
+        if (genreGroups[genre].length < itemsPerGenre) {
           genreGroups[genre].push(item);
         }
       });
