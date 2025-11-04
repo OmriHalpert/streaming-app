@@ -182,6 +182,14 @@ function updateContentDisplay(content, viewType = "search") {
     recommendationsSection.style.display = "none";
   }
 
+  // Hide popular content when showing search/genre results
+  const popularContentSection = document.querySelector(
+    ".popular-section"
+  )
+  if (popularContentSection && viewType !== "main") {
+    popularContentSection.style.display = "none";
+  }
+
   if (content.length === 0) {
     container.innerHTML =
       '<div class="no-content"><h3>No results found</h3></div>';
@@ -870,12 +878,26 @@ function returnToMainFeed() {
     isInfiniteScrollEnabled: true,
   };
 
+  // Reset container class back to genre-container
+  const container = document.getElementById("files-container");
+  if (container) {
+    container.className = "genre-container";
+  }
+
   // Show recommendations section again
   const recommendationsSection = document.querySelector(
     ".recommendations-section"
   );
   if (recommendationsSection) {
-    recommendationsSection.style.display = "block";
+    recommendationsSection.style.display = "";
+  }
+
+  // Show popular content section again
+  const popularContentSection = document.querySelector(
+    ".popular-section"
+  );
+  if (popularContentSection) {
+    popularContentSection.style.display = "";
   }
 
   // Clear search input if it's visible

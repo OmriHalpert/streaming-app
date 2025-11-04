@@ -690,9 +690,16 @@ a:hover {
     scrollbar-color: #555 transparent;
 }
 
+/* Popular container alignment fix */
+.popular-container {
+    padding-left: 0; /* Remove any inherited padding */
+    margin-left: 0; /* Remove any inherited margin */
+}
+
 /* Recommendations container alignment fix */
 .recommendations-container {
     padding-left: 0; /* Remove any inherited padding */
+    margin-left: 0; /* Remove any inherited margin */
 }
 
 .genre-file {
