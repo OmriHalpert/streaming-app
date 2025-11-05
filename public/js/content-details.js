@@ -410,6 +410,11 @@ async function clearProgress() {
       parseInt(contentId),
       contentType
     );
+    
+    // Reset local state after clearing progress
+    userProgress = [];
+    isCompleted = false;
+    isWatchd = false;
   } catch (error) {
     console.error('Error clearing progress:', error);
   }
