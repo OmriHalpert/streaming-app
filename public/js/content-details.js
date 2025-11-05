@@ -14,6 +14,9 @@ let userProgress = []; // Store user's progress for this content
 
 // Initialize page
 async function init() {
+  // Setup header
+  setupHamburgerMenu();
+  
   // Setup buttons
   setupPlayButton();
   setupLikeButton();
@@ -31,6 +34,24 @@ async function init() {
   loadRecommendedContent();
   checkIfLiked();
   checkIfWatched();
+}
+
+// Initialize hamburger menu
+function setupHamburgerMenu() {
+  const hamburgerBtn = document.querySelector(".hamburger-btn");
+  const navMenu = document.querySelector(".nav-menu");
+
+  if (hamburgerBtn && navMenu) {
+    hamburgerBtn.addEventListener("click", () => {
+      navMenu.classList.toggle("show");
+    });
+
+    navMenu.addEventListener("click", (e) => {
+      if (e.target.classList.contains("nav-selection")) {
+        navMenu.classList.remove("show");
+      }
+    });
+  }
 }
 
 // Setup play button click handler
