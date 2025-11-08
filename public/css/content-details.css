@@ -584,6 +584,9 @@ a:hover {
   overflow-y: hidden;
   padding: 10px 0;
   scroll-behavior: smooth;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Horizontal scrollbar styles for recommendations */
@@ -623,7 +626,10 @@ a:hover {
 /* Recommended Content Cards - Match Feed Styling Exactly */
 .recommended-content-grid .file {
   width: 280px;
+  min-width: 280px;
+  height: 160px;
   min-height: 160px;
+  flex-shrink: 0;
   background-color: #2f2f2f;
   border-radius: 4px;
   padding: 15px;
@@ -633,6 +639,7 @@ a:hover {
   justify-content: space-between;
   position: relative;
   transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+  box-sizing: border-box;
 }
 
 .recommended-content-grid .file:hover {
