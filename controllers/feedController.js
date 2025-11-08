@@ -7,6 +7,8 @@ const {
   getContentByGenre,
   getContentById,
   addNewContent,
+  updateExistingContent,
+  deleteExistingContent,
 } = require("../services/contentService");
 const {
   getRecommendations: getRecommendationsService,
@@ -457,6 +459,83 @@ async function getOMDBRating(req, res) {
   }
 }
 
+// Update existing content
+async function updateContent(req, res) {
+  try {
+    const { contentId } = req.params;
+    const updateData = req.body;
+
+    if (!contentId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Content ID is required'
+      });
+    }
+
+    // Update content via service
+    const updatedContent = await updateExistingContent(contentId, updateData);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Content updated successfully',
+      data: updatedContent
+    });
+
+  } catch (error) {
+    console.error('Error updating content:', error);
+    
+    if (error.message === 'Content not found') {
+      return res.status(404).json({
+        success: false,
+        error: error.message
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to update content'
+    });
+  }
+}
+
+// Delete content
+async function deleteContent(req, res) {
+  try {
+    const { contentId } = req.params;
+
+    if (!contentId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Content ID is required'
+      });
+    }
+
+    // Delete content via service
+    const deletedContent = await deleteExistingContent(contentId);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Content deleted successfully',
+      data: deletedContent
+    });
+
+  } catch (error) {
+    console.error('Error deleting content:', error);
+    
+    if (error.message === 'Content not found') {
+      return res.status(404).json({
+        success: false,
+        error: error.message
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to delete content'
+    });
+  }
+}
+
 module.exports = {
   renderFeedPage,
   getContent,
@@ -467,5 +546,7 @@ module.exports = {
   getGenreContent,
   getSingleContentById,
   addContent,
+  updateContent,
+  deleteContent,
   getOMDBRating,
 };

@@ -242,6 +242,78 @@ async function deleteUserProfile(userId, profileId) {
   }
 }
 
+// Update user information
+async function updateUser(userId, updateData) {
+  try {
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Update email if provided
+    if (updateData.email !== undefined) {
+      const lowercaseEmail = updateData.email.toLowerCase();
+      // Check if new email already exists (and belongs to different user)
+      const existingUser = await findUserByEmail(lowercaseEmail);
+      if (existingUser && existingUser.id !== userId) {
+        throw new Error("Email already in use");
+      }
+      user.email = lowercaseEmail;
+    }
+
+    // Update username if provided
+    if (updateData.username !== undefined) {
+      const lowercaseUsername = updateData.username.toLowerCase();
+      // Check if new username already exists (and belongs to different user)
+      const existingUser = await findUserByUsername(lowercaseUsername);
+      if (existingUser && existingUser.id !== userId) {
+        throw new Error("Username already in use");
+      }
+      user.username = lowercaseUsername;
+    }
+
+    // Update password if provided
+    if (updateData.password !== undefined) {
+      const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10);
+      user.password = await bcrypt.hash(updateData.password, saltRounds);
+    }
+
+    await user.save();
+
+    // Return user data (without password)
+    return {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      profiles: user.profiles,
+    };
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Delete user and all associated data
+async function deleteUser(userId) {
+  try {
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Delete user from database
+    await User.deleteOne({ id: parseInt(userId) });
+
+    // Return deleted user data (without password) for confirmation
+    return {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+    };
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   register,
   login,
@@ -251,4 +323,6 @@ module.exports = {
   findUserByEmail,
   findUserById,
   emailExists,
+  updateUser,
+  deleteUser,
 };

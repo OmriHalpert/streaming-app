@@ -456,6 +456,40 @@ async function addNewContent(contentData) {
   }
 }
 
+// Update existing content
+async function updateExistingContent(contentId, updateData) {
+  try {
+    // Validate content ID
+    if (!contentId || isNaN(parseInt(contentId))) {
+      throw new Error("Invalid content ID");
+    }
+
+    // Update content in database
+    const updatedContent = await contentModel.updateContent(contentId, updateData);
+
+    return updatedContent;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Delete content
+async function deleteExistingContent(contentId) {
+  try {
+    // Validate content ID
+    if (!contentId || isNaN(parseInt(contentId))) {
+      throw new Error("Invalid content ID");
+    }
+
+    // Delete content from database
+    const deletedContent = await contentModel.deleteContent(contentId);
+
+    return deletedContent;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   getAllContent,
   getContentByName,
@@ -467,4 +501,6 @@ module.exports = {
   markAsWatched,
   checkIfCompleted,
   addNewContent,
+  updateExistingContent,
+  deleteExistingContent,
 };
