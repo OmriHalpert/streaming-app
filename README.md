@@ -25,9 +25,13 @@ npm install
 ```
 PORT=3000
 MONGODB_URI=mongodb://localhost:27017/streaming-app
-JWT_SECRET=your_jwt_secret_key
+SESSION_SECRET=your_session_secret_key
 BCRYPT_SALT_ROUNDS=10
 OMDB_API_KEY=your_omdb_api_key
+NODE_ENV=development
+LOG_LEVEL=info
+ITEMS_PER_PAGE=30
+FEED_ITEMS_PER_GENRE=10
 ```
 
 4. Start MongoDB (if running locally):
@@ -91,7 +95,7 @@ streaming-app/
 ## Main Features
 
 ### Authentication & Authorization
-- User registration and login with JWT authentication
+- User registration and login with Express session authentication
 - Password hashing with bcrypt
 - Role-based access control (admin/user)
 - Session management with HTTP-only cookies
