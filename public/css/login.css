@@ -118,3 +118,79 @@ p {
   margin-top: 2px;
   width: 85%;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .main_box {
+    width: 90%;
+    max-width: 450px;
+    height: auto;
+    min-height: 500px;
+    margin: 20px auto;
+    padding-bottom: 30px;
+  }
+
+  .logo {
+    padding: 4% 5%;
+  }
+
+  .logo img {
+    max-width: 120px;
+    height: auto;
+  }
+
+  .textbox-title {
+    font-size: 32px;
+    padding-top: 8%;
+    padding-left: 8%;
+  }
+
+  .text-input {
+    width: 85%;
+    height: 50px;
+    font-size: 16px;
+    padding-left: 15px;
+  }
+
+  .login-button,
+  .alt-login-button {
+    width: 85%;
+    height: 50px;
+    font-size: 16px;
+  }
+
+  .textbox-footer {
+    padding: 0 8%;
+  }
+
+  .sign-up-text {
+    font-size: 16px;
+  }
+
+  p {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main_box {
+    width: 95%;
+    margin: 10px auto;
+  }
+
+  .textbox-title {
+    font-size: 28px;
+    padding-top: 10%;
+  }
+
+  .text-input {
+    height: 48px;
+    font-size: 16px;
+  }
+
+  .login-button,
+  .alt-login-button {
+    height: 48px;
+    font-size: 16px;
+  }
+}
