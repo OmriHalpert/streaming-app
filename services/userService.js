@@ -212,6 +212,103 @@ async function deleteUserProfile(userId, profileId) {
   }
 }
 
+// Update user information
+async function updateUser(userId, updateData) {
+  try {
+    // Validate user ID
+    if (isNaN(userId) || userId <= 0) {
+      throw new Error("Invalid user ID");
+    }
+
+    // Validate at least one field is being updated
+    if (!updateData.email && !updateData.username && !updateData.password) {
+      throw new Error("At least one field must be provided for update");
+    }
+
+    const trimmedData = {};
+
+    // Validate and trim email
+    if (updateData.email !== undefined) {
+      const trimmedEmail = updateData.email.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      
+      if (!emailRegex.test(trimmedEmail)) {
+        throw new Error("Invalid email format");
+      }
+      
+      if (trimmedEmail.length < 5 || trimmedEmail.length > 254) {
+        throw new Error(
+          trimmedEmail.length < 5
+            ? "Email must be at least 5 characters"
+            : "Email must be no more than 254 characters"
+        );
+      }
+      
+      trimmedData.email = trimmedEmail;
+    }
+
+    // Validate and trim username
+    if (updateData.username !== undefined) {
+      const trimmedUsername = updateData.username.trim();
+      
+      if (trimmedUsername.length < 3 || trimmedUsername.length > 30) {
+        throw new Error(
+          trimmedUsername.length < 3
+            ? "Username must be at least 3 characters"
+            : "Username must be no more than 30 characters"
+        );
+      }
+      
+      trimmedData.username = trimmedUsername;
+    }
+
+    // Validate and trim password
+    if (updateData.password !== undefined) {
+      const trimmedPassword = updateData.password.trim();
+      
+      if (trimmedPassword.length < 5 || trimmedPassword.length > 128) {
+        throw new Error(
+          trimmedPassword.length < 5
+            ? "Password must be at least 5 characters"
+            : "Password must be no more than 128 characters"
+        );
+      }
+      
+      trimmedData.password = trimmedPassword;
+    }
+
+    return await usersModel.updateUser(userId, trimmedData);
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Delete user and all associated data
+async function deleteUser(userId) {
+  try {
+    // Validate user ID
+    if (isNaN(userId) || userId <= 0) {
+      throw new Error("Invalid user ID");
+    }
+
+    // Get user to find all their profiles
+    const user = await usersModel.findUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Delete all profile interactions for each profile
+    for (const profile of user.profiles) {
+      await profileInteractionService.deleteProfileInteractions(userId, profile.id);
+    }
+
+    // Delete the user
+    return await usersModel.deleteUser(userId);
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   getUserById,
   getUserProfiles,
@@ -220,4 +317,6 @@ module.exports = {
   addProfile,
   updateUserProfile,
   deleteUserProfile,
+  updateUser,
+  deleteUser,
 };

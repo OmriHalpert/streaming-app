@@ -9,6 +9,8 @@ const {
   getRecommendations,
   getGenreContent,
   addContent,
+  updateContent,
+  deleteContent,
   getOMDBRating,
 } = require("../controllers/feedController");
 const { upload } = require('../config/upload');
@@ -40,5 +42,11 @@ contentRouter.post(
   upload.any(), // Accept any field names (needed for dynamic episode fields)
   addContent
 );
+
+// Update content endpoint (admin only)
+contentRouter.put('/:contentId', requireAdminAuth, updateContent);
+
+// Delete content endpoint (admin only)
+contentRouter.delete('/:contentId', requireAdminAuth, deleteContent);
 
 module.exports = { contentRouter };
