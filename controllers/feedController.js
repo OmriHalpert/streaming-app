@@ -3,7 +3,6 @@ const {
   getContentForFeed,
   toggleContentLike: toggleLike,
   searchContent: searchContentService,
-  markAsWatched,
   getContentByGenre,
   getContentById,
   addNewContent,
@@ -13,7 +12,6 @@ const {
 const {
   getRecommendations: getRecommendationsService,
 } = require("../services/recommendationService");
-const Content = require("../models/Content");
 const { getVideoDuration } = require('../utils/videoProcessor');
 const path = require('path');
 
