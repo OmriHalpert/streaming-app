@@ -8,7 +8,8 @@ const {
 // Save progress
 async function saveProgress(req, res) {
   try {
-    const { userId, profileId, contentId, contentType, lastPositionSec, isCompleted, season, episode } = req.body;
+    const { profileId, contentId, contentType, lastPositionSec, isCompleted, season, episode } = req.body;
+    const userId = req.session.user.id; // Get from session, not client
 
     const result = await saveProgressService(
       userId,
@@ -31,7 +32,8 @@ async function saveProgress(req, res) {
 // Clear progress (removes ALL episodes for shows)
 async function clearProgress(req, res) {
   try {
-    const { userId, profileId, contentId, contentType } = req.body;
+    const { profileId, contentId, contentType } = req.body;
+    const userId = req.session.user.id; // Get from session, not client
 
     const result = await clearProgressService(
       userId,
@@ -50,7 +52,8 @@ async function clearProgress(req, res) {
 // Get profile interactions (likes and progress)
 async function getProfileInteractions(req, res) {
   try {
-    const { userId, profileId } = req.query;
+    const { profileId } = req.query;
+    const userId = req.session.user.id; // Get from session, not client
 
     const interactions = await getProfileInteractionsService(
       userId,

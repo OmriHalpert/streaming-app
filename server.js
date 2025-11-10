@@ -50,7 +50,7 @@ async function startServer() {
     );
 
     // Logging middleware
-    app.use(logAuthEvents); // Log authentication events
+    app.use(logAuthEvents);
 
     // Add user info to all templates
     app.use(addUserToLocals);

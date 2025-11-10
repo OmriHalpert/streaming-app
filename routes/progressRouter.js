@@ -6,14 +6,14 @@ const {
   clearProgress, 
   getProfileInteractions 
 } = require("../controllers/progressController");
-const { requireAuth } = require("../middleware/auth");
+const { requireAuth, requireProfileOwnership } = require("../middleware/auth");
 
 // Declarations
 const progressRouter = Router();
 
-// Progress operations - Require authentication
-progressRouter.post("/save", requireAuth, saveProgress);
-progressRouter.delete("/clear", requireAuth, clearProgress);
-progressRouter.get("/interactions", requireAuth, getProfileInteractions);
+// Progress operations - Require authentication and profile ownership
+progressRouter.post("/save", requireProfileOwnership, saveProgress);
+progressRouter.delete("/clear", requireProfileOwnership, clearProgress);
+progressRouter.get("/interactions", requireProfileOwnership, getProfileInteractions);
 
 module.exports = { progressRouter };
