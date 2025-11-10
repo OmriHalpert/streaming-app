@@ -5,11 +5,10 @@ const { getDailyViewsPerProfile, getGenrePopularity } = require('../services/sta
 // Handles call for daily views for user profiles
 async function getDailyViews(req, res) {
     try {
-        const userId = req.session.user.id; // Get from session, not client
+        const userId = req.session.user.id;
 
         const data = await getDailyViewsPerProfile(userId);
 
-        // Return success response with the new profile
         res.json({
             success: true,
             data: data
@@ -30,7 +29,6 @@ async function getGenreStats(req, res) {
 
         const data = await getGenrePopularity(userId);
 
-        // Return success response with the new profile
         res.json({
             success: true,
             data: data

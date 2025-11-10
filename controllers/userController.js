@@ -28,6 +28,11 @@ async function getUserById(req, res) {
         // Convert to integer
         const userId = Number(req.params.id);
 
+        // Validate userId
+        if (!userId || isNaN(userId) || userId <= 0) {
+            return res.status(400).json({ error: 'Valid user ID is required' });
+        }
+
         // Fetch user via user services
         const user = await getUserByIdService(userId);
 
@@ -44,6 +49,11 @@ async function getUserProfiles(req, res) {
         // Convert to integer
         const userId = Number(req.params.id);
 
+        // Validate userId
+        if (!userId || isNaN(userId) || userId <= 0) {
+            return res.status(400).json({ error: 'Valid user ID is required' });
+        }
+
         // Fetch user profiles using user services
         const profiles = await getUserProfilesService(userId);
 
@@ -59,6 +69,12 @@ async function updateUser(req, res) {
     try {
         // Convert to integer
         const userId = Number(req.params.id);
+
+        // Validate userId
+        if (!userId || isNaN(userId) || userId <= 0) {
+            return res.status(400).json({ error: 'Valid user ID is required' });
+        }
+
         const updateData = req.body;
 
         // Update user via user services
@@ -88,6 +104,11 @@ async function deleteUser(req, res) {
     try {
         // Convert to integer
         const userId = Number(req.params.id);
+
+        // Validate userId
+        if (!userId || isNaN(userId) || userId <= 0) {
+            return res.status(400).json({ error: 'Valid user ID is required' });
+        }
 
         // Delete user via user services
         const deletedUser = await deleteUserService(userId);
