@@ -1,6 +1,3 @@
-//Imports
-
-
 // Main functions
 // Render add-content (admin) page
 async function renderAddContentPage(req, res) {
