@@ -257,57 +257,6 @@ async function searchContent(req, res) {
   }
 }
 
-// Mark content as watched
-async function watchContent(req, res) {
-  try {
-    const { contentId } = req.params;
-    const { userId, profileId, season, episode } = req.body;
-
-    // Optional season and episode (if its a show)
-    const seasonNum = season ? parseInt(season) : null;
-    const episodeNum = episode ? parseInt(episode) : null;
-
-    if (!contentId || !userId || !profileId) {
-      return res.status(400).json({
-        success: false,
-        error: "Content ID, user ID, and profile ID are required",
-      });
-    }
-
-    // Fetch content to get its type
-    const content = await Content.findOne({ id: parseInt(contentId) });
-    if (!content) {
-      return res.status(404).json({
-        success: false,
-        error: "Content not found",
-      });
-    }
-
-    // Marks content as watched via content services
-    const result = await markAsWatched(
-      parseInt(contentId),
-      parseInt(userId),
-      parseInt(profileId),
-      content.type,
-      seasonNum,
-      episodeNum
-    );
-
-    res.json({
-      success: true,
-      message: result.message,
-      alreadyWatched: result.alreadyWatched,
-    });
-  } catch (error) {
-    console.error("Error marking content as watched:", error);
-
-    res.status(500).json({
-      success: false,
-      error: "Unable to mark content as watched. Please try again.",
-    });
-  }
-}
-
 // Get recommendations
 async function getRecommendations(req, res) {
   try {
@@ -541,7 +490,6 @@ module.exports = {
   getContent,
   toggleContentLike,
   searchContent,
-  watchContent,
   getRecommendations,
   getGenreContent,
   getSingleContentById,
