@@ -20,7 +20,7 @@ async function searchContent(query) {
 
     const searchTerm = query.toLowerCase().trim();
 
-    // Use MongoDB text search with regex for flexible matching, sorted by popularity
+    // Search - sorted by popularity (static likes)
     return await Content.find({
       name: { $regex: searchTerm, $options: "i" },
     }).sort({ likes: -1 }); // Most liked first for search results

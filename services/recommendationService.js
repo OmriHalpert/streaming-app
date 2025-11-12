@@ -42,7 +42,7 @@ async function analyzeGenrePreferences(interactions, allContent) {
 // Get content from favorite genres
 function getContentFromTopGenres(content, genrePreferences, interactions) {
   if (genrePreferences.length === 0) {
-    // No preferences yet, just return random stuff
+    // Return random content when there are no preferences yet
     const shuffled = [...content].sort(() => 0.5 - Math.random());
     return shuffled.map((item) => ({
       ...item.toObject(),
@@ -86,7 +86,7 @@ async function getRecommendations(userId, profileId, limit = 10) {
       allContent
     );
 
-    // Filter out watched content (content in progress array)
+    // Filter out watched content
     const watchedContentIds = interactions.progress.map((p) => p.contentId);
     const unwatchedContent = allContent.filter(
       (content) => !watchedContentIds.includes(content.id)

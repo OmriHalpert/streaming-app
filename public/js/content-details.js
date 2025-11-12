@@ -20,6 +20,7 @@ async function init() {
   // Setup buttons
   setupPlayButton();
   setupLikeButton();
+  setupBackButton();
   loadUserProfile();
   setupStartOverButton()
   
@@ -52,6 +53,16 @@ function setupHamburgerMenu() {
       }
     });
   }
+}
+
+// Setup back button click handler
+function setupBackButton() {
+  const backButton = document.querySelector('.back-button');
+  if (!backButton) return;
+  
+  backButton.addEventListener('click', () => {
+    window.location.href = `/feed?userId=${userId}&profileId=${profileId}`;
+  });
 }
 
 // Setup play button click handler

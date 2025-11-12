@@ -5,7 +5,7 @@ const loggerService = require("../services/loggerService");
 function logRequest(req, res, next) {
   const startTime = Date.now();
 
-  // Log the request using the helper function
+  // Log the request using the helper function (currently disabled)
   loggerService.logHttp("info", "HTTP Request", {
     method: req.method,
     url: req.url,
@@ -98,7 +98,7 @@ function logErrors(err, req, res, next) {
     userAgent: req.get("User-Agent"),
   });
 
-  next(err); // Pass error to next error event handler
+  next(err);
 }
 
 module.exports = {

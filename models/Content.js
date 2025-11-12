@@ -7,18 +7,18 @@ const contentSchema = new mongoose.Schema(
     id: {
       type: Number,
       required: true,
+      unique: true,
     },
     name: {
       type: String,
       required: true,
       trim: true,
-      unique: true,
     },
     year: {
       type: Number,
       required: true,
       min: 1900,
-      max: new Date().getFullYear() + 5,
+      max: new Date().getFullYear(),
     },
     type: {
       type: String,
@@ -77,7 +77,7 @@ const contentSchema = new mongoose.Schema(
     durationSec: {
       type: Number,
       min: 0,
-      required: function() { // Only if movie
+      required: function() {
         return this.type === "movie";
       }
     },
@@ -114,7 +114,7 @@ const contentSchema = new mongoose.Schema(
           ]
         }
       ],
-      required: function() { // Only if show
+      required: function() {
         return this.type === "show";
       },
     },
@@ -126,7 +126,6 @@ const contentSchema = new mongoose.Schema(
 );
 
 // Create indexes for better performance
-contentSchema.index({ id: 1 }, { unique: true });
 contentSchema.index({ genre: 1 });
 contentSchema.index({ name: 1, year: 1 }, {unique: true});
 contentSchema.index({ likes: -1 }); // Descending for popular content first

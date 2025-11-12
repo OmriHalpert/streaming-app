@@ -77,7 +77,7 @@ async function register(email, username, password) {
     const randomAvatar = await generateRandomAvatar();
 
     // Hash the password before saving
-    const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10);
+    const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 12);
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const newUser = new User({
@@ -97,7 +97,7 @@ async function register(email, username, password) {
     // Save user to MongoDB
     await newUser.save();
 
-    // Return user data (without password)
+    // Return user data
     return {
       id: newUser.id,
       email: newUser.email,
@@ -274,13 +274,13 @@ async function updateUser(userId, updateData) {
 
     // Update password if provided
     if (updateData.password !== undefined) {
-      const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10);
+      const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 12);
       user.password = await bcrypt.hash(updateData.password, saltRounds);
     }
 
     await user.save();
 
-    // Return user data (without password)
+    // Return user data
     return {
       id: user.id,
       email: user.email,
@@ -303,7 +303,7 @@ async function deleteUser(userId) {
     // Delete user from database
     await User.deleteOne({ id: parseInt(userId) });
 
-    // Return deleted user data (without password) for confirmation
+    // Return deleted user data for confirmation
     return {
       id: user.id,
       email: user.email,

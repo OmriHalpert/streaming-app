@@ -7,22 +7,30 @@ const fs = require('fs').promises;
 // Storage configuration
 const storage = multer.diskStorage({
   destination: async function (req, file, cb) {
-    // Determine directory based on file type
-    let uploadDir;
-    if (file.fieldname === 'thumbnail') {
-      uploadDir = path.join(__dirname, '../public/resources/thumbnails');
-    } else {
-      uploadDir = path.join(__dirname, '../public/resources/mp4');
+    try {
+      // Determine directory based on file type
+      let uploadDir;
+      if (file.fieldname === 'thumbnail') {
+        uploadDir = path.join(__dirname, '../public/resources/thumbnails');
+      } else {
+        uploadDir = path.join(__dirname, '../public/resources/mp4');
+      }
+      
+      // Ensure directory exists
+      await fs.mkdir(uploadDir, { recursive: true });
+      cb(null, uploadDir);
+    } catch (error) {
+      cb(error);
     }
-    
-    // Ensure directory exists
-    await fs.mkdir(uploadDir, { recursive: true });
-    cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    // Generate unique filename: contentName_timestamp_originalname
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+    try {
+      // Generate unique filename: contentName_timestamp_originalname
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, uniqueSuffix + path.extname(file.originalname));
+    } catch (error) {
+      cb(error);
+    }
   }
 });
 

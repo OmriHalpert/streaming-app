@@ -14,7 +14,7 @@ async function getNextContentId() {
 }
 
 // Main functions
-// Get all content with optional profile-specific like/watched status
+// Get all content
 async function getAllContent(userId = null, profileId = null) {
   // Fetch content list
   const content = await contentModel.getContent();
@@ -32,7 +32,7 @@ async function getAllContent(userId = null, profileId = null) {
     );
 
     const transformedContent = content.map((item) => ({
-      ...item.toObject(), // Convert Mongoose document to plain object
+      ...item.toObject(),
       isLiked: interactions.likes.includes(item.id),
       isWatched: interactions.progress.some((p) => p.contentId === item.id),
     }));
@@ -94,6 +94,7 @@ async function getContentByGenre(
   page = 1,
   limit = null
 ) {
+
   // Validate genre name
   if (!genreName || genreName.trim() === "") {
     throw new Error("Genre name is required");
@@ -113,7 +114,7 @@ async function getContentByGenre(
     throw new Error("Content not found");
   }
 
-  // Calculate pagination with cycling (repeat content when reaching end)
+  // Calculate pagination with cycling
   const totalItems = foundContent.length;
   const startIndex = ((pageNumber - 1) * itemsPerPage) % totalItems;
   let paginatedContent = [];
@@ -132,7 +133,7 @@ async function getContentByGenre(
     );
 
     const transformedContent = paginatedContent.map((item) => ({
-      ...item.toObject(), // Convert Mongoose document to plain object
+      ...item.toObject(),
       isLiked: interactions.likes.includes(item.id),
       isWatched: interactions.progress.some((p) => p.contentId === item.id),
     }));
@@ -179,7 +180,6 @@ async function searchContent(query, userId = null, profileId = null) {
     throw new Error("Search query must be at least 2 characters");
   }
 
-  // Use model search function
   const searchResults = await contentModel.searchContent(query.trim());
 
   // Add profile-specific like/watched status if userId and profileId provided
@@ -190,13 +190,13 @@ async function searchContent(query, userId = null, profileId = null) {
     );
 
     return searchResults.map((item) => ({
-      ...item.toObject(), // Convert Mongoose document to plain object
+      ...item.toObject(),
       isLiked: interactions.likes.includes(item.id),
       isWatched: interactions.progress.some((p) => p.contentId === item.id),
     }));
   }
 
-  // Convert all results to plain objects without interaction status
+  // Return plain content without interaction status
   return searchResults.map((item) => ({
     ...item.toObject(),
     isLiked: false,
@@ -247,7 +247,7 @@ async function getContentForFeed(userId, profileId) {
     // Get all content with profile-specific like/watched status
     const content = await getAllContent(parseInt(userId), parseInt(profileId));
 
-    // Get most popular content (based on view count across all profiles)
+    // Get popular content
     const popularLimit = parseInt(process.env.FEED_ITEMS_PER_GENRE) || 10;
     const popularContentData = await profileInteractionService.getMostPopularContent(popularLimit);
     
@@ -386,9 +386,9 @@ async function checkIfCompleted(contentId, userId, profileId) {
 
       return progressItem.isCompleted;
     } else if (contentType === "show") {
-      // Check if latest episode has been watched (then completed)
+      // Check if latest episode has been watched
       const lastSeasonNumber = content.seasons.length;
-      const lastSeason = content.seasons[lastSeasonNumber - 1]; // Array is 0-indexed
+      const lastSeason = content.seasons[lastSeasonNumber - 1];
       const lastEpisodeNumber = lastSeason.episodes.length;
       
       const lastEpisode = interactions.progress.find((item) => 

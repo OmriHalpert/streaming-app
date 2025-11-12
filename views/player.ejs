@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/css/player.css" />
-    <title><%= content.name %> - Netflix Player</title>
+    <title><%= content.name %> - SA Player</title>
     <% if (content.type === 'show' && content.seasons) { %>
     <script>
       // Pass seasons data and next episode to JavaScript
@@ -31,10 +31,9 @@
   >
     <!-- Video Container -->
     <div class="video-container">
-      <!-- HTML5 Video Element -->
       <video id="video-player" class="video-element">
         <source src="<%= videoUrl %>" type="video/mp4" />
-        Your browser does not support the video tag.
+        Your browser does not support the video tag. <!-- Fallback message -->
       </video>
 
       <!-- Video Controls Overlay -->
