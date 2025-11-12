@@ -58,6 +58,10 @@ function setupProfileClickHandlers() {
       };
 
       localStorage.setItem("selectedProfile", JSON.stringify(selectedProfile));
+      
+      // Clear welcome message flag for the new profile to show message again
+      localStorage.removeItem(`welcomeShown_${selectedProfile.id}`);
+      
       window.location.href = `/feed?profileId=${selectedProfile.id}&userId=${userId}`;
     });
   });

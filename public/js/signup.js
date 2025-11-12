@@ -58,7 +58,7 @@ async function registerUser(email, username, password) {
     submitButton.disabled = true;
 
     // Send registration request to server using API
-    const result = await window.UserAPI.registerUser(email, username, password);
+    const result = await UserAPI.registerUser(email, username, password);
 
     if (result.success) {
       // Success - redirect to login page with success message

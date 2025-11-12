@@ -17,7 +17,6 @@ const { renderAddContentPage } = require('../controllers/addContentController.js
 const {
   requirePageOwnership,
   redirectIfAuthenticated,
-  requireAuthAndOwnership,
   requireAdminAuth,
 } = require("../middleware/auth"); // Import authentication middleware
 

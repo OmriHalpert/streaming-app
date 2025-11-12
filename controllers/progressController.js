@@ -8,7 +8,45 @@ const {
 // Save progress
 async function saveProgress(req, res) {
   try {
-    const { userId, profileId, contentId, contentType, lastPositionSec, isCompleted, season, episode } = req.body;
+    const { profileId, contentId, contentType, lastPositionSec, isCompleted, season, episode } = req.body;
+    const userId = req.session.user.id;
+
+    // Validate required fields
+    if (!profileId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Profile ID is required" 
+      });
+    }
+
+    if (!contentId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Content ID is required" 
+      });
+    }
+
+    if (!contentType) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Content type is required" 
+      });
+    }
+
+    if (lastPositionSec === undefined || lastPositionSec === null) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Last position is required" 
+      });
+    }
+
+    // For shows, season and episode are required
+    if (contentType === 'show' && (!season || !episode)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Season and episode are required for TV shows" 
+      });
+    }
 
     const result = await saveProgressService(
       userId,
@@ -31,7 +69,30 @@ async function saveProgress(req, res) {
 // Clear progress (removes ALL episodes for shows)
 async function clearProgress(req, res) {
   try {
-    const { userId, profileId, contentId, contentType } = req.body;
+    const { profileId, contentId, contentType } = req.body;
+    const userId = req.session.user.id;
+
+    // Validate required fields
+    if (!profileId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Profile ID is required" 
+      });
+    }
+
+    if (!contentId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Content ID is required" 
+      });
+    }
+
+    if (!contentType) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Content type is required" 
+      });
+    }
 
     const result = await clearProgressService(
       userId,
@@ -50,7 +111,16 @@ async function clearProgress(req, res) {
 // Get profile interactions (likes and progress)
 async function getProfileInteractions(req, res) {
   try {
-    const { userId, profileId } = req.query;
+    const { profileId } = req.query;
+    const userId = req.session.user.id;
+
+    // Validate required fields
+    if (!profileId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Profile ID is required" 
+      });
+    }
 
     const interactions = await getProfileInteractionsService(
       userId,

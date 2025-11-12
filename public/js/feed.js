@@ -49,7 +49,7 @@ function deduplicateContent(contentArray) {
 // Create HTML for a single content card
 function createContentCard(item) {
   const hasThumb = item.thumbnail;
-  const contentId = item.id; // Use numeric id, not MongoDB _id
+  const contentId = item.id;
 
   if (hasThumb) {
     return `
@@ -93,7 +93,7 @@ function createContentCard(item) {
   }
 }
 
-// Show a notification message to the user
+// Show notification
 function showNotification(message, type = "info") {
   // Remove existing notifications
   const existing = document.querySelector(".notification");
@@ -115,7 +115,7 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
-// Show loading indicator at bottom of content
+// Show loading indicator at bottom of content (infinite scroll)
 function showLoadingIndicator() {
   const container = document.getElementById("files-container");
   const existingLoader = document.getElementById("infinite-scroll-loader");
@@ -129,7 +129,7 @@ function showLoadingIndicator() {
   }
 }
 
-// Hide loading indicator
+// Hide loading indicator (infinite scroll)
 function hideLoadingIndicator() {
   const loader = document.getElementById("infinite-scroll-loader");
   if (loader) {
@@ -137,7 +137,7 @@ function hideLoadingIndicator() {
   }
 }
 
-// Append new content to existing display
+// Append new content to existing display (infinite scroll)
 function appendContentToDisplay(newContent) {
   const container = document.getElementById("files-container");
   if (!container) return;
@@ -196,7 +196,7 @@ function updateContentDisplay(content, viewType = "search") {
     return;
   }
 
-  // Switch container to grid layout for search results
+  // Switch container to grid layout for search/genre results
   container.className = "files-container";
 
   // Generate HTML for all content cards
@@ -252,7 +252,7 @@ async function loadContent() {
       throw new Error("Failed to load content");
     }
 
-    // Render popular content section (using same fetched data)
+    // Render popular content section
     renderPopularContent(feedData);
 
     // Update title with count
@@ -290,7 +290,7 @@ async function loadContent() {
           tempDiv.innerHTML = contentHTML;
           const contentDiv = tempDiv.firstElementChild;
 
-          // Update class name for genre view (use genre-file instead of file)
+          // Update class name for genre view
           contentDiv.className = contentDiv.className.replace(
             "file",
             "genre-file"
@@ -350,13 +350,13 @@ async function loadRecommendations() {
     container.innerHTML = "";
 
     if (recommendations && recommendations.length > 0) {
-      // Use same structure as genre sections
+      // Create HTML element to contain cards 
       const recommendationsRow = document.createElement("div");
       recommendationsRow.className = "genre-row";
 
       // Create card for each recommendation
       recommendations.forEach((item) => {
-        // Use the helper function to create consistent content cards
+        // Use the helper function to create cards
         const contentHTML = createContentCard(item);
 
         // Create a temporary container to parse the HTML
@@ -364,7 +364,7 @@ async function loadRecommendations() {
         tempDiv.innerHTML = contentHTML;
         const contentDiv = tempDiv.firstElementChild;
 
-        // Update class name for genre view (use genre-file instead of file)
+        // Update class name for genre view
         contentDiv.className = contentDiv.className.replace(
           "file",
           "genre-file"
@@ -396,7 +396,7 @@ async function loadRecommendations() {
   }
 }
 
-// Load popular content (uses already-fetched feedData)
+// Load popular content
 function renderPopularContent(feedData) {
   const container = document.getElementById("popular-container");
 
@@ -405,13 +405,13 @@ function renderPopularContent(feedData) {
     container.innerHTML = "";
 
     if (feedData && feedData.popularContent && feedData.popularContent.length > 0) {
-      // Use same structure as genre sections
+      // Create HTML element to contain cards
       const popularRow = document.createElement("div");
       popularRow.className = "genre-row";
 
       // Create card for each popular content item
       feedData.popularContent.forEach((item) => {
-        // Use the helper function to create consistent content cards
+        // Use the helper function to create cards
         const contentHTML = createContentCard(item);
 
         // Create a temporary container to parse the HTML
@@ -419,7 +419,7 @@ function renderPopularContent(feedData) {
         tempDiv.innerHTML = contentHTML;
         const contentDiv = tempDiv.firstElementChild;
 
-        // Update class name for genre view (use genre-file instead of file)
+        // Update class name for genre view
         contentDiv.className = contentDiv.className.replace(
           "file",
           "genre-file"
@@ -492,7 +492,7 @@ async function loadUserProfile() {
   }
 }
 
-// Initialize like button handlers for server-rendered content
+// Initialize like button handlers
 function setupLikeButtons() {
   // Get all like icons from DOM
   const likeIcons = document.querySelectorAll(".like-icon");
@@ -572,6 +572,11 @@ function handleGenreClick() {
       element.addEventListener("click", async (e) => {
         // Don't trigger for the recommendations section
         if (element.textContent === "Recommended for You") {
+          return;
+        }
+
+        // Don't trigger for the popular content section
+        if (element.textContent === "Popular Content") {
           return;
         }
 
@@ -666,7 +671,7 @@ function switchToGenreView(genreName, content, pagination = null) {
   setupInfiniteScroll();
 }
 
-// Set up infinite scroll for genre view
+// Set up infinite scroll for genre view (infinite scroll)
 function setupInfiniteScroll() {
   // Remove any existing scroll listeners
   window.removeEventListener("scroll", handleInfiniteScroll);
@@ -678,7 +683,7 @@ function setupInfiniteScroll() {
   }
 }
 
-// Handle infinite scroll events
+// Handle infinite scroll events (infinite scroll)
 async function handleInfiniteScroll() {
   // Only proceed if we're in genre view and not currently loading
   if (
@@ -705,7 +710,7 @@ async function handleInfiniteScroll() {
   }
 }
 
-// Load more content for current genre
+// Load more content for current genre (infinite scroll)
 async function loadMoreGenreContent() {
   if (currentGenreData.isLoading || !currentGenreData.genreName) {
     return;
@@ -877,6 +882,9 @@ function returnToMainFeed() {
     hasMore: true,
     isInfiniteScrollEnabled: true,
   };
+
+  // Reset genre click handlers flag since we'll be recreating genre elements
+  genreClickHandlersSetup = false;
 
   // Reset container class back to genre-container
   const container = document.getElementById("files-container");
@@ -1212,10 +1220,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const selectedProfile = JSON.parse(
     localStorage.getItem("selectedProfile") || "{}"
   );
-  const welcomeShown = localStorage.getItem("welcomeShown");
+  const profileId = getProfileId();
+  const welcomeShown = localStorage.getItem(`welcomeShown_${profileId}`);
 
   if (selectedProfile.name && !welcomeShown) {
     showNotification(`👋 Welcome back ${selectedProfile.name}!`);
-    localStorage.setItem("welcomeShown", "true");
+    localStorage.setItem(`welcomeShown_${profileId}`, "true");
   }
 });

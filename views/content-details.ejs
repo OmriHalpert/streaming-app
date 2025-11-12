@@ -8,7 +8,7 @@
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/css/content-details.css" />
-    <title><%= content.name %> - Netflix</title>
+    <title><%= content.name %> - Streaming App</title>
     <script src="/js/api.js" defer></script>
     <script src="/js/content-details.js" defer></script>
     <% if (content.type === 'show' && content.seasons) { %>
@@ -79,7 +79,7 @@
     <div class="content-details-page">
       <!-- Back Button -->
       <div class="back-button-container">
-        <button class="back-button" onclick="window.location.href='/feed?userId=<%= userId %>&profileId=<%= profileId %>'">← Back to Feed</button>
+        <button class="back-button">← Back to Feed</button>
       </div>
 
       <!-- Content Image and Info Container -->

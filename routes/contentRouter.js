@@ -5,7 +5,6 @@ const {
   toggleContentLike,
   searchContent,
   getContent,
-  watchContent,
   getRecommendations,
   getGenreContent,
   addContent,
@@ -26,7 +25,6 @@ contentRouter.use(requireAuth);
 contentRouter.get("/", getContent);
 contentRouter.get("/recommendations/:userId/:profileId", getRecommendations);
 contentRouter.post("/like", toggleContentLike);
-contentRouter.post("/watch/:contentId", watchContent);
 contentRouter.get("/search", searchContent);
 contentRouter.get("/rating", getOMDBRating); // OMDB rating endpoint
 contentRouter.get("/:genreName", getGenreContent);

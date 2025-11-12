@@ -65,15 +65,15 @@ async function playContent(req, res) {
             }
         }
 
-        // Fetch video URL (uses local path, in prod will use CDN URL)
+        // Fetch video URL
         let videoUrl;
         if (isShow) {
-          // Get episode video URL or fallback to default
+          // Get episode video URL
           const episodeData = content.seasons[season - 1].episodes[episode - 1];
-          videoUrl = episodeData.videoUrl || "/resources/mp4/game_of_thrones_trailer.mp4";
+          videoUrl = episodeData.videoUrl;
         } else {
-          // Get movie video URL or fallback to default
-          videoUrl = content.videoUrl || "/resources/mp4/the_dark_knight_trailer.mp4";
+          // Get movie video URL
+          videoUrl = content.videoUrl;
         }
 
         // Get saved progress

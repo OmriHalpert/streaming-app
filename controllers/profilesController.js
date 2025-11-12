@@ -57,8 +57,7 @@ async function renderManageProfilesPage(req, res) {
 // Adds a new profile
 async function addProfile(req, res) {
   try {
-    const userId = req.query.userId || req.body.userId;
-    const profileName = req.body.profileName;
+    const { userId, profileName } = req.body;
 
     // Validate inputs
     if (!userId) {
@@ -134,9 +133,8 @@ async function addProfile(req, res) {
 // Updates a profile's name
 async function updateProfile(req, res) {
   try {
-    const userId = req.query.userId || req.body.userId;
-    const profileId = req.body.profileId;
-    const profileName = req.body.profileName;
+    const userId = req.session.user.id;
+    const { profileId, profileName} = req.body;
 
     // Validate inputs
     if (!userId) {
@@ -227,7 +225,7 @@ async function updateProfile(req, res) {
 // Deletes a profile
 async function deleteProfile(req, res) {
   try {
-    const userId = req.query.userId || req.body.userId;
+    const userId = req.session.user.id;
     const profileId = req.body.profileId;
 
     // Validate inputs

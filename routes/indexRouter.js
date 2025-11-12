@@ -26,7 +26,7 @@ indexRouter.use("/profiles", profilesRouter);
 // Route to handle progress tracking
 indexRouter.use("/progress", progressRouter);
 
-// Route to handle statistics operATIONS
+// Route to handle statistics operations
 indexRouter.use("/stats", statsRouter);
 
 module.exports = { indexRouter };

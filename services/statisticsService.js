@@ -24,7 +24,6 @@ async function getDailyViewsPerProfile(userId) {
         const labels = [];
         const data = [];
         
-        // Use for...of to properly handle async operations
         for (const profile of userProfiles) {
             // Fetch interactions per profile
             const interactions = await getProfileInteractions(userId, profile.id);
@@ -63,7 +62,6 @@ async function getGenrePopularity(userId) {
         // Object to count genre occurrences
         const genreCounts = {};
 
-        // Use for...of to properly handle async operations
         for (const profile of userProfiles) {
             // Fetch interactions per profile
             const interactions = await getProfileInteractions(userId, profile.id);

@@ -14,7 +14,10 @@ function requireOwnership(req, res, next) {
   }
 
   const requestedUserId =
-    req.params.id || req.params.userId || req.body.userId || req.query.userId;
+    (req.params && req.params.id) || 
+    (req.params && req.params.userId) || 
+    (req.body && req.body.userId) || 
+    (req.query && req.query.userId);
   const loggedInUserId = req.session.user.id;
 
   if (parseInt(requestedUserId) !== parseInt(loggedInUserId)) {
@@ -74,9 +77,18 @@ function requireProfileOwnership(req, res, next) {
     });
   }
 
-  const profileId = parseInt(
-    req.body.profileId || req.params.profileId || req.query.profileId
-  );
+  const profileIdParam = (req.body && req.body.profileId) || 
+                         (req.params && req.params.profileId) || 
+                         (req.query && req.query.profileId);
+  
+  if (!profileIdParam) {
+    return res.status(400).json({
+      error: "Bad request",
+      message: "profileId is required",
+    });
+  }
+
+  const profileId = parseInt(profileIdParam);
   const userProfiles = req.session.user.profiles || [];
 
   const ownsProfile = userProfiles.some(

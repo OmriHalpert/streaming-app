@@ -121,6 +121,11 @@ body {
   margin-bottom: 4px;
 }
 
+.play-pause-btn .pause-icon {
+  margin-left: 3px;
+  margin-bottom: 8px;
+}
+
 .play-pause-btn:hover {
   transform: scale(1.1);
   background: rgba(255, 255, 255, 0.3);

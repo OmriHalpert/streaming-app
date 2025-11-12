@@ -20,6 +20,7 @@ async function init() {
   // Setup buttons
   setupPlayButton();
   setupLikeButton();
+  setupBackButton();
   loadUserProfile();
   setupStartOverButton()
   
@@ -52,6 +53,16 @@ function setupHamburgerMenu() {
       }
     });
   }
+}
+
+// Setup back button click handler
+function setupBackButton() {
+  const backButton = document.querySelector('.back-button');
+  if (!backButton) return;
+  
+  backButton.addEventListener('click', () => {
+    window.location.href = `/feed?userId=${userId}&profileId=${profileId}`;
+  });
 }
 
 // Setup play button click handler
@@ -188,7 +199,7 @@ async function checkIfWatched() {
 // Load user's progress for this content
 async function loadInteractions() {
   try {
-    const result = await window.UserAPI.getProfileInteractions(
+    const result = await UserAPI.getProfileInteractions(
       parseInt(userId),
       parseInt(profileId)
     );
@@ -301,17 +312,6 @@ function loadEpisodes(season) {
   }).join('');
 }
 
-// Update episode UI after watching
-function updateEpisodeWatchedStatus(season, episode) {
-  const episodeCard = document.querySelector(
-    `.episode-card[data-season="${season}"][data-episode="${episode}"]`
-  );
-  
-  if (episodeCard) {
-    episodeCard.classList.add('watched');
-  }
-}
-
 // Load recommended content
 async function loadRecommendedContent() {
   const recommendedGrid = document.getElementById('recommended-content-grid');
@@ -401,10 +401,10 @@ function formatDuration(seconds) {
   return `${minutes}m`;
 }
 
-// Helper function to clear ALL progress from database (all episodes for shows)
+// Clear all progress from database (all episodes for shows)
 async function clearProgress() {
   try {
-    await window.UserAPI.clearProgress(
+    await UserAPI.clearProgress(
       parseInt(userId),
       parseInt(profileId),
       parseInt(contentId),

@@ -1,5 +1,3 @@
-// Player.js - Video Player Controls
-
 // Get elements from DOM
 const video = document.getElementById('video-player');
 const controlsOverlay = document.getElementById('controls-overlay');
@@ -25,19 +23,16 @@ const episode = document.body.dataset.episode;
 // State variables
 let controlsTimeout;
 let isPlaying = false;
-let isSeeking = false;
 let progressSaveInterval;
 
 // Initialize player when page loads
 document.addEventListener('DOMContentLoaded', init);
 
+// Initializae page
 function init() {
   setupEventListeners();
   setupKeyboardShortcuts();
   setupProgressTracking();
-  if (contentType === 'show') {
-    setupEpisodesUI();
-  }
   
   // Resume from saved position
   if (window.startPosition && window.startPosition > 0) {
@@ -50,8 +45,7 @@ function init() {
   }
 }
 
-// ===== Phase 3: Basic Playback Controls =====
-
+// Sets up event listeners
 function setupEventListeners() {
   // Play/Pause buttons
   centerPlayPause.addEventListener('click', togglePlayPause);
@@ -69,18 +63,18 @@ function setupEventListeners() {
   // Back button
   backButton.addEventListener('click', goBack);
 
-  // Phase 4: Advanced controls
+  // Advanced controls
   rewindBtn.addEventListener('click', rewind);
   forwardBtn.addEventListener('click', forward);
   progressBar.addEventListener('click', seek);
 
-  // Phase 5: Fullscreen
+  // Fullscreen
   fullscreenBtn.addEventListener('click', toggleFullscreen);
 
-  // Phase 8: Auto-hide controls
+  // Auto-hide controls
   setupAutoHideControls();
 
-  // Phase 6 & 7: TV show specific
+  // TV show specific
   if (contentType === 'show') {
     setupNextEpisodeButton();
     setupEpisodesSidebar();
@@ -140,8 +134,6 @@ function updatePlayPauseIcons(playing) {
   });
 }
 
-// ===== Phase 4: Advanced Controls =====
-
 // Rewind 10 seconds
 function rewind() {
   video.currentTime = Math.max(0, video.currentTime - 10);
@@ -174,7 +166,7 @@ function seek(e) {
 
 // Update progress bar as video plays
 function updateProgress() {
-  if (!video.duration || isSeeking) return;
+  if (!video.duration) return;
   const percent = (video.currentTime / video.duration) * 100;
   progressFilled.style.width = percent + '%';
   currentTimeDisplay.textContent = formatTime(video.currentTime);
@@ -208,8 +200,7 @@ function padZero(num) {
   return num.toString().padStart(2, '0');
 }
 
-// ===== Phase 5: Fullscreen =====
-
+// Toggle fullscreen (supports old and new browsers)
 function toggleFullscreen() {
   const container = document.querySelector('.video-container');
   
@@ -234,8 +225,7 @@ function toggleFullscreen() {
   }
 }
 
-// ===== Phase 6: Next Episode Button =====
-
+// Setup next episode button
 function setupNextEpisodeButton() {
   const nextEpisodeBtn = document.getElementById('next-episode-btn');
   if (!nextEpisodeBtn || !window.nextEpisode) return;
@@ -254,8 +244,7 @@ function goToNextEpisode() {
   window.location.href = url;
 }
 
-// ===== Phase 7: Episodes Sidebar =====
-
+// Setup episode sidebar
 function setupEpisodesSidebar() {
   const episodesBtn = document.getElementById('episodes-btn');
   const sidebar = document.getElementById('episodes-sidebar');
@@ -292,11 +281,7 @@ function setupEpisodesSidebar() {
   loadEpisodes(parseInt(season));
 }
 
-function setupEpisodesUI() {
-  if (!window.seasonsData) return;
-  // Will be loaded dynamically when sidebar opens
-}
-
+// Loads episodes
 function loadEpisodes(seasonNumber) {
   const episodesList = document.getElementById('episodes-list');
   if (!episodesList || !window.seasonsData) return;
@@ -331,8 +316,11 @@ function playEpisode(seasonNum, episodeNum) {
   window.location.href = url;
 }
 
-// ===== Phase 8: Auto-Hide Controls =====
+// Make playEpisode global so it can be called from HTML onclick
+window.playEpisode = playEpisode;
 
+
+// Auto-Hide Controls
 function setupAutoHideControls() {
   // Show controls on mouse move
   document.addEventListener('mousemove', showControls);
@@ -350,11 +338,13 @@ function setupAutoHideControls() {
   });
 }
 
+// Shows play/pause controls
 function showControls() {
   controlsOverlay.classList.remove('hidden');
   hideControlsAfterDelay();
 }
 
+// Hides play/pause controls
 function hideControlsAfterDelay() {
   clearTimeout(controlsTimeout);
   if (isPlaying) {
@@ -364,8 +354,7 @@ function hideControlsAfterDelay() {
   }
 }
 
-// ===== Keyboard Shortcuts =====
-
+// Keyboard shortcuts
 function setupKeyboardShortcuts() {
   document.addEventListener('keydown', (e) => {
     // Ignore if typing in an input
@@ -401,8 +390,7 @@ function setupKeyboardShortcuts() {
   });
 }
 
-// ===== Navigation =====
-
+// Navigation
 function goBack() {
   // Save progress before navigating back
   saveProgressBeforeNavigation();
@@ -411,11 +399,7 @@ function goBack() {
   window.location.href = `/content/${contentId}?userId=${userId}&profileId=${profileId}`;
 }
 
-// Make playEpisode global so it can be called from HTML onclick
-window.playEpisode = playEpisode;
-
-// ===== Progress Tracking =====
-
+// Progress tracking
 function setupProgressTracking() {
   // Start saving progress when video plays
   video.addEventListener('play', startProgressSaving);
@@ -433,6 +417,7 @@ function setupProgressTracking() {
   });
 }
 
+// Starts progress saving
 function startProgressSaving() {
   // Save progress every 10 seconds
   progressSaveInterval = setInterval(() => {
@@ -442,6 +427,7 @@ function startProgressSaving() {
   }, 10000);
 }
 
+// Stops progress saving
 function stopProgressSaving() {
   if (progressSaveInterval) {
     clearInterval(progressSaveInterval);
@@ -466,8 +452,9 @@ function saveProgressBeforeNavigation() {
   }
 }
 
+// Uses API to save progress
 async function saveProgress(isCompleted) {
-  await window.UserAPI.saveProgress(
+  await UserAPI.saveProgress(
     parseInt(userId),
     parseInt(profileId),
     parseInt(contentId),
