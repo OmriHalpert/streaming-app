@@ -60,7 +60,7 @@ function setupEventListeners() {
   // Input validation on typing
   profileNameInput.addEventListener("input", function () {
     clearMessage();
-    updateAddProfileButton(); // Enable button while text is entered
+    updateAddProfileButton(); 
   });
 
   // Event delegation for edit and delete buttons (handles dynamically added buttons)
@@ -549,6 +549,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // Setup event listeners
   setupEventListeners();
   
-  // Load statistics
+  // Load Daily views chart
   loadStatistics();
 });

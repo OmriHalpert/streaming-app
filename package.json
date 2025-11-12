@@ -1,15 +1,15 @@
 {
   "name": "streaming-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "A Netflix-style streaming platform for movies and TV shows built with Node.js, Express, and MongoDB",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server.js",
     "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["streaming", "netflix", "movies", "tv-shows", "express", "mongodb"],
+  "author": "Omri Halpert",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",

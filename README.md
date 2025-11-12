@@ -151,7 +151,7 @@ streaming-app/
 ### Authentication
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
+- `GET /logout` - User logout
 
 ### Content
 - `GET /api/content/` - Get all content
@@ -161,7 +161,8 @@ streaming-app/
 - `PUT /api/content/:contentId` - Update content (admin)
 - `DELETE /api/content/:contentId` - Delete content (admin)
 - `POST /api/content/like` - Like/unlike content
-- `POST /api/content/watch/:contentId` - Mark as watched
+- `GET /api/content/recommendations/:userId/:profileId` - Get personalized recommendations
+- `GET /api/content/rating` - Get OMDB rating for content
 
 ### Users
 - `GET /api/users/:id` - Get user details
@@ -175,6 +176,6 @@ streaming-app/
 - `DELETE /api/profiles/delete` - Delete profile
 
 ### Progress
-- `POST /api/progress/save` - Save watch progress
+- `POST /api/progress/save` - Save watch progress (also marks as watched when isCompleted=true)
 - `GET /api/progress/interactions` - Get profile interactions
 - `DELETE /api/progress/clear` - Clear watch progress

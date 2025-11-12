@@ -129,7 +129,7 @@ document.getElementById('submitBtn').addEventListener('click', async function() 
     
     // Validate basic fields
     if (!contentName || !releaseYear || !genresInput || !castInput || !director || !summary) {
-      showMessage('Please fill in all required fields', 'error');
+      showMessage('All fields are required', 'error');
       return;
     }
     
@@ -155,7 +155,7 @@ document.getElementById('submitBtn').addEventListener('click', async function() 
         return; // Stop if rating fetch fails
     }
 
-    const rating = resultImdb.rating; // Access rating directly, not from .data
+    const rating = resultImdb.rating;
     
     // Prepare content data
     const contentData = {

@@ -17,7 +17,7 @@ function loginValidation() {
 
   // On submit
   form.addEventListener("submit", (e) => {
-    e.preventDefault(); // Always prevent default form submission
+    e.preventDefault(); 
     clearErrors();
     let hasError = false;
 
